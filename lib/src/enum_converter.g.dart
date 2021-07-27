@@ -18,36 +18,41 @@ Map<String, dynamic> _$ResultCodeConverterToJson(
       'e': _$ResultCodeEnumMap[instance.e],
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
   dynamic source, {
-  T unknownValue,
+  K? unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$ResultCodeEnumMap = {
@@ -130,6 +135,7 @@ Map<String, dynamic> _$ChannelServiceConverterToJson(
 const _$ChannelServiceEnumMap = {
   ChannelService.Media: 1,
   ChannelService.Whiteboard: 2,
+  ChannelService.Message: 4,
 };
 
 UserLeaveReasonConverter _$UserLeaveReasonConverterFromJson(
@@ -981,4 +987,22 @@ Map<String, dynamic> _$MessageServiceStateConverterToJson(
 const _$MessageServiceStateEnumMap = {
   MessageServiceState.Unavailable: 0,
   MessageServiceState.Available: 1,
+};
+
+ActionTypeConverter _$ActionTypeConverterFromJson(Map<String, dynamic> json) {
+  return ActionTypeConverter(
+    _$enumDecodeNullable(_$ActionTypeEnumMap, json['e']),
+  );
+}
+
+Map<String, dynamic> _$ActionTypeConverterToJson(
+        ActionTypeConverter instance) =>
+    <String, dynamic>{
+      'e': _$ActionTypeEnumMap[instance.e],
+    };
+
+const _$ActionTypeEnumMap = {
+  ActionType.Add: 0,
+  ActionType.Update: 1,
+  ActionType.Remove: 2,
 };

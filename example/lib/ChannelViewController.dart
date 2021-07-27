@@ -329,11 +329,28 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         onServiceStateChanged: (MessageServiceState state) {
       print('onServiceStateChanged state $state');
       if (state == MessageServiceState.Available) {
-        rtcMessageService.broadcastMessage(utf8.encode('Test'));
+        rtcMessageService.broadcastMessage(utf8.encode('broadcastMessage'));
+        rtcMessageService.setProperty("setProperty", utf8.encode('setProperty value'));
+        rtcMessageService.publish("publish", utf8.encode('publish value'));
+        rtcMessageService.subscribe("publish");
+        rtcMessageService.unsubscribe("publish");
       }
     }, onUserMessage: (String userId, Uint8List byte) {
       print('onMessage userId: $userId');
       print('onMessage byte:' + utf8.decode(byte));
+    }, onSubscribeResult: (String topic, ResultCode result) {
+      print('onSubscribeResult topic: $topic');
+      print('onSubscribeResult result: $result');
+    }, onTopicMessage: (String topic, String userId, Uint8List data) {
+      print('onTopicMessage topic: $topic');
+      print('onTopicMessage userId: $userId');
+      print('onTopicMessage data: ' + utf8.decode(data));
+    }, onPropertyChanged: (List<RtcPropertyAction> props) {
+      print('onPropertyChanged props length: ' + props.length.toString());
+      RtcPropertyAction action = props[0];
+      print('onPropertyChanged actionType: ' + action.actionType.toString());
+      print('onPropertyChanged propName: ' + action.propName);
+      print('onPropertyChanged propValue: ' + utf8.decode(action.propValue));
     }));
     joinChannel();
   }
@@ -507,17 +524,6 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
                             ),
                             padding: EdgeInsets.all(8),
                             shape: CircleBorder(),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(
-                          width: 80,
-                          height: 30,
-                          child: Image.asset(
-                            'assets/app_logo.png',
-                            fit: BoxFit.fitWidth,
                           ),
                         ),
                         SizedBox(

@@ -1,5 +1,19 @@
 # Change log
 
+## 1.0.0
+
+* Migrate to null safety
+
+## 0.9.8
+
+* Support Pano SDK to 1.5.3
+* Support RtcMessageService new apis
+* Add Message ChannelService
+* Change default VideoProfileType to Standard
+* Fix Android render release bug when RtcView detached from window
+* Fix Android not reset front camera state when destory engine bug
+* Fix Whitboard addImageFile image not show bug
+
 ## 0.9.7
 
 * Support Pano SDK to 1.4.4.6

@@ -10,8 +10,8 @@ RtcEngineConfig _$RtcEngineConfigFromJson(Map<String, dynamic> json) {
   return RtcEngineConfig(
     json['appId'] as String,
     json['rtcServer'] as String,
-    videoCodecHwAcceleration: json['videoCodecHwAcceleration'] as bool,
-    audioScenario: json['audioScenario'] as int,
+    videoCodecHwAcceleration: json['videoCodecHwAcceleration'] as bool?,
+    audioScenario: json['audioScenario'] as int?,
   );
 }
 
@@ -26,11 +26,11 @@ Map<String, dynamic> _$RtcEngineConfigToJson(RtcEngineConfig instance) =>
 RtcChannelConfig _$RtcChannelConfigFromJson(Map<String, dynamic> json) {
   return RtcChannelConfig(
     mode: _$enumDecodeNullable(_$ChannelModeEnumMap, json['mode']),
-    serviceFlags: (json['serviceFlags'] as List)
+    serviceFlags: (json['serviceFlags'] as List<dynamic>?)
         ?.map((e) => _$enumDecodeNullable(_$ChannelServiceEnumMap, e))
-        ?.toSet(),
-    subscribeAudioAll: json['subscribeAudioAll'] as bool,
-    userName: json['userName'] as String,
+        .toSet(),
+    subscribeAudioAll: json['subscribeAudioAll'] as bool?,
+    userName: json['userName'] as String?,
   );
 }
 
@@ -39,41 +39,46 @@ Map<String, dynamic> _$RtcChannelConfigToJson(RtcChannelConfig instance) =>
       'mode': _$ChannelModeEnumMap[instance.mode],
       'serviceFlags': instance.serviceFlags
           ?.map((e) => _$ChannelServiceEnumMap[e])
-          ?.toList(),
+          .toList(),
       'subscribeAudioAll': instance.subscribeAudioAll,
       'userName': instance.userName,
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
   dynamic source, {
-  T unknownValue,
+  K? unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$ChannelModeEnumMap = {
@@ -84,16 +89,17 @@ const _$ChannelModeEnumMap = {
 const _$ChannelServiceEnumMap = {
   ChannelService.Media: 1,
   ChannelService.Whiteboard: 2,
+  ChannelService.Message: 4,
 };
 
 RtcRenderConfig _$RtcRenderConfigFromJson(Map<String, dynamic> json) {
   return RtcRenderConfig(
     profileType:
         _$enumDecodeNullable(_$VideoProfileTypeEnumMap, json['profileType']),
-    sourceMirror: json['sourceMirror'] as bool,
+    sourceMirror: json['sourceMirror'] as bool?,
     scalingMode:
         _$enumDecodeNullable(_$VideoScalingModeEnumMap, json['scalingMode']),
-    mirror: json['mirror'] as bool,
+    mirror: json['mirror'] as bool?,
   );
 }
 
@@ -124,9 +130,9 @@ const _$VideoScalingModeEnumMap = {
 RtcAudioFormat _$RtcAudioFormatFromJson(Map<String, dynamic> json) {
   return RtcAudioFormat(
     type: _$enumDecodeNullable(_$AudioTypeEnumMap, json['type']),
-    channels: json['channels'] as int,
-    sampleRate: json['sampleRate'] as int,
-    bytesPerSample: json['bytesPerSample'] as int,
+    channels: json['channels'] as int?,
+    sampleRate: json['sampleRate'] as int?,
+    bytesPerSample: json['bytesPerSample'] as int?,
   );
 }
 
@@ -144,12 +150,12 @@ const _$AudioTypeEnumMap = {
 
 RtcVideoFormat _$RtcVideoFormatFromJson(Map<String, dynamic> json) {
   return RtcVideoFormat(
-    (json['offset'] as List)?.map((e) => e as int)?.toList(),
-    (json['stride'] as List)?.map((e) => e as int)?.toList(),
+    (json['offset'] as List<dynamic>).map((e) => e as int).toList(),
+    (json['stride'] as List<dynamic>).map((e) => e as int).toList(),
     type: _$enumDecodeNullable(_$VideoTypeEnumMap, json['type']),
-    width: json['width'] as int,
-    height: json['height'] as int,
-    count: json['count'] as int,
+    width: json['width'] as int?,
+    height: json['height'] as int?,
+    count: json['count'] as int?,
     rotation: _$enumDecodeNullable(_$VideoRotationEnumMap, json['rotation']),
   );
 }
@@ -179,8 +185,8 @@ const _$VideoRotationEnumMap = {
 RtcAudioLevel _$RtcAudioLevelFromJson(Map<String, dynamic> json) {
   return RtcAudioLevel(
     json['userId'] as String,
-    level: json['level'] as int,
-    active: json['active'] as bool,
+    level: json['level'] as int?,
+    active: json['active'] as bool?,
   );
 }
 
@@ -228,11 +234,11 @@ RtcAudioSendStats _$RtcAudioSendStatsFromJson(Map<String, dynamic> json) {
     json['bytesSent'] as int,
     json['sendBitrate'] as int,
     json['packetsLost'] as int,
-    (json['lossRatio'] as num)?.toDouble(),
+    (json['lossRatio'] as num).toDouble(),
     json['rtt'] as int,
     json['inputLevel'] as int,
     json['inputActiveFlag'] as bool,
-    _$enumDecodeNullable(_$AudioCodecTypeEnumMap, json['codecType']),
+    _$enumDecode(_$AudioCodecTypeEnumMap, json['codecType']),
   );
 }
 
@@ -263,9 +269,9 @@ RtcAudioRecvStats _$RtcAudioRecvStatsFromJson(Map<String, dynamic> json) {
     json['bytesRecv'] as int,
     json['recvBitrate'] as int,
     json['packetsLost'] as int,
-    (json['lossRatio'] as num)?.toDouble(),
+    (json['lossRatio'] as num).toDouble(),
     json['outputLevel'] as int,
-    _$enumDecodeNullable(_$AudioCodecTypeEnumMap, json['codecType']),
+    _$enumDecode(_$AudioCodecTypeEnumMap, json['codecType']),
   );
 }
 
@@ -286,13 +292,13 @@ RtcVideoSendStats _$RtcVideoSendStatsFromJson(Map<String, dynamic> json) {
     json['bytesSent'] as int,
     json['sendBitrate'] as int,
     json['packetsLost'] as int,
-    (json['lossRatio'] as num)?.toDouble(),
+    (json['lossRatio'] as num).toDouble(),
     json['width'] as int,
     json['height'] as int,
     json['framerate'] as int,
     json['plisReceived'] as int,
     json['rtt'] as int,
-    _$enumDecodeNullable(_$VideoCodecTypeEnumMap, json['codecType']),
+    _$enumDecode(_$VideoCodecTypeEnumMap, json['codecType']),
   );
 }
 
@@ -324,12 +330,12 @@ RtcVideoRecvStats _$RtcVideoRecvStatsFromJson(Map<String, dynamic> json) {
     json['bytesRecv'] as int,
     json['recvBitrate'] as int,
     json['packetsLost'] as int,
-    (json['lossRatio'] as num)?.toDouble(),
+    (json['lossRatio'] as num).toDouble(),
     json['width'] as int,
     json['height'] as int,
     json['framerate'] as int,
     json['plisSent'] as int,
-    _$enumDecodeNullable(_$VideoCodecTypeEnumMap, json['codecType']),
+    _$enumDecode(_$VideoCodecTypeEnumMap, json['codecType']),
   );
 }
 
@@ -399,8 +405,8 @@ Map<String, dynamic> _$RtcSystemStatsToJson(RtcSystemStats instance) =>
 
 RtcDeviceInfo _$RtcDeviceInfoFromJson(Map<String, dynamic> json) {
   return RtcDeviceInfo(
-    deviceId: json['deviceId'] as String,
-    deviceName: json['deviceName'] as String,
+    deviceId: json['deviceId'] as String?,
+    deviceName: json['deviceName'] as String?,
   );
 }
 
@@ -426,10 +432,10 @@ Map<String, dynamic> _$RtcScreenSourceInfoToJson(
 
 WBColor _$WBColorFromJson(Map<String, dynamic> json) {
   return WBColor(
-    red: (json['red'] as num)?.toDouble(),
-    green: (json['green'] as num)?.toDouble(),
-    blue: (json['blue'] as num)?.toDouble(),
-    alpha: (json['alpha'] as num)?.toDouble(),
+    red: (json['red'] as num?)?.toDouble(),
+    green: (json['green'] as num?)?.toDouble(),
+    blue: (json['blue'] as num?)?.toDouble(),
+    alpha: (json['alpha'] as num?)?.toDouble(),
   );
 }
 
@@ -443,7 +449,7 @@ Map<String, dynamic> _$WBColorToJson(WBColor instance) => <String, dynamic>{
 WBTextFormat _$WBTextFormatFromJson(Map<String, dynamic> json) {
   return WBTextFormat(
     style: _$enumDecodeNullable(_$WBFontStyleEnumMap, json['style']),
-    size: json['size'] as int,
+    size: json['size'] as int?,
   );
 }
 
@@ -462,10 +468,10 @@ const _$WBFontStyleEnumMap = {
 
 WBStamp _$WBStampFromJson(Map<String, dynamic> json) {
   return WBStamp(
-    resizable: json['resizable'] as bool,
-  )
-    ..stampId = json['stampId'] as String
-    ..path = json['path'] as String;
+    json['stampId'] as String,
+    json['path'] as String,
+    resizable: json['resizable'] as bool?,
+  );
 }
 
 Map<String, dynamic> _$WBStampToJson(WBStamp instance) => <String, dynamic>{
@@ -477,7 +483,7 @@ Map<String, dynamic> _$WBStampToJson(WBStamp instance) => <String, dynamic>{
 WBDocContents _$WBDocContentsFromJson(Map<String, dynamic> json) {
   return WBDocContents(
     json['name'] as String,
-    (json['urls'] as List)?.map((e) => e as String)?.toList(),
+    (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
   );
 }
 
@@ -490,7 +496,7 @@ Map<String, dynamic> _$WBDocContentsToJson(WBDocContents instance) =>
 WBConvertConfig _$WBConvertConfigFromJson(Map<String, dynamic> json) {
   return WBConvertConfig(
     type: _$enumDecodeNullable(_$WBConvertTypeEnumMap, json['type']),
-    needThumb: json['needThumb'] as bool,
+    needThumb: json['needThumb'] as bool?,
   );
 }
 
@@ -511,7 +517,7 @@ WBDocInfo _$WBDocInfoFromJson(Map<String, dynamic> json) {
     json['fileId'] as String,
     json['name'] as String,
     json['creator'] as String,
-    _$enumDecodeNullable(_$WBDocTypeEnumMap, json['type']),
+    _$enumDecode(_$WBDocTypeEnumMap, json['type']),
   );
 }
 
@@ -529,8 +535,8 @@ const _$WBDocTypeEnumMap = {
 
 FaceBeautifyOption _$FaceBeautifyOptionFromJson(Map<String, dynamic> json) {
   return FaceBeautifyOption(
-    enable: json['enable'] as bool,
-    intensity: (json['intensity'] as num)?.toDouble(),
+    enable: json['enable'] as bool?,
+    intensity: (json['intensity'] as num?)?.toDouble(),
   );
 }
 
@@ -543,15 +549,15 @@ Map<String, dynamic> _$FaceBeautifyOptionToJson(FaceBeautifyOption instance) =>
 BuiltinTransformOption _$BuiltinTransformOptionFromJson(
     Map<String, dynamic> json) {
   return BuiltinTransformOption(
-    enable: json['enable'] as bool,
-    bReset: json['bReset'] as bool,
-    xScaling: (json['xScaling'] as num)?.toDouble(),
-    yScaling: (json['yScaling'] as num)?.toDouble(),
-    xRotation: (json['xRotation'] as num)?.toDouble(),
-    yRotation: (json['yRotation'] as num)?.toDouble(),
-    zRotation: (json['zRotation'] as num)?.toDouble(),
-    xProjection: (json['xProjection'] as num)?.toDouble(),
-    yProjection: (json['yProjection'] as num)?.toDouble(),
+    enable: json['enable'] as bool?,
+    bReset: json['bReset'] as bool?,
+    xScaling: (json['xScaling'] as num?)?.toDouble(),
+    yScaling: (json['yScaling'] as num?)?.toDouble(),
+    xRotation: (json['xRotation'] as num?)?.toDouble(),
+    yRotation: (json['yRotation'] as num?)?.toDouble(),
+    zRotation: (json['zRotation'] as num?)?.toDouble(),
+    xProjection: (json['xProjection'] as num?)?.toDouble(),
+    yProjection: (json['yProjection'] as num?)?.toDouble(),
   );
 }
 
@@ -571,12 +577,12 @@ Map<String, dynamic> _$BuiltinTransformOptionToJson(
 
 QuadTransformOption _$QuadTransformOptionFromJson(Map<String, dynamic> json) {
   return QuadTransformOption(
-    enable: json['enable'] as bool,
-    bReset: json['bReset'] as bool,
+    enable: json['enable'] as bool?,
+    bReset: json['bReset'] as bool?,
     index: _$enumDecodeNullable(_$QuadIndexEnumMap, json['index']),
-    xDeltaAxis: (json['xDeltaAxis'] as num)?.toDouble(),
-    yDeltaAxis: (json['yDeltaAxis'] as num)?.toDouble(),
-    bMirror: json['bMirror'] as bool,
+    xDeltaAxis: (json['xDeltaAxis'] as num?)?.toDouble(),
+    yDeltaAxis: (json['yDeltaAxis'] as num?)?.toDouble(),
+    bMirror: json['bMirror'] as bool?,
   );
 }
 
@@ -600,12 +606,12 @@ const _$QuadIndexEnumMap = {
 
 FeedbackInfo _$FeedbackInfoFromJson(Map<String, dynamic> json) {
   return FeedbackInfo(
-    _$enumDecodeNullable(_$FeedbackTypeEnumMap, json['type']),
+    _$enumDecode(_$FeedbackTypeEnumMap, json['type']),
     json['productName'] as String,
     json['detailDescription'] as String,
-    contact: json['contact'] as String,
-    extraInfo: json['extraInfo'] as String,
-    uploadLogs: json['uploadLogs'] as bool,
+    contact: json['contact'] as String?,
+    extraInfo: json['extraInfo'] as String?,
+    uploadLogs: json['uploadLogs'] as bool?,
   );
 }
 
@@ -629,12 +635,12 @@ const _$FeedbackTypeEnumMap = {
 
 RtcAudioMixingConfig _$RtcAudioMixingConfigFromJson(Map<String, dynamic> json) {
   return RtcAudioMixingConfig(
-    enablePublish: json['enablePublish'] as bool,
-    publishVolume: json['publishVolume'] as int,
-    enableLoopback: json['enableLoopback'] as bool,
-    loopbackVolume: json['loopbackVolume'] as int,
-    cycle: json['cycle'] as int,
-    replaceMicrophone: json['replaceMicrophone'] as bool,
+    enablePublish: json['enablePublish'] as bool?,
+    publishVolume: json['publishVolume'] as int?,
+    enableLoopback: json['enableLoopback'] as bool?,
+    loopbackVolume: json['loopbackVolume'] as int?,
+    cycle: json['cycle'] as int?,
+    replaceMicrophone: json['replaceMicrophone'] as bool?,
   );
 }
 
@@ -653,7 +659,7 @@ RtcSnapshotVideoOption _$RtcSnapshotVideoOptionFromJson(
     Map<String, dynamic> json) {
   return RtcSnapshotVideoOption(
     format: _$enumDecodeNullable(_$ImageFileFormatEnumMap, json['format']),
-    mirror: json['mirror'] as bool,
+    mirror: json['mirror'] as bool?,
   );
 }
 
@@ -673,9 +679,9 @@ const _$ImageFileFormatEnumMap = {
 RtcNetworkQuality _$RtcNetworkQualityFromJson(Map<String, dynamic> json) {
   return RtcNetworkQuality(
     rating: _$enumDecodeNullable(_$QualityRatingEnumMap, json['rating']),
-    txLoss: (json['txLoss'] as num)?.toDouble(),
-    rxLoss: (json['rxLoss'] as num)?.toDouble(),
-    rtt: json['rtt'] as int,
+    txLoss: (json['txLoss'] as num?)?.toDouble(),
+    rxLoss: (json['rxLoss'] as num?)?.toDouble(),
+    rtt: json['rtt'] as int?,
   );
 }
 

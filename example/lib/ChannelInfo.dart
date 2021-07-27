@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:pano_rtc/pano_rtc.dart';
 
 class ChannelInfo {
@@ -6,7 +8,7 @@ class ChannelInfo {
   static String token = YOUR TOKEN;
   static String channelId = '';
   static ChannelMode channelMode = ChannelMode.Meeting;
-  static String userId = '123';
+  static String userId = Random().nextInt(10000).toString();
   static String userName = '';
 
   static void setUserId(String userId) {

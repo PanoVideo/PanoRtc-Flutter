@@ -16,6 +16,12 @@ class RtcMessageSrv(
         })
     }
 
+    override fun setProperty(params: Map<String, *>, callback: Callback) {
+        val name = params["name"] as String
+        val value = params["value"] as ByteArray
+        callback.success(service?.setProperty(name, value))
+    }
+
     override fun sendMessage(params: Map<String, *>, callback: Callback) {
         val message = params["message"] as ByteArray
         val userId = (params["userId"] as String).toLong()
@@ -26,5 +32,21 @@ class RtcMessageSrv(
         val message = params["message"] as ByteArray
         val sendBack = params["sendBack"] as Boolean
         callback.success(service?.broadcastMessage(message, sendBack))
+    }
+
+    override fun publish(params: Map<String, *>, callback: Callback) {
+        val topic = params["topic"] as String
+        val data = params["data"] as ByteArray
+        callback.success(service?.publish(topic, data))
+    }
+
+    override fun subscribe(params: Map<String, *>, callback: Callback) {
+        val topic = params["topic"] as String
+        callback.success(service?.subscribe(topic))
+    }
+
+    override fun unsubscribe(params: Map<String, *>, callback: Callback) {
+        val topic = params["topic"] as String
+        callback.success(service?.unsubscribe(topic))
     }
 }

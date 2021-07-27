@@ -66,6 +66,7 @@ class RtcEngineManager(
         networkMgr = null
         videoStreamMgr = null
         rtcMessageSrv = null
+        frontCamera = true
         callback.success(Constants.QResult.OK)
     }
 
@@ -77,7 +78,19 @@ class RtcEngineManager(
         val userId = (params["userId"] as String).toLong()
         val channelId = params["channelId"] as String
         val token = params["token"] as String
-        callback.success(engine?.joinChannel(token, channelId, userId, RtcChannelConfig()))
+        val config = params["config"] as Map<*, *>
+        val serviceFlagsList = config["serviceFlags"] as List<*>
+        var serviceFlags = 0
+        serviceFlagsList.forEach {
+            serviceFlags = serviceFlags or (it as Number).toInt()
+        }
+        val rtcChannelConfig = RtcChannelConfig().apply {
+            this.mode_1v1 = (config["mode"] as Number).toInt() == 0
+            this.serviceFlags = serviceFlags
+            this.subscribeAudioAll = config["subscribeAudioAll"] as Boolean
+            this.userName = config["userName"] as String
+        }
+        callback.success(engine?.joinChannel(token, channelId, userId, rtcChannelConfig))
     }
 
     override fun leaveChannel(callback: Callback) {

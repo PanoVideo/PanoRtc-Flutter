@@ -24,27 +24,27 @@ class RtcEngineKit with RtcEngineKitInterface {
   static const EventChannel _eventChannel =
       EventChannel('pano_rtc/events_engine');
 
-  static RtcEngineKit _engine;
+  static RtcEngineKit? _engine;
 
   /// @nodoc
   static final Map<String, RtcWhiteboard> whiteboards = {};
 
-  RtcEngineEventHandler _handler;
-  RtcVideoStreamManager _videoStreamManager;
-  RtcAnnotationManager _annotationManager;
-  RtcNetworkManager _networkManager;
-  RtcMessageService _messageService;
+  RtcEngineEventHandler? _handler;
+  RtcVideoStreamManager? _videoStreamManager;
+  RtcAnnotationManager? _annotationManager;
+  RtcNetworkManager? _networkManager;
+  RtcMessageService? _messageService;
 
   RtcEngineKit._() {
     _eventChannel.receiveBroadcastStream().listen((event) {
       final eventMap = Map<dynamic, dynamic>.from(event);
-      final methodName = eventMap['methodName'] as String;
+      final methodName = eventMap['methodName'] as String?;
       final data = List<dynamic>.from(eventMap['data']);
       _handler?.process(methodName, data);
     });
   }
 
-  Future<T> _invokeMethod<T>(String method, [Map<String, dynamic> arguments]) {
+  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     if (T == ResultCode) {
       return _methodChannel.invokeMethod(method, arguments).then((value) {
         return ResultCodeConverter.fromValue(value).e as T;
@@ -73,11 +73,11 @@ class RtcEngineKit with RtcEngineKitInterface {
   ///
   /// **Note**
   /// 如果对象创建失败，将返回空对象。
-  static Future<RtcEngineKit> engine(RtcEngineConfig config) async {
+  static Future<RtcEngineKit?> engine(RtcEngineConfig config) async {
     if (_engine != null) return _engine;
     await _methodChannel.invokeMethod('create', {'config': config.toJson()});
     _engine = RtcEngineKit._();
-    await _engine.setParameters(jsonEncode({
+    await _engine!.setParameters(jsonEncode({
       'pano_sdk': {'sdk_type': 'flutter', 'dart': Platform.version}
     }));
     return _engine;
@@ -115,18 +115,18 @@ class RtcEngineKit with RtcEngineKitInterface {
   ///
   /// **Returns**
   /// PANO SDK 版本字符串，比如 1.0.1。
-  static Future<String> getSdkVersion() {
+  static Future<String?> getSdkVersion() {
     return _methodChannel.invokeMethod('getSdkVersion');
   }
 
   @override
-  Future<ResultCode> updateConfig(RtcEngineConfig config) {
+  Future<ResultCode?> updateConfig(RtcEngineConfig config) {
     return _invokeMethod('updateConfig', {'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> joinChannel(String token, String channelId, String userId,
-      {RtcChannelConfig config}) {
+  Future<ResultCode?> joinChannel(String token, String channelId, String userId,
+      {RtcChannelConfig? config}) {
     config ??= RtcChannelConfig();
     return _invokeMethod('joinChannel', {
       'token': token,
@@ -142,53 +142,53 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> startAudio() {
+  Future<ResultCode?> startAudio() {
     return _invokeMethod('startAudio');
   }
 
   @override
-  Future<ResultCode> stopAudio() {
+  Future<ResultCode?> stopAudio() {
     return _invokeMethod('stopAudio');
   }
 
   @override
-  Future<ResultCode> startVideo(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config}) {
+  Future<ResultCode?> startVideo(RtcSurfaceViewModel viewModel,
+      {RtcRenderConfig? config}) {
     config ??= RtcRenderConfig();
     return viewModel.invokeMethod('startVideo', {'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> stopVideo() {
+  Future<ResultCode?> stopVideo() {
     return _invokeMethod('stopVideo');
   }
 
   @override
-  Future<ResultCode> subscribeAudio(String userId) {
+  Future<ResultCode?> subscribeAudio(String userId) {
     return _invokeMethod('subscribeAudio', {'userId': userId});
   }
 
   @override
-  Future<ResultCode> unsubscribeAudio(String userId) {
+  Future<ResultCode?> unsubscribeAudio(String userId) {
     return _invokeMethod('unsubscribeAudio', {'userId': userId});
   }
 
   @override
-  Future<ResultCode> subscribeVideo(
+  Future<ResultCode?> subscribeVideo(
       String userId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config}) {
+      {RtcRenderConfig? config}) {
     config ??= RtcRenderConfig();
     return viewModel.invokeMethod(
         'subscribeVideo', {'userId': userId, 'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> unsubscribeVideo(String userId) {
+  Future<ResultCode?> unsubscribeVideo(String userId) {
     return _invokeMethod('unsubscribeVideo', {'userId': userId});
   }
 
   @override
-  Future<ResultCode> startScreen({String appGroupId}) {
+  Future<ResultCode?> startScreen({String? appGroupId}) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return _invokeMethod('startScreen');
     } else {
@@ -198,23 +198,23 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> stopScreen() {
+  Future<ResultCode?> stopScreen() {
     return _invokeMethod('stopScreen');
   }
 
   @override
-  Future<ResultCode> subscribeScreen(
+  Future<ResultCode?> subscribeScreen(
       String userId, RtcSurfaceViewModel viewModel) {
     return viewModel.invokeMethod('subscribeScreen', {'userId': userId});
   }
 
   @override
-  Future<ResultCode> unsubscribeScreen(String userId) {
+  Future<ResultCode?> unsubscribeScreen(String userId) {
     return _invokeMethod('unsubscribeScreen', {'userId': userId});
   }
 
   @override
-  Future<ResultCode> updateScreenScaling(
+  Future<ResultCode?> updateScreenScaling(
       String userId, ScreenScalingRatio ratio) {
     return _invokeMethod('updateScreenScaling', {
       'userId': userId,
@@ -223,7 +223,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> updateScreenScalingWithFocus(
+  Future<ResultCode?> updateScreenScalingWithFocus(
       String userId, double ratio, Point<int> focus) {
     return _invokeMethod('updateScreenScalingWithFocus', {
       'userId': userId,
@@ -233,7 +233,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> updateScreenMoving(String userId, Point<int> distance) {
+  Future<ResultCode?> updateScreenMoving(String userId, Point<int> distance) {
     return _invokeMethod('updateScreenMoving', {
       'userId': userId,
       'distance': {'x': distance.x, 'y': distance.y}
@@ -241,155 +241,155 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> muteAudio() {
+  Future<ResultCode?> muteAudio() {
     return _invokeMethod('muteAudio');
   }
 
   @override
-  Future<ResultCode> unmuteAudio() {
+  Future<ResultCode?> unmuteAudio() {
     return _invokeMethod('unmuteAudio');
   }
 
   @override
-  Future<ResultCode> muteVideo() {
+  Future<ResultCode?> muteVideo() {
     return _invokeMethod('muteVideo');
   }
 
   @override
-  Future<ResultCode> unmuteVideo() {
+  Future<ResultCode?> unmuteVideo() {
     return _invokeMethod('unmuteVideo');
   }
 
   @override
-  Future<ResultCode> setMicrophoneMuteStatus(bool enable) {
+  Future<ResultCode?> setMicrophoneMuteStatus(bool enable) {
     return _invokeMethod('setMicrophoneMuteStatus', {'enable': enable});
   }
 
   @override
-  Future<ResultCode> setAudioDeviceVolume(int volume, AudioDeviceType type) {
+  Future<ResultCode?> setAudioDeviceVolume(int volume, AudioDeviceType type) {
     return _invokeMethod('setAudioDeviceVolume',
         {'volume': volume, 'type': AudioDeviceTypeConverter(type).value()});
   }
 
   @override
-  Future<int> getAudioDeviceVolume(AudioDeviceType type) {
+  Future<int?> getAudioDeviceVolume(AudioDeviceType type) {
     return _invokeMethod('getAudioDeviceVolume',
         {'type': AudioDeviceTypeConverter(type).value()});
   }
 
   @override
-  Future<int> getRecordingLevel() {
+  Future<int?> getRecordingLevel() {
     return _invokeMethod('getRecordingLevel');
   }
 
   @override
-  Future<int> getPlayoutLevel() {
+  Future<int?> getPlayoutLevel() {
     return _invokeMethod('getPlayoutLevel');
   }
 
   @override
-  Future<ResultCode> setLoudspeakerStatus(bool enable) {
+  Future<ResultCode?> setLoudspeakerStatus(bool enable) {
     return _invokeMethod('setLoudspeakerStatus', {'enable': enable});
   }
 
   @override
-  Future<bool> isEnabledLoudspeaker() {
+  Future<bool?> isEnabledLoudspeaker() {
     return _invokeMethod('isEnabledLoudspeaker');
   }
 
   @override
-  Future<ResultCode> switchCamera() {
+  Future<ResultCode?> switchCamera() {
     return _invokeMethod('switchCamera');
   }
 
   @override
-  Future<bool> isFrontCamera() {
+  Future<bool?> isFrontCamera() {
     return _invokeMethod('isFrontCamera');
   }
 
   @override
-  Future<String> getCameraDeviceId(bool frontCamera) {
+  Future<String?> getCameraDeviceId(bool frontCamera) {
     return _invokeMethod('getCameraDeviceId', {'frontCamera': frontCamera});
   }
 
   @override
-  Future<ResultCode> startPreview(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config}) {
+  Future<ResultCode?> startPreview(RtcSurfaceViewModel viewModel,
+      {RtcRenderConfig? config}) {
     config ??= RtcRenderConfig();
     return viewModel.invokeMethod('startPreview', {'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> stopPreview() {
+  Future<ResultCode?> stopPreview() {
     return _invokeMethod('stopPreview');
   }
 
   @override
-  Future<ResultCode> createAudioMixingTask(int taskId, String filename) {
+  Future<ResultCode?> createAudioMixingTask(int taskId, String filename) {
     return _invokeMethod(
         'createAudioMixingTask', {'taskId': taskId, 'filename': filename});
   }
 
   @override
-  Future<ResultCode> destroyAudioMixingTask(int taskId) {
+  Future<ResultCode?> destroyAudioMixingTask(int taskId) {
     return _invokeMethod('destroyAudioMixingTask', {'taskId': taskId});
   }
 
   @override
-  Future<ResultCode> startAudioMixingTask(
+  Future<ResultCode?> startAudioMixingTask(
       int taskId, RtcAudioMixingConfig config) {
     return _invokeMethod(
         'startAudioMixingTask', {'taskId': taskId, 'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> updateAudioMixingTask(
+  Future<ResultCode?> updateAudioMixingTask(
       int taskId, RtcAudioMixingConfig config) {
     return _invokeMethod(
         'updateAudioMixingTask', {'taskId': taskId, 'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode> stopAudioMixingTask(int taskId) {
+  Future<ResultCode?> stopAudioMixingTask(int taskId) {
     return _invokeMethod('stopAudioMixingTask', {'taskId': taskId});
   }
 
   @override
-  Future<ResultCode> resumeAudioMixing(int taskId) {
+  Future<ResultCode?> resumeAudioMixing(int taskId) {
     return _invokeMethod('resumeAudioMixing', {'taskId': taskId});
   }
 
   @override
-  Future<ResultCode> pauseAudioMixing(int taskId) {
+  Future<ResultCode?> pauseAudioMixing(int taskId) {
     return _invokeMethod('pauseAudioMixing', {'taskId': taskId});
   }
 
   @override
-  Future<int> getAudioMixingDuration(int taskId) {
+  Future<int?> getAudioMixingDuration(int taskId) {
     return _invokeMethod('getAudioMixingDuration', {'taskId': taskId});
   }
 
   @override
-  Future<int> getAudioMixingCurrentTimestamp(int taskId) {
+  Future<int?> getAudioMixingCurrentTimestamp(int taskId) {
     return _invokeMethod('getAudioMixingCurrentTimestamp', {'taskId': taskId});
   }
 
   @override
-  Future<ResultCode> seekAudioMixing(int taskId, int timestampMs) {
+  Future<ResultCode?> seekAudioMixing(int taskId, int timestampMs) {
     return _invokeMethod(
         'seekAudioMixing', {'taskId': taskId, 'timestampMs': timestampMs});
   }
 
   @override
-  Future<ResultCode> snapshotVideo(String outputDir, String userId,
-      {RtcSnapshotVideoOption option}) {
+  Future<ResultCode?> snapshotVideo(String outputDir, String userId,
+      {RtcSnapshotVideoOption? option}) {
     option ??= RtcSnapshotVideoOption();
     return _invokeMethod('snapshotVideo',
         {'outputDir': outputDir, 'userId': userId, 'option': option.toJson()});
   }
 
   @override
-  Future<RtcWhiteboard> whiteboardEngine() async {
+  Future<RtcWhiteboard?> whiteboardEngine() async {
     var whiteboardId = await _invokeMethod('whiteboardEngine') as String;
     if (whiteboardId.isNotEmpty) {
       whiteboards[whiteboardId] ??= RtcWhiteboard(whiteboardId);
@@ -399,30 +399,30 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> switchWhiteboardEngine(String whiteboardId) {
+  Future<ResultCode?> switchWhiteboardEngine(String whiteboardId) {
     return _invokeMethod(
         'switchWhiteboardEngine', {'whiteboardId': whiteboardId});
   }
 
   @override
-  Future<ResultCode> startAudioDumpWithFilePath(
+  Future<ResultCode?> startAudioDumpWithFilePath(
       String filePath, int maxFileSize) {
     return _invokeMethod('startAudioDumpWithFilePath',
         {'filePath': filePath, 'maxFileSize': maxFileSize});
   }
 
   @override
-  Future<ResultCode> stopAudioDump() {
+  Future<ResultCode?> stopAudioDump() {
     return _invokeMethod('stopAudioDump');
   }
 
   @override
-  Future<ResultCode> sendFeedback(FeedbackInfo info) {
+  Future<ResultCode?> sendFeedback(FeedbackInfo info) {
     return _invokeMethod('sendFeedback', {'info': info.toJson()});
   }
 
   @override
-  Future<ResultCode> setOption(option, OptionType type) {
+  Future<ResultCode?> setOption(option, OptionType type) {
     var params = <String, dynamic>{};
     params['type'] = OptionTypeConverter(type).value();
     var isValid = true;
@@ -524,12 +524,12 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<ResultCode> setParameters(String param) {
+  Future<ResultCode?> setParameters(String param) {
     return _invokeMethod('setParameters', {'param': param});
   }
 
   @override
-  Future<RtcVideoStreamManager> videoStreamManager() async {
+  Future<RtcVideoStreamManager?> videoStreamManager() async {
     if (_videoStreamManager != null) return _videoStreamManager;
     await _invokeMethod('videoStreamManager');
     _videoStreamManager = RtcVideoStreamManager();
@@ -537,7 +537,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<RtcAnnotationManager> annotationManager() async {
+  Future<RtcAnnotationManager?> annotationManager() async {
     if (_annotationManager != null) return _annotationManager;
     await _invokeMethod('annotationManager');
     _annotationManager = RtcAnnotationManager();
@@ -545,7 +545,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<RtcNetworkManager> networkManager() async {
+  Future<RtcNetworkManager?> networkManager() async {
     if (_networkManager != null) return _networkManager;
     await _invokeMethod('networkManager');
     _networkManager = RtcNetworkManager();
@@ -553,7 +553,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
-  Future<RtcMessageService> messageService() async {
+  Future<RtcMessageService?> messageService() async {
     if (_messageService != null) return _messageService;
     await _invokeMethod('messageService');
     _messageService = RtcMessageService();
@@ -593,7 +593,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 请在加入频道之前更新配置，否则将返回失败。
-  Future<ResultCode> updateConfig(RtcEngineConfig config);
+  Future<ResultCode?> updateConfig(RtcEngineConfig config);
 
   /// Destroy the [RtcEngineKit] object.
   ///
@@ -651,8 +651,8 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 同一时刻只能加入一个频道。
   /// 用户需检查回调函数 [onUserJoinIndication] 获知加会结果。
-  Future<ResultCode> joinChannel(String token, String channelId, String userId,
-      {RtcChannelConfig config});
+  Future<ResultCode?> joinChannel(String token, String channelId, String userId,
+      {RtcChannelConfig? config});
 
   /// Leave the channel.
   ///
@@ -678,7 +678,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 开启音频前请先加入一个频道，否则将返回失败。
-  Future<ResultCode> startAudio();
+  Future<ResultCode?> startAudio();
 
   /// Stop audio.
   ///
@@ -691,7 +691,7 @@ mixin RtcEngineKitInterface
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopAudio();
+  Future<ResultCode?> stopAudio();
 
   /// Start video (with a render view).
   ///
@@ -720,8 +720,8 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 开启视频前请先加入一个频道，否则将返回失败。
   /// 必须从主线程调用。
-  Future<ResultCode> startVideo(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config});
+  Future<ResultCode?> startVideo(RtcSurfaceViewModel viewModel,
+      {RtcRenderConfig? config});
 
   /// Stop video.
   ///
@@ -734,7 +734,7 @@ mixin RtcEngineKitInterface
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopVideo();
+  Future<ResultCode?> stopVideo();
 
   /// Subscribe to a user's audio.
   ///
@@ -757,7 +757,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 订阅用户的音频前，请确保用户已开启音频。
-  Future<ResultCode> subscribeAudio(String userId);
+  Future<ResultCode?> subscribeAudio(String userId);
 
   /// Unsubscribe to a user's audio.
   ///
@@ -780,7 +780,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 当用户停止音频或者离开频道的时候，用户的音频将会被自动取消订阅。
-  Future<ResultCode> unsubscribeAudio(String userId);
+  Future<ResultCode?> unsubscribeAudio(String userId);
 
   /// Subscribe to a user's video (with a render view).
   ///
@@ -813,9 +813,9 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 订阅用户的视频前，请确保用户已开启视频。
   /// 必须从主线程调用。
-  Future<ResultCode> subscribeVideo(
+  Future<ResultCode?> subscribeVideo(
       String userId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config});
+      {RtcRenderConfig? config});
 
   /// Unsubscribe to a user's video.
   ///
@@ -838,7 +838,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 当用户停止视频或者离开频道的时候，用户的视频将会被自动取消订阅。
-  Future<ResultCode> unsubscribeVideo(String userId);
+  Future<ResultCode?> unsubscribeVideo(String userId);
 
   /// Start screen capture.
   ///
@@ -861,7 +861,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// iOS: 该接口支持 iOS 11.0 及以上的 iPhone 和 iPad
-  Future<ResultCode> startScreen({String appGroupId});
+  Future<ResultCode?> startScreen({String? appGroupId});
 
   /// Stop screen capture.
   /// **Returns**
@@ -871,7 +871,7 @@ mixin RtcEngineKitInterface
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopScreen();
+  Future<ResultCode?> stopScreen();
 
   /// Subscribe to a user's screen sharing (with a render view).
   ///
@@ -900,7 +900,7 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 订阅用户的屏幕共享前，请确保用户已开启屏幕共享。
   /// 必须从主线程调用。
-  Future<ResultCode> subscribeScreen(
+  Future<ResultCode?> subscribeScreen(
       String userId, RtcSurfaceViewModel viewModel);
 
   /// Unsubscribe to a user's screen sharing.
@@ -925,7 +925,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 当用户停止屏幕共享或者离开频道的时候，用户的屏幕共享将会被自动取消订阅。
-  Future<ResultCode> unsubscribeScreen(String userId);
+  Future<ResultCode?> unsubscribeScreen(String userId);
 
   /// Update screen absolute scaling ratio.
   ///
@@ -952,7 +952,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 默认焦点是视图的中心点。
-  Future<ResultCode> updateScreenScaling(
+  Future<ResultCode?> updateScreenScaling(
       String userId, ScreenScalingRatio ratio);
 
   /// Update screen relative scaling ratio.
@@ -978,7 +978,7 @@ mixin RtcEngineKitInterface
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> updateScreenScalingWithFocus(
+  Future<ResultCode?> updateScreenScalingWithFocus(
       String userId, double ratio, Point<int> focus);
 
   /// Update screen relative moving distance.
@@ -1000,7 +1000,7 @@ mixin RtcEngineKitInterface
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> updateScreenMoving(String userId, Point<int> distance);
+  Future<ResultCode?> updateScreenMoving(String userId, Point<int> distance);
 
   /// Mute audio.
   ///
@@ -1019,7 +1019,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 静音前请先开启音频，否则操作将无效。
-  Future<ResultCode> muteAudio();
+  Future<ResultCode?> muteAudio();
 
   /// Unmute audio.
   ///
@@ -1038,7 +1038,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 取消静音前请先开启音频，否则操作将无效。
-  Future<ResultCode> unmuteAudio();
+  Future<ResultCode?> unmuteAudio();
 
   /// Pause video.
   ///
@@ -1057,7 +1057,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 暂停视频前请先开启视频，否则操作将无效。
-  Future<ResultCode> muteVideo();
+  Future<ResultCode?> muteVideo();
 
   /// Resume video.
   ///
@@ -1076,7 +1076,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// 恢复视频前请先开启视频，否则操作将无效。
-  Future<ResultCode> unmuteVideo();
+  Future<ResultCode?> unmuteVideo();
 }
 
 /// @nodoc
@@ -1096,7 +1096,7 @@ mixin RtcDeviceManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> setMicrophoneMuteStatus(bool enable);
+  Future<ResultCode?> setMicrophoneMuteStatus(bool enable);
 
   /// Set the volume of the current audio device.
   ///
@@ -1117,7 +1117,7 @@ mixin RtcDeviceManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> setAudioDeviceVolume(int volume, AudioDeviceType type);
+  Future<ResultCode?> setAudioDeviceVolume(int volume, AudioDeviceType type);
 
   /// Get the volume of the current audio device.
   ///
@@ -1132,7 +1132,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 当前音量。有效值范围0到255。
-  Future<int> getAudioDeviceVolume(AudioDeviceType type);
+  Future<int?> getAudioDeviceVolume(AudioDeviceType type);
 
   /// Get audio capture level.
   ///
@@ -1143,7 +1143,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 音频采集强度值。
-  Future<int> getRecordingLevel();
+  Future<int?> getRecordingLevel();
 
   /// Get audio playout level.
   ///
@@ -1154,7 +1154,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 音频播放强度值。
-  Future<int> getPlayoutLevel();
+  Future<int?> getPlayoutLevel();
 
   /// Set loudspeaker enable status.
   ///
@@ -1171,7 +1171,7 @@ mixin RtcDeviceManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> setLoudspeakerStatus(bool enable);
+  Future<ResultCode?> setLoudspeakerStatus(bool enable);
 
   /// Get loudspeaker enable status.
   ///
@@ -1182,7 +1182,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 是否启用。
-  Future<bool> isEnabledLoudspeaker();
+  Future<bool?> isEnabledLoudspeaker();
 
   /// Switch front and rear cameras.
   ///
@@ -1195,7 +1195,7 @@ mixin RtcDeviceManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> switchCamera();
+  Future<ResultCode?> switchCamera();
 
   /// Get current camera type.
   ///
@@ -1206,7 +1206,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 是否是前置摄像头。
-  Future<bool> isFrontCamera();
+  Future<bool?> isFrontCamera();
 
   /// Get camera device ID.
   ///
@@ -1221,7 +1221,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 设备唯一标识。
-  Future<String> getCameraDeviceId(bool frontCamera);
+  Future<String?> getCameraDeviceId(bool frontCamera);
 
   /// Start current camera preview (with a render view).
   ///
@@ -1248,8 +1248,8 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Note**
   /// 必须从主线程调用。
-  Future<ResultCode> startPreview(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig config});
+  Future<ResultCode?> startPreview(RtcSurfaceViewModel viewModel,
+      {RtcRenderConfig? config});
 
   /// Stop current camera preview.
   ///
@@ -1262,7 +1262,7 @@ mixin RtcDeviceManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopPreview();
+  Future<ResultCode?> stopPreview();
 }
 
 /// @nodoc
@@ -1287,7 +1287,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> createAudioMixingTask(int taskId, String filename);
+  Future<ResultCode?> createAudioMixingTask(int taskId, String filename);
 
   /// Destroy audio mixing task.
   ///
@@ -1304,7 +1304,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> destroyAudioMixingTask(int taskId);
+  Future<ResultCode?> destroyAudioMixingTask(int taskId);
 
   /// Start audio mixing task.
   ///
@@ -1331,7 +1331,7 @@ mixin RtcAudioMixingManagerInterface {
   ///
   /// **Note**
   /// 实际的混音操作仅在加入房间后进行。
-  Future<ResultCode> startAudioMixingTask(
+  Future<ResultCode?> startAudioMixingTask(
       int taskId, RtcAudioMixingConfig config);
 
   /// Update audio mixing task configuration.
@@ -1353,7 +1353,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> updateAudioMixingTask(
+  Future<ResultCode?> updateAudioMixingTask(
       int taskId, RtcAudioMixingConfig config);
 
   /// Stop audio mixing task.
@@ -1371,7 +1371,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopAudioMixingTask(int taskId);
+  Future<ResultCode?> stopAudioMixingTask(int taskId);
 
   /// Resume the paused audio mixing task.
   ///
@@ -1388,7 +1388,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> resumeAudioMixing(int taskId);
+  Future<ResultCode?> resumeAudioMixing(int taskId);
 
   /// Pause audio mixing task.
   ///
@@ -1405,7 +1405,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> pauseAudioMixing(int taskId);
+  Future<ResultCode?> pauseAudioMixing(int taskId);
 
   /// Get duration of music file.
   ///
@@ -1427,7 +1427,7 @@ mixin RtcAudioMixingManagerInterface {
   ///
   /// **Note**
   /// 总时长是根据文件平均码率估算出来的。对于某些非恒定码率的音频文件，可能与实际总时长相比存在一定偏差。
-  Future<int> getAudioMixingDuration(int taskId);
+  Future<int?> getAudioMixingDuration(int taskId);
 
   /// Get current timestamp.
   ///
@@ -1442,7 +1442,7 @@ mixin RtcAudioMixingManagerInterface {
   ///
   /// **Returns**
   /// 毫秒级当前时间戳。如果失败或者混音任务已结束，返回值小于0。
-  Future<int> getAudioMixingCurrentTimestamp(int taskId);
+  Future<int?> getAudioMixingCurrentTimestamp(int taskId);
 
   /// Seek to target timestamp.
   ///
@@ -1463,7 +1463,7 @@ mixin RtcAudioMixingManagerInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> seekAudioMixing(int taskId, int timestampMs);
+  Future<ResultCode?> seekAudioMixing(int taskId, int timestampMs);
 }
 
 /// @nodoc
@@ -1491,8 +1491,8 @@ mixin RtcSnapshotInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> snapshotVideo(String outputDir, String userId,
-      {RtcSnapshotVideoOption option});
+  Future<ResultCode?> snapshotVideo(String outputDir, String userId,
+      {RtcSnapshotVideoOption? option});
 }
 
 /// @nodoc
@@ -1506,7 +1506,7 @@ mixin RtcWhiteboardManagerInterface {
   ///
   /// **Returns**
   /// [RtcWhiteboard] 对象。
-  Future<RtcWhiteboard> whiteboardEngine();
+  Future<RtcWhiteboard?> whiteboardEngine();
 
   /// Switch whiteboard control object.
   ///
@@ -1537,7 +1537,7 @@ mixin RtcWhiteboardManagerInterface {
   /// - RtcEngine会保留前缀为"pano-"的白板Id，请不要使用
   /// - 当传入的whiteboardId之前没被设置过，[RtcEngineKit]会生成新的白板
   /// - 切换后需要调用whiteboardEngine获得当前的白板控制对象。
-  Future<ResultCode> switchWhiteboardEngine(String whiteboardId);
+  Future<ResultCode?> switchWhiteboardEngine(String whiteboardId);
 }
 
 /// @nodoc
@@ -1561,7 +1561,7 @@ mixin RtcTroubleshootInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> startAudioDumpWithFilePath(
+  Future<ResultCode?> startAudioDumpWithFilePath(
       String filePath, int maxFileSize);
 
   /// Stop audio dump.
@@ -1575,7 +1575,7 @@ mixin RtcTroubleshootInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> stopAudioDump();
+  Future<ResultCode?> stopAudioDump();
 
   /// Send feedback to PANO.
   ///
@@ -1592,7 +1592,7 @@ mixin RtcTroubleshootInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> sendFeedback(FeedbackInfo info);
+  Future<ResultCode?> sendFeedback(FeedbackInfo info);
 }
 
 /// @nodoc
@@ -1616,7 +1616,7 @@ mixin RtcOptionInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> setOption(dynamic option, OptionType type);
+  Future<ResultCode?> setOption(dynamic option, OptionType type);
 }
 
 /// @nodoc
@@ -1636,7 +1636,7 @@ mixin RtcCustomizedInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode> setParameters(String param);
+  Future<ResultCode?> setParameters(String param);
 }
 
 /// @nodoc
@@ -1650,7 +1650,7 @@ mixin RtcManagersInterface {
   ///
   /// **Returns**
   /// [RtcVideoStreamManager] 对象。
-  Future<RtcVideoStreamManager> videoStreamManager();
+  Future<RtcVideoStreamManager?> videoStreamManager();
 
   /// Get annotation manager object.
   ///
@@ -1661,7 +1661,7 @@ mixin RtcManagersInterface {
   ///
   /// **Returns**
   /// [RtcAnnotationManager] 对象。
-  Future<RtcAnnotationManager> annotationManager();
+  Future<RtcAnnotationManager?> annotationManager();
 
   /// get the network manager, it can be called before initialize.
   ///
@@ -1672,7 +1672,16 @@ mixin RtcManagersInterface {
   ///
   /// **Returns**
   /// [RtcNetworkManager] 对象。
-  Future<RtcNetworkManager> networkManager();
+  Future<RtcNetworkManager?> networkManager();
 
-  Future<RtcMessageService> messageService();
+  /// Get the message service interface.
+  ///
+  /// **Returns**
+  /// [RtcMessageService] object.
+  ///
+  /// 获取消息服务的接口指针
+  ///
+  /// **Returns**
+  /// [RtcMessageService] 对象。
+  Future<RtcMessageService?> messageService();
 }

@@ -10,7 +10,7 @@ class RtcAnnotationManager with RtcAnnotationManagerInterface {
       MethodChannel('pano_rtc/api_annotationMgr');
   static const EventChannel _eventChannel =
       EventChannel('pano_rtc/events_annotationMgr');
-  AnnotationMgrEventHandler _handler;
+  AnnotationMgrEventHandler? _handler;
 
   /// @nodoc
   static final Map<String, RtcAnnotation> annotations = {};
@@ -19,13 +19,13 @@ class RtcAnnotationManager with RtcAnnotationManagerInterface {
   RtcAnnotationManager() {
     _eventChannel.receiveBroadcastStream().listen((event) {
       final eventMap = Map<dynamic, dynamic>.from(event);
-      final methodName = eventMap['methodName'] as String;
+      final methodName = eventMap['methodName'] as String?;
       final data = List<dynamic>.from(eventMap['data']);
       _handler?.process(methodName, data);
     });
   }
 
-  Future<T> _invokeMethod<T>(String method, [Map<String, dynamic> arguments]) {
+  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     if (T == ResultCode) {
       return _methodChannel.invokeMethod(method, arguments).then((value) {
         return ResultCodeConverter.fromValue(value).e as T;
@@ -50,7 +50,7 @@ class RtcAnnotationManager with RtcAnnotationManagerInterface {
   }
 
   @override
-  Future<RtcAnnotation> getShareAnnotation(String userId) async {
+  Future<RtcAnnotation?> getShareAnnotation(String userId) async {
     var annotationId =
         await _invokeMethod('getShareAnnotation', {'userId': userId}) as String;
     if (annotationId.isNotEmpty) {
@@ -61,7 +61,7 @@ class RtcAnnotationManager with RtcAnnotationManagerInterface {
   }
 
   @override
-  Future<RtcAnnotation> getVideoAnnotation(String userId, int streamId) async {
+  Future<RtcAnnotation?> getVideoAnnotation(String userId, int streamId) async {
     var annotationId = await _invokeMethod(
             'getVideoAnnotation', {'userId': userId, 'streamId': streamId})
         as String;
@@ -94,7 +94,7 @@ mixin RtcAnnotationManagerInterface {
   /// **Returns**
   /// - 非空指针： 指向视频标注对象的指针。
   /// - 空指针: 失败
-  Future<RtcAnnotation> getVideoAnnotation(String userId, int streamId);
+  Future<RtcAnnotation?> getVideoAnnotation(String userId, int streamId);
 
   /// Get share annotation object.
   ///
@@ -111,5 +111,5 @@ mixin RtcAnnotationManagerInterface {
   /// **Returns**
   /// - 非空指针： 指向共享标注对象的指针。
   /// - 空指针: 失败
-  Future<RtcAnnotation> getShareAnnotation(String userId);
+  Future<RtcAnnotation?> getShareAnnotation(String userId);
 }

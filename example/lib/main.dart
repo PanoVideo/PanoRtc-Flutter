@@ -37,17 +37,25 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final TextEditingController txtChannelID = TextEditingController();
   final TextEditingController txtUsername = TextEditingController();
+  final TextEditingController txtUserId = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
+    txtChannelID.text = ChannelInfo.channelId;
     txtChannelID.addListener(() {
       ChannelInfo.setChannelId(txtChannelID.text);
     });
 
+    txtUsername.text = ChannelInfo.userName;
     txtUsername.addListener(() {
-      ChannelInfo.setUserName(txtChannelID.text);
+      ChannelInfo.setUserName(txtUsername.text);
+    });
+
+    txtUserId.text = ChannelInfo.userId;
+    txtUserId.addListener(() {
+      ChannelInfo.setUserId(txtUserId.text);
     });
   }
 
@@ -56,11 +64,11 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
     txtChannelID.removeListener(() {});
     txtUsername.removeListener(() {});
+    txtUserId.removeListener(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -101,7 +109,38 @@ class _MyAppState extends State<MyApp> {
                       borderSide: BorderSide(color: Color(0xffE7E7EF)),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    hintText: 'Channel ID'),
+                    hintText: 'Input channel id',
+                    labelText: 'Channel ID'),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: const Color(0xff000000),
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              TextField(
+                maxLines: 1,
+                controller: txtUserId,
+                autocorrect: false,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(8.0),
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(
+                        left: 15,
+                        right: 15,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xffE7E7EF)),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xffE7E7EF)),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    hintText: 'Input user id',
+                    labelText: 'User Id'),
                 style: TextStyle(
                   fontSize: 15,
                   color: const Color(0xff000000),
@@ -130,7 +169,8 @@ class _MyAppState extends State<MyApp> {
                       borderSide: BorderSide(color: Color(0xffE7E7EF)),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    hintText: 'User name'),
+                    hintText: 'Input user name',
+                    labelText: 'User name'),
                 style: TextStyle(
                   fontSize: 15,
                   color: const Color(0xff000000),
@@ -139,6 +179,9 @@ class _MyAppState extends State<MyApp> {
               RaisedButton(
                 onPressed: () async {
                   if (txtChannelID.text == '') {
+                    return;
+                  }
+                  if (txtUserId.text == '') {
                     return;
                   }
                   if (txtUsername.text == '') {

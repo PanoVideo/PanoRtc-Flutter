@@ -216,6 +216,12 @@ enum ChannelService {
   /// 频道启用白板服务。
   @JsonValue(1 << 1)
   Whiteboard,
+
+  /// Channel enable message service
+  ///
+  /// 频道启用消息服务。
+  @JsonValue(1 << 2)
+  Message,
 }
 
 /// User leave reason
@@ -921,55 +927,55 @@ enum OptionType {
   @JsonValue(0)
   FaceBeautify,
 
-  /// Logs upload option, object type is NSNumber with BOOL value.
+  /// Logs upload option, object type is bool value.
   ///
-  /// 日志上传可选项，对象类型是带 BOOL 值的 NSNumber 。
+  /// 日志上传可选项，对象类型是bool。
   @JsonValue(1)
   UploadLogs,
 
-  /// Audio dump file upload option, object type is NSNumber with BOOL value.
+  /// Audio dump file upload option, object type is bool value.
   ///
-  /// 音频转储文件上传选项，对象类型是带 BOOL 值的 NSNumber 。
+  /// 音频转储文件上传选项，对象类型是bool。
   @JsonValue(2)
   UploadAudioDump,
 
-  /// Audio equalization option, object type is NSNumber with PanoAudioEqualizationMode value.
+  /// Audio equalization option, object type is AudioEqualizationMode value.
   ///
-  /// 音频均衡器选项，对象类型是带 PanoAudioEqualizationMode 值的 NSNumber 。
+  /// 音频均衡器选项，对象类型是 AudioEqualizationMode 枚举值。
   @JsonValue(3)
   AudioEqualizationMode,
 
-  /// Audio reverb option, object type is NSNumber with PanoAudioReverbMode value.
+  /// Audio reverb option, object type is AudioReverbMode value.
   ///
-  /// 音频混响器选项，对象类型是带 PanoAudioReverbMode 值的 NSNumber 。
+  /// 音频混响器选项，对象类型是带 AudioReverbMode 枚举值 。
   @JsonValue(4)
   AudioReverbMode,
 
-  /// Adjust video capture frame rate option, object type is NSNumber with PanoVideoFrameRateType value.
+  /// Adjust video capture frame rate option, object type is VideoFrameRateType value.
   ///
-  /// 调整视频采集帧率选项，对象类型是带 PanoVideoFrameRateType 值的 NSNumber 。
+  /// 调整视频采集帧率选项，对象类型是带 VideoFrameRateType 枚举值。
   @JsonValue(5)
   VideoFrameRate,
 
-  /// Audio ear Monitoring enable option, object type is NSNumber with BOOL value.
+  /// Audio ear Monitoring enable option, object type is bool value.
   ///
-  /// 音频耳返开关选项，对象类型是带 BOOL 值的 NSNumber 。
+  /// 音频耳返开关选项，对象类型是bool。
   @JsonValue(6)
   AudioEarMonitoring,
 
-  /// (Deprecated) Internal video transform option, object type is PanoBuiltinTransformOption.
+  /// (Deprecated) Internal video transform option, object type is BuiltinTransformOption.
   ///
-  /// (已废弃)视频内嵌变换可选项，对象类型是 PanoBuiltinTransformOption 。
+  /// (已废弃)视频内嵌变换可选项，对象类型是 BuiltinTransformOption 。
   @deprecated
   @JsonValue(7)
   BuiltinTransform,
 
-  /// Enable upload PANO SDK logs when failed to join channel, object type is NSNumber with BOOL value.
+  /// Enable upload PANO SDK logs when failed to join channel, object type is bool value.
   ///
   /// **Note**
   /// This flag has been set by default.
   ///
-  /// 允许加会失败时上传PANO日志，对象类型是带 BOOL 值的 NSNumber 。
+  /// 允许加会失败时上传PANO日志，对象类型是bool。
   ///
   /// **Note**
   /// 此标记设置后会一直有效。默认已经启用。
@@ -977,33 +983,33 @@ enum OptionType {
   UploadLogsAtFailure,
 
   /// Allow SDK to adjust video quality according to CPU performance.
-  ///           Object type is NSNumber with BOOL value. Default value is ture. Configurable before join room.
+  ///           Object type is bool value. Default value is ture. Configurable before join room.
   ///
   /// **Note**
   /// We do not recommend disabling CPU adaption in general case.
   ///
-  /// 允许SDK根据CPU性能调整视频质量。对象类型是带 BOOL 值的 NSNumber 。默认值是true。仅在加入房间前可以配置。
+  /// 允许SDK根据CPU性能调整视频质量。对象类型是带bool。默认值是true。仅在加入房间前可以配置。
   ///
   /// **Note**
   /// 通常场景下不建议关闭此功能。
   @JsonValue(9)
   CpuAdaption,
 
-  /// Audio profile option, object type is PanoRtcAudioProfile.
+  /// Audio profile option, object type is RtcAudioProfile.
   ///
-  /// 音频配置选项，对象类型是 PanoRtcAudioProfile 。
+  /// 音频配置选项，对象类型是 RtcAudioProfile 。
   @JsonValue(10)
   AudioProfile,
 
-  /// Quadrilateral video transform option, object type is PanoQuadTransformOption.
+  /// Quadrilateral video transform option, object type is QuadTransformOption.
   ///
-  /// 视频四边形变换可选项，对象类型是 PanoQuadTransformOption 。
+  /// 视频四边形变换可选项，对象类型是 QuadTransformOption 。
   @JsonValue(11)
   QuadTransform,
 
   ///Screen Capture Frame Rate. Default value is false, true to enable high frame rate capture, for motion scenario.
   ///
-  ///屏幕采集帧率模式。参数类型是Boolean，默认是false, 高帧率采集用于内容变化剧烈场景。
+  ///屏幕采集帧率模式。参数类型是bool，默认是false, 高帧率采集用于内容变化剧烈场景。
   @JsonValue(17)
   ScreenOptimization,
 }
@@ -1530,10 +1536,42 @@ enum QuadIndex {
   BottomRight,
 }
 
+/// Message service state.
+///
+/// 消息服务状态。
 enum MessageServiceState {
+  /// The message service is unavailable..
+  ///
+  /// 消息服务不可用。
   @JsonValue(0)
   Unavailable,
 
+  /// The message service is available..
+  ///
+  /// 消息服务可用。
   @JsonValue(1)
   Available
+}
+
+/// Action type.
+///
+/// 操作类型。
+enum ActionType {
+  /// Add action.
+  ///
+  /// 添加操作。
+  @JsonValue(0)
+  Add,
+
+  /// Update action.
+  ///
+  /// 更新操作。
+  @JsonValue(1)
+  Update,
+
+  /// Remove action.
+  ///
+  /// 删除操作。
+  @JsonValue(2)
+  Remove
 }

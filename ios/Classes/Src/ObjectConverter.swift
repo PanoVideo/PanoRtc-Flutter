@@ -77,6 +77,8 @@ extension PanoRtcChannelConfig {
                     flagSet = flagSet.union(.media)
                 } else if flag == PanoChannelService.whiteboard.rawValue {
                     flagSet = flagSet.union(.whiteboard)
+                } else if flag == PanoChannelService.message.rawValue {
+                    flagSet = flagSet.union(.message)
                 }
             }
             self.serviceFlags = flagSet
@@ -418,6 +420,16 @@ extension PanoRtcSystemStats {
             "totalPhysMemory": totalPhysMemory,
             "workingSetSize": workingSetSize,
             "memoryUsage": memoryUsage
+        ]
+    }
+}
+
+extension PanoPropertyAction {
+    func toMap() -> Dictionary<String, Any?> {
+        return [
+            "type": type.rawValue,
+            "propName": propName,
+            "propValue": propValue
         ]
     }
 }

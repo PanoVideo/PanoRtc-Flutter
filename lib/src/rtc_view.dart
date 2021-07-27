@@ -18,7 +18,7 @@ class RtcSurfaceViewModel {
   final MethodChannel _methodChannel;
 
   /// @nodoc
-  Future<T> invokeMethod<T>(String method, [Map<String, dynamic> arguments]) {
+  Future<T?> invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     if (T == ResultCode) {
       return _methodChannel.invokeMethod(method, arguments).then((value) {
         return ResultCodeConverter.fromValue(value).e as T;
@@ -37,7 +37,7 @@ class RtcSurfaceViewModel {
 /// Use [UIView](https://developer.apple.com/documentation/uikit/uiview) in iOS.
 class RtcSurfaceView extends StatefulWidget {
   /// @nodoc
-  final RtcSurfaceViewCreatedCallback onViewCreated;
+  final RtcSurfaceViewCreatedCallback? onViewCreated;
 
   /// Which gestures should be consumed by the web view.
   ///
@@ -48,11 +48,11 @@ class RtcSurfaceView extends StatefulWidget {
   ///
   /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   /// Constructs a [RtcSurfaceView]
   const RtcSurfaceView({
-    Key key,
+    Key? key,
     this.onViewCreated,
     this.gestureRecognizers,
   }) : super(key: key);
@@ -100,7 +100,7 @@ class _RtcSurfaceViewState extends State<RtcSurfaceView> {
         RtcSurfaceViewModel(MethodChannel('pano_rtc/view_surface_$id'));
     _viewModel.complete(viewModel);
     if (widget.onViewCreated != null) {
-      widget.onViewCreated(viewModel);
+      widget.onViewCreated!(viewModel);
     }
   }
 }
@@ -114,7 +114,7 @@ class RtcWhiteboardSurfaceViewModel {
   final MethodChannel _methodChannel;
 
   /// @nodoc
-  Future<T> invokeMethod<T>(String method, [Map<String, dynamic> arguments]) {
+  Future<T?> invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
     if (T == ResultCode) {
       return _methodChannel.invokeMethod(method, arguments).then((value) {
         return ResultCodeConverter.fromValue(value).e as T;
@@ -133,7 +133,7 @@ class RtcWhiteboardSurfaceViewModel {
 /// Use [UIView](https://developer.apple.com/documentation/uikit/uiview) in iOS.
 class RtcWhiteboardSurfaceView extends StatefulWidget {
   /// @nodoc
-  final RtcWhiteboardSurfaceViewCreatedCallback onViewCreated;
+  final RtcWhiteboardSurfaceViewCreatedCallback? onViewCreated;
 
   /// Which gestures should be consumed by the web view.
   ///
@@ -144,11 +144,11 @@ class RtcWhiteboardSurfaceView extends StatefulWidget {
   ///
   /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   /// Constructs a [RtcWhiteboardSurfaceView]
   const RtcWhiteboardSurfaceView({
-    Key key,
+    Key? key,
     this.onViewCreated,
     this.gestureRecognizers,
   }) : super(key: key);
@@ -196,7 +196,7 @@ class _RtcWhiteboardSurfaceViewState extends State<RtcWhiteboardSurfaceView> {
         MethodChannel('pano_rtc/whiteboard_surface_view_$id'));
     _viewModel.complete(viewModel);
     if (widget.onViewCreated != null) {
-      widget.onViewCreated(viewModel);
+      widget.onViewCreated!(viewModel);
     }
   }
 }

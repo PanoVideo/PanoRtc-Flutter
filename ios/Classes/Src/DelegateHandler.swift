@@ -543,6 +543,9 @@ extension PanoRtcNetworkTestDelegateHandler: PanoRtcNetworkTestDelegate {
 enum PanoRtcMessageDelegateType: String, CaseIterable {
     case onServiceStateChanged
     case onUserMessage
+    case onSubscribeResult
+    case onTopicMessage
+    case onPropertyChanged
 }
 
 class PanoRtcMessageDelegateHandler: DelegateHandler<PanoRtcMessageDelegateType> {}
@@ -558,5 +561,17 @@ extension PanoRtcMessageDelegateHandler: PanoRtcMessageDelegate {
     
     func onUserMessage(_ userId: UInt64, data: Data) {
         callback(.onUserMessage, String(userId), data)
+    }
+    
+    func onSubscribeTopic(_ topic: String, result: PanoResult) {
+        callback(.onSubscribeResult, topic, result.rawValue)
+    }
+    
+    func onTopicMessage(_ topic: String, userId: UInt64, data: Data) {
+        callback(.onTopicMessage, topic, String(userId), data)
+    }
+    
+    func onPropertyChanged(_ props: [PanoPropertyAction]) {
+        callback(.onPropertyChanged, props.map { $0.toMap() })
     }
 }

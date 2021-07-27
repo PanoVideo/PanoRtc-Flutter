@@ -6,7 +6,7 @@ description: Demonstrates how to use the pano_rtc plugin.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -24,10 +24,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
 
-  permission_handler: ^5.0.1+1
-  path_provider: ^1.6.27
+  permission_handler: ^8.1.0
+  path_provider: ^2.0.2
   stepper_counter_swipe: ^1.0.0
-  flutter_easyloading: ^2.2.2
+  flutter_easyloading: ^3.0.0
 
 dev_dependencies:
   flutter_test:

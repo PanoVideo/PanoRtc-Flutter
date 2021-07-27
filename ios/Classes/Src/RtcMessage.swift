@@ -9,9 +9,17 @@ import Foundation
 import PanoRtc
 
 protocol RtcMessageInterface {
+    func setProperty(_ params: NSDictionary, _ callback: Callback)
+    
     func sendMessage(_ params: NSDictionary, _ callback: Callback)
     
     func broadcastMessage(_ params: NSDictionary, _ callback: Callback)
+    
+    func publish(_ params: NSDictionary, _ callback: Callback)
+    
+    func subscribe(_ params: NSDictionary, _ callback: Callback)
+    
+    func unsubscribe(_ params: NSDictionary, _ callback: Callback)
 }
 
 protocol RtcMessageDelegate: AnyObject {
@@ -38,6 +46,15 @@ class RtcMessage: NSObject, RtcMessageInterface {
         service = nil
     }
     
+    @objc func setProperty(_ params: NSDictionary, _ callback: Callback) {
+        guard let value = params["value"] as? Data else {
+            callback.code(PanoResult.invalidArgs)
+            return
+        }
+        
+        callback.code(service?.setProperty(params["name"] as! String, value: value))
+    }
+    
     @objc func sendMessage(_ params: NSDictionary, _ callback: Callback) {
         guard let data = params["message"] as? Data else {
             callback.code(PanoResult.invalidArgs)
@@ -54,5 +71,22 @@ class RtcMessage: NSObject, RtcMessageInterface {
         }
         
         callback.code(service?.broadcast(data, sendBack: params["sendBack"] as! Bool))
+    }
+    
+    @objc func publish(_ params: NSDictionary, _ callback: Callback) {
+        guard let data = params["data"] as? Data else {
+            callback.code(PanoResult.invalidArgs)
+            return
+        }
+        
+        callback.code(service?.publishTopic(params["topic"] as! String, data: data))
+    }
+    
+    @objc func subscribe(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(service?.subscribe(params["topic"] as! String))
+    }
+    
+    @objc func unsubscribe(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(service?.unsubscribe(params["topic"] as! String))
     }
 }

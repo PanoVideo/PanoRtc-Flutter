@@ -1,23 +1,24 @@
 name: pano_rtc
 description: Flutter plugin for PanoRtc SDK.
-version: 0.9.7
+version: 1.0.0
 homepage: https://www.pano.video
+repository: https://github.com/PanoVideo/PanoRtc-Flutter
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.20.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: '>=1.12.13+hotfix.6'
 
 dependencies:
   flutter:
     sdk: flutter
-  json_annotation: ^3.0.0
+  json_annotation: ^4.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.2
-  build_runner: ^1.7.0
-  json_serializable: ^3.2.0
+  pedantic: ^1.11.0
+  build_runner: ^2.0.4
+  json_serializable: ^4.1.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

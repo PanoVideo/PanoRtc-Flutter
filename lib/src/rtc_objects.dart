@@ -22,12 +22,12 @@ class RtcEngineConfig {
   /// Whether the video codec is enabled for hardware acceleration. Default: NO.
   ///
   /// 视频编解码器是否启用硬件加速。默认值：否。
-  bool videoCodecHwAcceleration;
+  bool? videoCodecHwAcceleration;
 
   /// The audio Scenario. Default: 0(voip).
   ///
   /// 音频场景。默认值：0(voip)
-  int audioScenario;
+  int? audioScenario;
 
   /// Constructs a [RtcEngineConfig]
   RtcEngineConfig(this.appId, this.rtcServer,
@@ -49,17 +49,17 @@ class RtcChannelConfig {
   /// Channel working mode. Default: ChannelMode.OneOnOne.
   ///
   /// 频道工作模式。默认值：ChannelMode.OneOnOne。
-  ChannelMode mode;
+  ChannelMode? mode;
 
   /// Channel service serviceFlags. Default: ChannelService.Media | ChannelService.Whiteboard.
   ///
   /// 频道服务标志。默认值：ChannelService.Media | ChannelService.Whiteboard。
-  Set<ChannelService> serviceFlags;
+  Set<ChannelService?>? serviceFlags;
 
   /// Whether to subscribe audio automatically. Default: YES.
   ///
   /// 是否自动订阅所有音频。默认值：是。
-  bool subscribeAudioAll;
+  bool? subscribeAudioAll;
 
   /// The user display name. It must compliance with the following rules:
   /// - max length is 128 bytes.
@@ -68,14 +68,15 @@ class RtcChannelConfig {
   /// 用户显示名字。必须符合以下规则:
   /// - 最大长度是128字节；
   /// - UTF8 字符串。*/
-  String userName;
+  String? userName;
 
   /// Constructs a [RtcChannelConfig]
   RtcChannelConfig(
       {this.mode = ChannelMode.OneOnOne,
       this.serviceFlags = const {
         ChannelService.Media,
-        ChannelService.Whiteboard
+        ChannelService.Whiteboard,
+        ChannelService.Message
       },
       this.subscribeAudioAll = true,
       this.userName});
@@ -93,29 +94,29 @@ class RtcChannelConfig {
 /// 视频渲染器的配置类。
 @JsonSerializable(explicitToJson: true)
 class RtcRenderConfig {
-  /// The video profile. Default: kPanoProfileLowest.
+  /// The video profile. Default: Standard.
   ///
-  /// 视频设定档。默认值：kPanoProfileLowest。
-  VideoProfileType profileType;
+  /// 视频设定档。默认值：Standard。
+  VideoProfileType? profileType;
 
   /// Enable Video Source Mirror. Default: NO
   ///
   ///  启用视频源镜像, 默认值: NO。*/
-  bool sourceMirror;
+  bool? sourceMirror;
 
   /// The video scaling mode. Default: kPanoScalingFit.
   ///
   /// 视频缩放模式。默认值：kPanoScalingFit。
-  VideoScalingMode scalingMode;
+  VideoScalingMode? scalingMode;
 
   /// Whether to enable video mirroring. Default: NO.
   ///
   /// 是否启用视频镜像。默认值：NO。
-  bool mirror;
+  bool? mirror;
 
   /// Constructs a [RtcRenderConfig]
   RtcRenderConfig(
-      {this.profileType = VideoProfileType.Lowest,
+      {this.profileType = VideoProfileType.Standard,
       this.sourceMirror = false,
       this.scalingMode = VideoScalingMode.Fit,
       this.mirror = false});
@@ -136,22 +137,22 @@ class RtcAudioFormat {
   /// The audio type. Default: kPanoPCM.
   ///
   /// 音频类型。默认值：kPanoPCM。
-  final AudioType type;
+  final AudioType? type;
 
   /// The number of audio channels.
   ///
   /// 音频通道数。
-  final int channels;
+  final int? channels;
 
   /// The audio sample rate.
   ///
   /// 音频采样率。
-  final int sampleRate;
+  final int? sampleRate;
 
   /// The bytes per audio frame.
   ///
   /// 音频每帧的字节数。
-  final int bytesPerSample;
+  final int? bytesPerSample;
 
   /// Constructs a [RtcAudioFormat]
   RtcAudioFormat(
@@ -176,17 +177,17 @@ class RtcVideoFormat {
   /// The video type. Default: kPanoI420.
   ///
   /// 视频类型。默认值：kPanoI420。
-  final VideoType type;
+  final VideoType? type;
 
   /// The video width.
   ///
   /// 视频宽度。
-  final int width;
+  final int? width;
 
   /// The video height.
   ///
   /// 视频高度。
-  final int height;
+  final int? height;
 
   /// The count of video block array.
   ///
@@ -197,7 +198,7 @@ class RtcVideoFormat {
   ///
   /// **Note**
   /// 如果视频类型为kPanoI420，则计数应为3。
-  final int count;
+  final int? count;
 
   /// The video block offset array. Item type: UInt32.
   ///
@@ -218,7 +219,7 @@ class RtcVideoFormat {
   /// The video rotation degrees. Default: kPanoRotation0.
   ///
   /// 视频旋转角度。默认值：kPanoRotation0。
-  final VideoRotation rotation;
+  final VideoRotation? rotation;
 
   /// Constructs a [RtcVideoFormat]
   RtcVideoFormat(this.offset, this.stride,
@@ -262,7 +263,7 @@ class RtcAudioLevel {
   ///
   /// **Note**
   /// 此属性是回调统计时的瞬时值。
-  final int level;
+  final int? level;
 
   /// The audio active flag.
   ///
@@ -273,7 +274,7 @@ class RtcAudioLevel {
   ///
   /// **Note**
   /// 此属性是回调统计时的瞬时音频活跃标志。
-  final bool active;
+  final bool? active;
 
   /// Constructs a [RtcAudioLevel]
   RtcAudioLevel(this.userId, {this.level = 0, this.active = false});
@@ -295,17 +296,17 @@ class RtcAudioProfile {
   /// The audio sample rate.
   ///
   /// 音频采样率。*/
-  final AudioSampleRate sampleRate;
+  final AudioSampleRate? sampleRate;
 
   /// The audio channel.
   ///
   /// 音频通道数。*/
-  final AudioChannel channel;
+  final AudioChannel? channel;
 
   /// The audio quality Profile.
   ///
   /// 音频质量。
-  final AudioProfileQuality profileQuality;
+  final AudioProfileQuality? profileQuality;
 
   /// Constructs a [RtcAudioProfile]
   RtcAudioProfile(
@@ -963,12 +964,12 @@ class RtcDeviceInfo {
   /// The device unque ID.
   ///
   /// 设备唯一标识。
-  final String deviceId;
+  final String? deviceId;
 
   /// The device display name.
   ///
   /// 设备可显示名字。
-  final String deviceName;
+  final String? deviceName;
 
   /// Constructs a [RtcDeviceInfo]
   RtcDeviceInfo({this.deviceId, this.deviceName});
@@ -1015,22 +1016,22 @@ class WBColor {
   /// The red component, valid value ranges between 0.0 and 1.0. Default: 0.0.
   ///
   /// 红色成分，有效值范围0.0到1.0。默认值：0.0。
-  double red;
+  double? red;
 
   /// The green component, valid value ranges between 0.0 and 1.0. Default: 0.0.
   ///
   /// 绿色成分，有效值范围0.0到1.0。默认值：0.0。
-  double green;
+  double? green;
 
   /// The blue component, valid value ranges between 0.0 and 1.0. Default: 0.0.
   ///
   /// 蓝色成分，有效值范围0.0到1.0。默认值：0.0。
-  double blue;
+  double? blue;
 
   /// The alpha component, valid value ranges between 0.0 and 1.0. Default: 1.0.
   ///
   /// 透明度成分，有效值范围0.0到1.0。默认值：1.0。
-  double alpha;
+  double? alpha;
 
   /// Constructs a [WBColor]
   WBColor(
@@ -1052,12 +1053,12 @@ class WBTextFormat {
   /// The font style, PanoWBFontStyle enum type. Default: kPanoWBFontNormal.
   ///
   /// 字体样式，PanoWBFontStyle 枚举类型。默认值：kPanoWBFontNormal。
-  WBFontStyle style;
+  WBFontStyle? style;
 
   /// The font size, valid value ranges between 10 and 96. Default: 12.
   ///
   /// 字体大小，有效值范围10到96。默认值：12。
-  int size;
+  int? size;
 
   /// Constructs a [WBTextFormat]
   WBTextFormat({this.style = WBFontStyle.Normal, this.size = 12});
@@ -1088,10 +1089,10 @@ class WBStamp {
   /// stamp could be resized or not. Default: false.
   ///
   /// 图章是否可以改变大小。默认值：false
-  bool resizable;
+  bool? resizable;
 
   /// Constructs a [WBStamp]
-  WBStamp({this.resizable = false});
+  WBStamp(this.stampId, this.path, {this.resizable = false});
 
   /// @nodoc
   factory WBStamp.fromJson(Map<String, dynamic> json) =>
@@ -1143,12 +1144,12 @@ class WBConvertConfig {
   /// Whiteboard doc convert type, [WBConvertType] enum type. Default: [WBConvertType.JPG].
   ///
   /// 白板文件转码类型 [WBConvertType] 枚举类型。默认值：[WBConvertType.JPG]。
-  WBConvertType type;
+  WBConvertType? type;
 
   /// Whether need thumbnails. Default: false.
   ///
   /// 是否需要缩略图。默认值：false。
-  bool needThumb;
+  bool? needThumb;
 
   /// Constructs a [WBConvertConfig]
   WBConvertConfig({this.type = WBConvertType.JPG, this.needThumb = false});
@@ -1205,12 +1206,12 @@ class FaceBeautifyOption {
   /// Whether to enable face beautify. Default: NO.
   ///
   /// 是否开启美颜。默认值：否。
-  bool enable;
+  bool? enable;
 
   /// The intensity of face beautify, valid value ranges between 0.0 and 1.0. Default: 0.5.
   ///
   /// 美颜强度，有效值范围0.0到1.0。默认值：0.5。
-  double intensity;
+  double? intensity;
 
   /// Constructs a [FaceBeautifyOption]
   FaceBeautifyOption({this.enable = false, this.intensity = 0.5});
@@ -1232,47 +1233,47 @@ class BuiltinTransformOption {
   /// Whether to enable built-in transform on video. Default: NO.
   ///
   /// 是否开启视频内嵌变换。默认值：否。
-  bool enable;
+  bool? enable;
 
   /// True to reset all parameters， false don't reset parameters. Default: NO.
   ///
   /// true 重置所有的视频形变参数， false 不重置视频形变参数。默认值：否。
-  bool bReset;
+  bool? bReset;
 
   /// scaling factor in X axis (1.0: no scaling). Default: 1.0.
   ///
   /// X轴缩放比例 （1.0：no scaling）。默认值：1.0。
-  double xScaling;
+  double? xScaling;
 
   /// scaling factor in Y axis (1.0: no scaling). Default: 1.0.
   ///
   /// Y轴缩放比例 （1.0：no scaling）。默认值：1.0。
-  double yScaling;
+  double? yScaling;
 
   /// Delta angle of the rotation (in radians) in X axis. Default: 0.0
   ///
   /// X轴旋转角度的差值。默认值：0.0。
-  double xRotation;
+  double? xRotation;
 
   /// Delta Angle of the rotation (in radians) in Y axis. Default: 0.0
   ///
   /// Y轴旋转角度的差值。默认值：0.0。
-  double yRotation;
+  double? yRotation;
 
   /// Delta Angle of the rotation (in radians) in Z axis. Default: 0.0
   ///
   /// Z轴旋转角度的差值。默认值：0.0。
-  double zRotation;
+  double? zRotation;
 
   /// Projection Depth along X axis. Default: 0.0.
   ///
   /// X轴的投影深度。 默认值：0.0。
-  double xProjection;
+  double? xProjection;
 
   /// Projection Depth along Y axis. Default: 0.0.
   ///
   /// Y轴的投影深度。 默认值：0.0。
-  double yProjection;
+  double? yProjection;
 
   /// Constructs a [BuiltinTransformOption]
   BuiltinTransformOption(
@@ -1302,32 +1303,32 @@ class QuadTransformOption {
   /// Whether to enable quadrilateral transform on video. Default: NO.
   ///
   /// 是否开启视频四边形变换。默认值：否。
-  bool enable;
+  bool? enable;
 
   /// True to reset all quadrilateral transform parameters， false don't reset quadrilateral transform parameters. Default: NO.
   ///
   /// true 重置所有的视频四边形形变参数， false 不重置视频四边形形变参数。默认值：否。
-  bool bReset;
+  bool? bReset;
 
   /// Vertex index of a quadrilateral. TopLeft: 0, TopRight: 1, BottomLeft: 2, BottomRight: 3
   ///
   /// 四边形顶点索引。 左上角：0，右上角：1，左下角：2，右下角：3*/
-  QuadIndex index;
+  QuadIndex? index;
 
   /// Delta of x axis, The origin (0,0) of the video is the top left, the whole size of video is 1x1, can be negative (top or left is out of view), and can be greater than 1 (bottom or right is out of view).
   ///
   /// X坐标轴的差值，视频的左上角为坐标系的原点（0，0），视频完整大小为1x1，可以为负值（左侧超出屏幕），可以为大于1的值（右侧超出屏幕）*/
-  double xDeltaAxis;
+  double? xDeltaAxis;
 
   /// Delta of y axis, The origin (0,0) of the video is the top left, the whole size of video is 1x1, can be negative (top or left is out of view), and can be greater than 1 (bottom or right is out of view).
   ///
   /// Y坐标轴的差值，视频的左上角为坐标系的原点（0，0），视频完整大小为1x1，可以为负值（左或上超出屏幕），可以为大于1的值（右或下超出屏幕）*/
-  double yDeltaAxis;
+  double? yDeltaAxis;
 
   /// Set Mirror mode for video transform (exchange left and right). Note: Set mirror mode to true when using front facing camera, false when using back facing camera. Reset doesn't reset this, but keeps last value.
   ///
   /// 设置视频变换为镜像模式(左右交换）。注意：使用前置摄像头时需要设置为true，使用后置摄像头时需要设置为false。重置参数时，并不会改变mirror的值，仍将保持上次的设置。*/
-  bool bMirror;
+  bool? bMirror;
 
   /// Constructs a [QuadTransformOption]
   QuadTransformOption(
@@ -1369,17 +1370,17 @@ class FeedbackInfo {
   /// User contact, max length 128 bytes.
   ///
   /// 联系信息，最多128字节。
-  String contact;
+  String? contact;
 
   /// User extra info, max length 256 bytes.
   ///
   /// 附加信息，最多256字节。
-  String extraInfo;
+  String? extraInfo;
 
   /// Whether to upload logs. Default: NO.
   ///
   /// 是否上传日志。默认值：否。
-  bool uploadLogs;
+  bool? uploadLogs;
 
   /// Constructs a [FeedbackInfo]
   FeedbackInfo(this.type, this.productName, this.detailDescription,
@@ -1401,7 +1402,7 @@ class RtcAudioMixingConfig {
   /// Enable publish. Default: YES
   ///
   /// 是否发送。默认值：是。
-  bool enablePublish;
+  bool? enablePublish;
 
   /// publish volume. 0~200. Default: 100.
   ///
@@ -1412,12 +1413,12 @@ class RtcAudioMixingConfig {
   ///
   /// **Note**
   /// 音量超过100后可能产生破音。
-  int publishVolume;
+  int? publishVolume;
 
   /// Enable loopback. Default: YES
   ///
   /// 是否发送。默认值：是。
-  bool enableLoopback;
+  bool? enableLoopback;
 
   /// loopback volume. 0~200. Default: 100.
   ///
@@ -1428,17 +1429,17 @@ class RtcAudioMixingConfig {
   ///
   /// **Note**
   /// 音量超过100后可能产生破音。
-  int loopbackVolume;
+  int? loopbackVolume;
 
   /// Times to play. 0 means loop forever. Default: 1.
   ///
   /// 播放次数。0指无限循环。默认值：1。
-  int cycle;
+  int? cycle;
 
   /// YES: Replace microphone data. NO: Mix with microphone data. Default: NO.
   ///
   /// 是: 替换麦克风数据。否: 与麦克风数据混音。默认值：否。
-  bool replaceMicrophone;
+  bool? replaceMicrophone;
 
   /// Constructs a [RtcAudioMixingConfig]
   RtcAudioMixingConfig(
@@ -1465,12 +1466,12 @@ class RtcSnapshotVideoOption {
   /// The format of snapshot. Default: kPanoImageFileJPEG.
   ///
   /// 快照格式。默认值：kPanoImageFileJPEG。
-  ImageFileFormat format;
+  ImageFileFormat? format;
 
   /// Whether to mirror. Default: NO.
   ///
   /// 是否镜像。默认值：否。
-  bool mirror;
+  bool? mirror;
 
   /// Constructs a [RtcSnapshotVideoOption]
   RtcSnapshotVideoOption(
@@ -1492,22 +1493,22 @@ class RtcNetworkQuality {
   /// Quality rating. Default: kPanoQualityUnavailable.
   ///
   /// 网络质量评分。默认值：kPanoQualityUnavailable。
-  final QualityRating rating;
+  final QualityRating? rating;
 
   /// Uplink loss rate. Default: 0.
   ///
   /// 上行丢包率。默认值：0。
-  final double txLoss;
+  final double? txLoss;
 
   /// Downlink loss rate. Default: 0.
   ///
   /// 下行丢包率。默认值：0。
-  final double rxLoss;
+  final double? rxLoss;
 
   /// Round-Trip Time in millisecond. Default: 0.
   ///
   /// RTT延迟, 单位：毫秒。默认值：0。
-  final int rtt;
+  final int? rtt;
 
   /// Constructs a [RtcNetworkQuality]
   RtcNetworkQuality(

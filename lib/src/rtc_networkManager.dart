@@ -8,13 +8,13 @@ class RtcNetworkManager with RtcNetworkManagerInterface {
       MethodChannel('pano_rtc/api_networkMgr');
   static const EventChannel _eventChannel =
       EventChannel('pano_rtc/events_networkMgr');
-  RtcNetworkMgrHandler _handler;
+  RtcNetworkMgrHandler? _handler;
 
   /// @nodoc
   RtcNetworkManager() {
     _eventChannel.receiveBroadcastStream().listen((event) {
       final eventMap = Map<dynamic, dynamic>.from(event);
-      final methodName = eventMap['methodName'] as String;
+      final methodName = eventMap['methodName'] as String?;
       final data = List<dynamic>.from(eventMap['data']);
       _handler?.process(methodName, data);
     });
@@ -30,12 +30,12 @@ class RtcNetworkManager with RtcNetworkManagerInterface {
   }
 
   @override
-  Future<ResultCode> startNetworkTest(String token) {
+  Future<ResultCode?> startNetworkTest(String token) {
     return _methodChannel.invokeMethod('startNetworkTest', {'token': token});
   }
 
   @override
-  Future<ResultCode> stopNetworkTest() {
+  Future<ResultCode?> stopNetworkTest() {
     return _methodChannel.invokeMethod('stopNetworkTest');
   }
 }
@@ -62,7 +62,7 @@ mixin RtcNetworkManagerInterface {
   ///  - 其他: 失败
   ///@note 在启动 startNetworkTest 前必须先初始化 RtcEngine
   ///      网络测试会产生额外流量，尽量避免在通话过程中进行测试。
-  Future<ResultCode> startNetworkTest(String token);
+  Future<ResultCode?> startNetworkTest(String token);
 
   /// Stop test network.
   ///
@@ -75,5 +75,5 @@ mixin RtcNetworkManagerInterface {
   ///@return
   ///  - [ResultCode.OK] 成功
   ///  - 其他: 失败
-  Future<ResultCode> stopNetworkTest();
+  Future<ResultCode?> stopNetworkTest();
 }
