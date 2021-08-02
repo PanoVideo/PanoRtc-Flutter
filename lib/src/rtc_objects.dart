@@ -51,9 +51,9 @@ class RtcChannelConfig {
   /// 频道工作模式。默认值：ChannelMode.OneOnOne。
   ChannelMode? mode;
 
-  /// Channel service serviceFlags. Default: ChannelService.Media | ChannelService.Whiteboard.
+  /// Channel service serviceFlags. Default: ChannelService.Media | ChannelService.Whiteboard | ChannelService.Message.
   ///
-  /// 频道服务标志。默认值：ChannelService.Media | ChannelService.Whiteboard。
+  /// 频道服务标志。默认值：ChannelService.Media | ChannelService.Whiteboard | ChannelService.Message
   Set<ChannelService?>? serviceFlags;
 
   /// Whether to subscribe audio automatically. Default: YES.

@@ -1,5 +1,9 @@
 # Change log
 
+## 1.0.1
+
+* Support Pano SDK to 1.5.4
+
 ## 1.0.0
 
 * Migrate to null safety
