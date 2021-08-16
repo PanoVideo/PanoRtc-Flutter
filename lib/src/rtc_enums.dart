@@ -947,13 +947,13 @@ enum OptionType {
 
   /// Audio reverb option, object type is AudioReverbMode value.
   ///
-  /// 音频混响器选项，对象类型是带 AudioReverbMode 枚举值 。
+  /// 音频混响器选项，对象类型是 AudioReverbMode 枚举值 。
   @JsonValue(4)
   AudioReverbMode,
 
   /// Adjust video capture frame rate option, object type is VideoFrameRateType value.
   ///
-  /// 调整视频采集帧率选项，对象类型是带 VideoFrameRateType 枚举值。
+  /// 调整视频采集帧率选项，对象类型是 VideoFrameRateType 枚举值。
   @JsonValue(5)
   VideoFrameRate,
 
@@ -988,7 +988,7 @@ enum OptionType {
   /// **Note**
   /// We do not recommend disabling CPU adaption in general case.
   ///
-  /// 允许SDK根据CPU性能调整视频质量。对象类型是带bool。默认值是true。仅在加入房间前可以配置。
+  /// 允许SDK根据CPU性能调整视频质量。对象类型是bool。默认值是true。仅在加入房间前可以配置。
   ///
   /// **Note**
   /// 通常场景下不建议关闭此功能。
