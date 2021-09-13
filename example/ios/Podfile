@@ -36,7 +36,7 @@ target 'Runner' do
   target 'Runner-Screen' do
     platform :ios, '11.0'
     use_frameworks!
-    pod 'PanoRtc_iOS/ReplayKitExt', '1.5.6'
+    pod 'PanoRtc_iOS/ReplayKitExt', '1.6.0.0'
   end
 end
 
@@ -60,6 +60,8 @@ post_install do |installer|
         # dart: PermissionGroup.microphone
         'PERMISSION_MICROPHONE=1',
       ]
+      
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
 
     end
   end

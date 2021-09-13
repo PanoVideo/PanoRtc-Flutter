@@ -1,5 +1,10 @@
 # Change log
 
+## 1.0.3
+
+* Support Pano SDK to 1.6.0.0
+* Support Whiteboard new apis
+
 ## 1.0.2
 
 * Support Pano SDK to 1.5.6

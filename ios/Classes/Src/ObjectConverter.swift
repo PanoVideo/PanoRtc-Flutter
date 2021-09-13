@@ -296,6 +296,21 @@ extension PanoWBConvertConfig {
     }
 }
 
+extension PanoWBVisionConfig {
+    convenience init(map: Dictionary<String, Any>) {
+        self.init()
+        if let width = map["width"] as? UInt32 {
+            self.width = width
+        }
+        if let height = map["height"] as? UInt32 {
+            self.height = height
+        }
+        if let limited = map["limited"] as? Bool {
+            self.limited = limited
+        }
+    }
+}
+
 extension PanoWBDocInfo {
     func toMap() -> Dictionary<String, Any?> {
         return [

@@ -106,6 +106,24 @@ enum ResultCode {
   @JsonValue(-15)
   WrongThread,
 
+  /// The operation thread is timeout.
+  ///
+  /// 操作超时。
+  @JsonValue(-16)
+  Timeout,
+
+  /// The operation thread is aborted.
+  ///
+  /// 操作终止。
+  @JsonValue(-17)
+  Aborted,
+
+  /// Too many operations.
+  ///
+  /// 操作次数过多。
+  @JsonValue(-18)
+  TooManyOps,
+
   /// Authentication failed
   ///
   /// 认证失败。

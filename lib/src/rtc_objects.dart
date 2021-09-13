@@ -1198,6 +1198,37 @@ class WBDocInfo {
   Map<String, dynamic> toJson() => _$WBDocInfoToJson(this);
 }
 
+/// Whiteboard vision configuration.
+///
+/// 白板视口配置。
+@JsonSerializable(explicitToJson: true)
+class WBVisionConfig {
+  /// Whiteboard width
+  ///
+  /// 白板宽度。
+  int width;
+
+  /// Whiteboard height
+  ///
+  /// 白板高度。
+  int height;
+
+  /// Whether whiteboard size is limited
+  ///
+  /// 白板大小是否固定。
+  bool limited;
+
+  /// Constructs a [WBVisionConfig]
+  WBVisionConfig(this.width, this.height, this.limited);
+
+  /// @nodoc
+  factory WBVisionConfig.fromJson(Map<String, dynamic> json) =>
+      _$WBVisionConfigFromJson(json);
+
+  /// @nodoc
+  Map<String, dynamic> toJson() => _$WBVisionConfigToJson(this);
+}
+
 /// The face beautify option class.
 ///
 /// 美颜选项类。

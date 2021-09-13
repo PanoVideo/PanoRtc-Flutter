@@ -106,6 +106,10 @@ interface IRtcWhiteboard {
 
     fun snapshot(params: Map<String, *>, callback: Callback)
 
+    fun initVision(params: Map<String, *>, callback: Callback)
+    
+    fun resetVision(callback: Callback)
+
     fun startShareVision(callback: Callback)
 
     fun stopShareVision(callback: Callback)

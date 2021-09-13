@@ -315,6 +315,18 @@ class RtcWhiteboardEngine(
         callback.success(whiteboard?.snapshot(getWBSnapshotMode(mode), outputDir))
     }
 
+    override fun initVision(params: Map<String, *>, callback: Callback) {
+        callback.success(whiteboard?.initVision(WBVisionConfig().apply {
+            this.width = (params["width"] as Number).toInt()
+            this.height = (params["height"] as Number).toInt()
+            this.limited = params["limited"] as Boolean
+        }))
+    }
+
+    override fun resetVision(callback: Callback) {
+        callback.success(whiteboard?.resetVision())
+    }
+
     override fun startShareVision(callback: Callback) {
         callback.success(whiteboard?.startShareVision())
     }

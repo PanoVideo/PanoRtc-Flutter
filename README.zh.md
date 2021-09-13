@@ -52,15 +52,9 @@ Pano SDK 需要 `摄像头` 和 `麦克风` 权限来开始视频通话。
 
 ## 常见问题
 
-### iOS 无法显示视频（Android 是好的）
+### iOS 无法显示视频（Android 正常）
 
-我们的 SDK 使用 `PlatformView`，您需要设置 `io.flutter.embedded_views_preview` 为 `YES` 在您的 **info.plist** 中。
-
-### iOS 内存泄漏
-
-如果您使用 `stable` 版本的 `flutter`，`PlatformView` 会导致内存泄漏，您可以运行 `flutter channel beta`
-
-您可以参考这个 [pull request](https://github.com/flutter/engine/pull/14326)
+我们的 SDK 使用 PlatformView，您需要在 info.plist 中设置 io.flutter.embedded_views_preview 为 YES 。
 
 ## API
 

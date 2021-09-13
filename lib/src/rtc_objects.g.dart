@@ -533,6 +533,21 @@ const _$WBDocTypeEnumMap = {
   WBDocType.H5: 2,
 };
 
+WBVisionConfig _$WBVisionConfigFromJson(Map<String, dynamic> json) {
+  return WBVisionConfig(
+    json['width'] as int,
+    json['height'] as int,
+    json['limited'] as bool,
+  );
+}
+
+Map<String, dynamic> _$WBVisionConfigToJson(WBVisionConfig instance) =>
+    <String, dynamic>{
+      'width': instance.width,
+      'height': instance.height,
+      'limited': instance.limited,
+    };
+
 FaceBeautifyOption _$FaceBeautifyOptionFromJson(Map<String, dynamic> json) {
   return FaceBeautifyOption(
     enable: json['enable'] as bool?,

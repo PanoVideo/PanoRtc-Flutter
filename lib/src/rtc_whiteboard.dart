@@ -26,7 +26,8 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   /// @nodoc
   RtcWhiteboard(this.whiteboardId);
 
-  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
+  Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
     var args = arguments == null
         ? {'whiteboardId': whiteboardId}
         : {'whiteboardId': whiteboardId, ...arguments};
@@ -338,6 +339,16 @@ class RtcWhiteboard with RtcWhiteboardInterface {
       'mode': WBSnapshotModeConverter(mode).value(),
       'outputDir': outputDir
     });
+  }
+
+  @override
+  Future<ResultCode?> initVision(WBVisionConfig config) {
+    return _invokeMethod('initVision', {'config': config.toJson()});
+  }
+
+  @override
+  Future<ResultCode?> resetVision() {
+    return _invokeMethod('resetVision');
   }
 
   @override
@@ -1328,6 +1339,36 @@ mixin RtcWhiteboardInterface {
   /// **Note**
   /// 快照结果和图像文件名通过回调函数[WhiteboardEventHandler.onSnapshotComplete]返回
   Future<ResultCode?> snapshot(WBSnapshotMode mode, String outputDir);
+
+  /// Configure whiteboard initial size
+  ///
+  /// **Parameter** [config] config param
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 设置白板初始大小
+  ///
+  /// **Parameter** [config] 配置参数
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  Future<ResultCode?> initVision(WBVisionConfig config);
+
+  /// Reset vision of current page
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 重置当前页视角
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  Future<ResultCode?> resetVision();
 
   /// Start share vision
   ///

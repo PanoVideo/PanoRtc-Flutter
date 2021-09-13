@@ -111,6 +111,10 @@ protocol RtcWhiteboardInterfce {
     
     func snapshot(_ params: NSDictionary, _ callback: Callback)
     
+    func initVision(_ params: NSDictionary, _ callback: Callback)
+    
+    func resetVision(_ params: NSDictionary, _ callback: Callback)
+    
     func startFollowVision(_ params: NSDictionary, _ callback: Callback)
     
     func startShareVision(_ params: NSDictionary, _ callback: Callback)
@@ -393,6 +397,14 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
         callback.code(
             self[params["whiteboardId"] as! String]?.snapshot(PanoWBSnapshotMode(rawValue: params["mode"] as! Int)!,
                              path: params["outputDir"] as! String))
+    }
+    
+    @objc func initVision(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(self[params["whiteboardId"] as! String]?.initVision(PanoWBVisionConfig(map: params["config"] as! [String: Any])))
+    }
+    
+    @objc func resetVision(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(self[params["whiteboardId"] as! String]?.resetVision())
     }
     
     @objc func startFollowVision(_ params: NSDictionary, _ callback: Callback) {
