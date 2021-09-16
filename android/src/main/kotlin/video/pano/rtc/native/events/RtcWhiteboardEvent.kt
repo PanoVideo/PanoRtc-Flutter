@@ -24,6 +24,10 @@ class RtcWhiteboardEvent(
         callback("onPageNumberChanged", curPage, totalPages)
     }
 
+    override fun onExternalHtmlMessageReceived(fileId: String?, msg: String?) {
+        callback("onExternalHtmlMessageReceived", msg, fileId)
+    }
+
     override fun onImageStateChanged(url: String?, state: Constants.WBImageState?) {
         callback("onImageStateChanged", url, state?.value)
     }

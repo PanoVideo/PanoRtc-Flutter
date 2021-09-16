@@ -1,9 +1,14 @@
 # Change log
 
+## 1.0.4
+
+* Support Pano SDK to 1.6.1.1
+* Add Whiteboard addDocWithExtHtml api
+
 ## 1.0.3
 
 * Support Pano SDK to 1.6.0.0
-* Support Whiteboard new apis
+* Support Whiteboard initVision & resetVision api
 
 ## 1.0.2
 

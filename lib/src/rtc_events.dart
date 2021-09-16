@@ -806,6 +806,8 @@ typedef OnDocTranscodeStatus = void Function(
 typedef OnSaveDoc = void Function(
     ResultCode? result, String fileId, String outputDir);
 typedef OnDocThumbnailReady = void Function(String fileId, List<String>? urls);
+typedef OnExternalHtmlMessageReceived = void Function(
+    String msg, String fileId);
 typedef OnUserJoined = void Function(String userId, String userName);
 
 /// Callback of RtcWhiteboard,  the callback must set to RtcWhiteboard to get events notification.
@@ -1004,6 +1006,19 @@ class WhiteboardEventHandler {
   /// **Parameter** [urls] 缩略图url数组
   OnDocThumbnailReady? onDocThumbnailReady;
 
+  /// Notification of custom message received from external html
+  ///
+  /// **Parameter** [msg] received message
+  ///
+  /// **Parameter** [fileId] Whiteboard file ID
+  ///
+  /// 外部Html消息通知
+  ///
+  /// **Parameter** [msg] 收到的自定义消息
+  ///
+  /// **Parameter** [fileId] 白板文件ID
+  OnExternalHtmlMessageReceived? onExternalHtmlMessageReceived;
+
   /// Notification of vision share started
   ///
   /// **Parameter** [userId] user ID
@@ -1062,6 +1077,7 @@ class WhiteboardEventHandler {
       this.onSwitchDoc,
       this.onSaveDoc,
       this.onDocThumbnailReady,
+      this.onExternalHtmlMessageReceived,
       this.onVisionShareStarted,
       this.onVisionShareStopped,
       this.onUserJoined,
@@ -1122,6 +1138,9 @@ class WhiteboardEventHandler {
         break;
       case 'onDocThumbnailReady':
         onDocThumbnailReady!.call(data[0], data[1].cast<String>());
+        break;
+      case 'onExternalHtmlMessageReceived':
+        onExternalHtmlMessageReceived!.call(data[0], data[1]);
         break;
       case 'onVisionShareStarted':
         onVisionShareStarted!.call(data[0]);
@@ -1494,7 +1513,8 @@ class RtcNetworkMgrHandler {
 typedef OnServiceStateChanged = void Function(MessageServiceState? state);
 typedef OnUserMessage = void Function(String userId, Uint8List byte);
 typedef OnSubscribeResult = void Function(String topic, ResultCode? result);
-typedef OnTopicMessage = void Function(String topic, String userId, Uint8List data);
+typedef OnTopicMessage = void Function(
+    String topic, String userId, Uint8List data);
 typedef OnPropertyChanged = void Function(List<RtcPropertyAction> props);
 
 /// Callback of RtcMessageService, the callback must be set to RtcMessageService to get events notification.
@@ -1559,13 +1579,12 @@ class RtcMessageServiceHandler {
   OnPropertyChanged? onPropertyChanged;
 
   /// Constructs a [RtcMessageServiceHandler]
-  RtcMessageServiceHandler({
-    this.onServiceStateChanged,
-    this.onUserMessage,
-    this.onSubscribeResult,
-    this.onTopicMessage,
-    this.onPropertyChanged
-  });
+  RtcMessageServiceHandler(
+      {this.onServiceStateChanged,
+      this.onUserMessage,
+      this.onSubscribeResult,
+      this.onTopicMessage,
+      this.onPropertyChanged});
 
   /// @nodoc
   void process(String? methodName, List<dynamic> data) {
@@ -1578,7 +1597,8 @@ class RtcMessageServiceHandler {
         onUserMessage?.call(data[0], data[1]);
         break;
       case 'onSubscribeResult':
-        onSubscribeResult?.call(data[0], ResultCodeConverter.fromValue(data[1]).e);
+        onSubscribeResult?.call(
+            data[0], ResultCodeConverter.fromValue(data[1]).e);
         break;
       case 'onTopicMessage':
         onTopicMessage?.call(data[0], data[1], data[2]);
@@ -1587,7 +1607,8 @@ class RtcMessageServiceHandler {
         var props = <RtcPropertyAction>[];
         var propList = data[0] as List<dynamic>;
         propList.forEach((element) {
-          var actionType = ActionTypeConverter.fromValue(element['actionType']).e;
+          var actionType =
+              ActionTypeConverter.fromValue(element['actionType']).e;
           var propName = element['propName'];
           var propValue = element['propValue'];
           props.add(RtcPropertyAction(actionType, propName, propValue));

@@ -1,6 +1,6 @@
 name: pano_rtc
 description: Flutter plugin for PanoRtc SDK.
-version: 1.0.3
+version: 1.0.4
 homepage: https://www.pano.video
 repository: https://github.com/PanoVideo/PanoRtc-Flutter
 

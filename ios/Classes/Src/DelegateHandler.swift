@@ -311,6 +311,7 @@ enum PanoRtcWhiteboardDelegateType: String, CaseIterable {
     case onSwitchDoc
     case onSaveDoc
     case onDocThumbnailReady
+    case onExternalHtmlMessageReceived
     case onVisionShareStarted
     case onVisionShareStopped
     case onUserJoined
@@ -386,6 +387,10 @@ extension PanoRtcWhiteboardDelegateHandler: PanoRtcWhiteboardDelegate {
     
     func onDocThumbnailReady(_ fileId: String, thumbs urls: [String]) {
         callback(.onDocThumbnailReady, fileId, urls)
+    }
+    
+    func onExternalHtmlMessageReceived(_ msg: String, fileId: String) {
+        callback(.onExternalHtmlMessageReceived, msg, fileId)
     }
     
     func onVisionShareStarted(_ userId: UInt64) {

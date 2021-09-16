@@ -239,7 +239,19 @@ class RtcWhiteboardEngine(
         val contents = params["contents"] as Map<*, *>
         callback.success(whiteboard?.addDoc(WBDocContents().apply {
             this.name = contents["name"] as String
+            this.docId = contents["docId"] as String
             this.urls = contents["urls"] as List<String>
+            this.thumbUrls = contents["thumbUrls"] as List<String>
+        }))
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun addDocWithExtHtml(params: Map<String, *>, callback: Callback) {
+        val extHtml = params["extHtml"] as Map<*, *>
+        callback.success(whiteboard?.addDoc(WBDocExtHtml().apply {
+            this.name = extHtml["name"] as String
+            this.url = extHtml["url"] as String
+            this.thumbUrls = extHtml["thumbUrls"] as List<String>
         }))
     }
 
@@ -294,6 +306,12 @@ class RtcWhiteboardEngine(
                 "fileId" to info?.fileId,
                 "name" to info?.name,
                 "creator" to info?.creator.toString()))
+    }
+
+    override fun sendMessageToExternalHtml(params: Map<String, *>, callback: Callback) {
+        val fileId = params["fileId"] as String
+        val msg = params["msg"] as String
+        callback.success(whiteboard?.sendMessageToExternalHtml(fileId, msg))
     }
 
     override fun clearContents(params: Map<String, *>, callback: Callback) {

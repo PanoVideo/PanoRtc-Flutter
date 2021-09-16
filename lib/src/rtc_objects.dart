@@ -1125,8 +1125,18 @@ class WBDocContents {
   /// url地址数组（仅支持远程url）。
   List<String> urls;
 
+  /// thumbnail url array (remote url only)
+  ///
+  /// thumbnail url地址数组（仅支持远程url）。
+  List<String> thumbUrls;
+
+  /// upload doc ID.
+  ///
+  /// 上传文档的ID。
+  String docId;
+
   /// Constructs a [WBDocContents]
-  WBDocContents(this.name, this.urls);
+  WBDocContents(this.name, this.urls, this.thumbUrls, {this.docId = ''});
 
   /// @nodoc
   factory WBDocContents.fromJson(Map<String, dynamic> json) =>
@@ -1134,6 +1144,43 @@ class WBDocContents {
 
   /// @nodoc
   Map<String, dynamic> toJson() => _$WBDocContentsToJson(this);
+}
+
+/// Whiteboard doc external Html content.
+///
+/// **Note**
+/// If need synchronize web contents, the web page must integrate PanoExternalHtml SDK.
+///
+/// 白板文件外部Html内容。
+///
+/// **Note**
+/// 如果需要同步网页内容，网页需要集成PanoExternalHtml SDK
+@JsonSerializable(explicitToJson: true)
+class WBDocExtHtml {
+  /// Whiteboard file name
+  ///
+  /// 白板文件名称。
+  String? name;
+
+  /// url (remote url only)
+  ///
+  /// url地址（仅支持远程url）。
+  String url;
+
+  /// thumbnail url array (remote url only)
+  ///
+  /// thumbnail url地址数组（仅支持远程url）。
+  List<String> thumbUrls;
+
+  /// Constructs a [WBDocExtHtml]
+  WBDocExtHtml(this.url, this.thumbUrls, {this.name = ''});
+
+  /// @nodoc
+  factory WBDocExtHtml.fromJson(Map<String, dynamic> json) =>
+      _$WBDocExtHtmlFromJson(json);
+
+  /// @nodoc
+  Map<String, dynamic> toJson() => _$WBDocExtHtmlToJson(this);
 }
 
 /// The configurations class of whiteboard doc convert.

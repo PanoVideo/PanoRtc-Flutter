@@ -81,6 +81,8 @@ protocol RtcWhiteboardInterfce {
     
     func addDoc(_ params: NSDictionary, _ callback: Callback)
     
+    func addDocWithExtHtml(_ params: NSDictionary, _ callback: Callback)
+    
     func createDocWithImages(_ params: NSDictionary, _ callback: Callback)
     
     func createDocWithFilePath(_ params: NSDictionary, _ callback: Callback)
@@ -96,6 +98,8 @@ protocol RtcWhiteboardInterfce {
     func getCurrentFileId(_ params: NSDictionary, _ callback: Callback)
     
     func getFileInfo(_ params: NSDictionary, _ callback: Callback)
+    
+    func sendToExternalHtml(_ params: NSDictionary, _ callback: Callback)
     
     func clearContents(_ params: NSDictionary, _ callback: Callback)
     
@@ -322,6 +326,10 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
         callback.resolve(self[params["whiteboardId"] as! String]) { $0.addDoc(PanoWBDocContents(map: params["contents"] as! [String: Any])) }
     }
     
+    @objc func addDocWithExtHtml(_ params: NSDictionary, _ callback: Callback) {
+        callback.resolve(self[params["whiteboardId"] as! String]) { $0.addDoc(with:PanoWBDocExtHtml(map: params["extHtml"] as! [String: Any])) }
+    }
+    
     @objc func createDocWithImages(_ params: NSDictionary, _ callback: Callback) {
         callback.resolve(self[params["whiteboardId"] as! String]) { $0.createDoc(withImages: params["urls"] as! [String]) }
     }
@@ -362,6 +370,12 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
         callback.resolve(self[params["whiteboardId"] as! String]) {
             $0.getFileInfo(params["fileId"] as! String)?.toMap()
         }
+    }
+    
+    @objc func sendToExternalHtml(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(
+            self[params["whiteboardId"] as! String]?.send(toExternalHtml: params["fileId"] as! String,
+                                                          message: params["msg"] as! String))
     }
     
     @objc func clearContents(_ params: NSDictionary, _ callback: Callback) {

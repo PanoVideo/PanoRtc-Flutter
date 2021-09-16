@@ -251,6 +251,11 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
+  Future<String?> addDocWithExtHtml(WBDocExtHtml extHtml) {
+    return _invokeMethod('addDocWithExtHtml', {'extHtml': extHtml.toJson()});
+  }
+
+  @override
   Future<String?> createDocWithImages(List<String> urls) {
     return _invokeMethod('createDocWithImages', {'urls': urls});
   }
@@ -295,6 +300,11 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   Future<WBDocInfo?> getFileInfo(String fileId) {
     return _invokeMethod('getFileInfo', {'fileId': fileId})
         .then((value) => value == null ? null : WBDocInfo.fromJson(value));
+  }
+
+  @override
+  Future<ResultCode?> sendToExternalHtml(String fileId, String msg) {
+    return _invokeMethod('sendToExternalHtml', {'fileId': fileId, 'msg': msg});
   }
 
   @override
@@ -1053,6 +1063,27 @@ mixin RtcWhiteboardInterface {
   /// PanoWhiteboard创建时会生成白板文件ID为"default"的白板文件
   Future<String?> addDoc(WBDocContents contents);
 
+  /// Add a new whiteboard file with external html
+  ///
+  /// **Parameter** [extHtml] Whiteboard file contents with external html
+  ///
+  /// **Returns**
+  /// - Current whiteborad file ID, if fail return nullptr
+  ///
+  /// **Note**
+  /// PanoWhiteboard has created doc with whiteboard file ID "default" when created
+  ///
+  /// 使用外部Html添加新的白板文件
+  ///
+  /// **Parameter** [extHtml] 外部Html的白板文件内容
+  ///
+  /// **Returns**
+  /// - 当前白板文件ID，如果失败返回nullptr
+  ///
+  /// **Note**
+  /// PanoWhiteboard创建时会生成白板文件ID为"default"的白板文件
+  Future<String?> addDocWithExtHtml(WBDocExtHtml extHtml);
+
   /// Create new whiteboard file with some background images
   ///
   /// **Parameter** [urls] Background image url array (remote url only)
@@ -1201,6 +1232,33 @@ mixin RtcWhiteboardInterface {
   /// - 非空：白板文件信息
   /// - 空：失败
   Future<WBDocInfo?> getFileInfo(String fileId);
+
+  /// send custom message to external html
+  ///
+  /// **Parameter** [fileId] Whiteboard file ID
+  ///
+  /// **Parameter** [msg] custom message
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// **Note**
+  /// only support external html doc
+  ///
+  /// 发送自定义消息到外部HTML页面
+  ///
+  /// **Parameter** [fileId] 白板文件ID
+  ///
+  /// **Parameter** [msg] 自定义消息
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  ///
+  /// **Note**
+  /// 只支持外部HTML
+  Future<ResultCode?> sendToExternalHtml(String fileId, String msg);
 
   /// clear whiteboard content
   ///

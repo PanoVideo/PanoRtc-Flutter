@@ -484,6 +484,8 @@ WBDocContents _$WBDocContentsFromJson(Map<String, dynamic> json) {
   return WBDocContents(
     json['name'] as String,
     (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
+    (json['thumbUrls'] as List<dynamic>).map((e) => e as String).toList(),
+    docId: json['docId'] as String,
   );
 }
 
@@ -491,6 +493,23 @@ Map<String, dynamic> _$WBDocContentsToJson(WBDocContents instance) =>
     <String, dynamic>{
       'name': instance.name,
       'urls': instance.urls,
+      'thumbUrls': instance.thumbUrls,
+      'docId': instance.docId,
+    };
+
+WBDocExtHtml _$WBDocExtHtmlFromJson(Map<String, dynamic> json) {
+  return WBDocExtHtml(
+    json['url'] as String,
+    (json['thumbUrls'] as List<dynamic>).map((e) => e as String).toList(),
+    name: json['name'] as String?,
+  );
+}
+
+Map<String, dynamic> _$WBDocExtHtmlToJson(WBDocExtHtml instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'url': instance.url,
+      'thumbUrls': instance.thumbUrls,
     };
 
 WBConvertConfig _$WBConvertConfigFromJson(Map<String, dynamic> json) {
