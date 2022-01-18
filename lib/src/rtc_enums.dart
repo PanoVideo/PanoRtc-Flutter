@@ -709,6 +709,12 @@ enum WBToolType {
   /// 激光笔。
   @JsonValue(15)
   Laser,
+
+  /// STAMP.
+  ///
+  /// 图章
+  @JsonValue(16)
+  Stamp,
 }
 
 /// Whiteboard fill type
@@ -930,9 +936,22 @@ enum WBOptionType {
   ScaleMove,
 
   /// set image or audio/video object's default status is selected or not, object type is bool value. Default is true
-  /// 设置图片或音视频对象默认选中状态, 对象类型是bool。默认启用 */
+  ///
+  /// 设置图片或音视频对象默认选中状态, 对象类型是bool。默认启用
   @JsonValue(5)
   AutoSelected,
+
+  /// enable synchronize cursor position, object type is bool value. Default is false
+  ///
+  /// 启用光标位置同步，对象类型是bool。默认关闭
+  @JsonValue(6)
+  CursorPosSync,
+
+  /// enable show remote cursor, object type is bool value. Default is false
+  ///
+  /// 开启显示远端光标，对象类型是bool。默认关闭
+  @JsonValue(7)
+  ShowRemoteCursor,
 }
 
 /// Option type

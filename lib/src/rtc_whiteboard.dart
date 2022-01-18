@@ -2,12 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:pano_rtc/pano_rtc.dart';
-import 'package:pano_rtc/src/enum_converter.dart';
 
-import 'rtc_enums.dart';
-import 'rtc_objects.dart';
-import 'rtc_view.dart';
+import '../pano_rtc.dart';
+import 'enum_converter.dart';
 
 /// The RtcWhiteboard class.
 class RtcWhiteboard with RtcWhiteboardInterface {
@@ -31,13 +28,14 @@ class RtcWhiteboard with RtcWhiteboardInterface {
     var args = arguments == null
         ? {'whiteboardId': whiteboardId}
         : {'whiteboardId': whiteboardId, ...arguments};
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, args).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, args);
-    }
+    return _methodChannel.invokeMethod(method, args);
+  }
+
+  Future<ResultCode> _invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// Sets the whiteboard event handler.
@@ -58,23 +56,23 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
-  Future<ResultCode?> open(RtcWhiteboardSurfaceViewModel viewModel) {
-    return viewModel.invokeMethod('open', {'whiteboardId': whiteboardId});
+  Future<ResultCode> open(RtcWhiteboardSurfaceViewModel viewModel) {
+    return viewModel.invokeCodeMethod('open', {'whiteboardId': whiteboardId});
   }
 
   @override
-  Future<ResultCode?> close() {
-    return _invokeMethod('close');
+  Future<ResultCode> close() {
+    return _invokeCodeMethod('close');
   }
 
   @override
-  Future<ResultCode?> leave() {
-    return _invokeMethod('leave');
+  Future<ResultCode> leave() {
+    return _invokeCodeMethod('leave');
   }
 
   @override
-  Future<ResultCode?> stop() {
-    return _invokeMethod('stop');
+  Future<ResultCode> stop() {
+    return _invokeCodeMethod('stop');
   }
 
   @override
@@ -83,152 +81,152 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
-  Future<ResultCode?> setRoleType(WBRoleType type) {
-    return _invokeMethod(
+  Future<ResultCode> setRoleType(WBRoleType type) {
+    return _invokeCodeMethod(
         'setRoleType', {'type': WBRoleTypeConverter(type).value()});
   }
 
   @override
-  Future<ResultCode?> setToolType(WBToolType type) {
-    return _invokeMethod(
+  Future<ResultCode> setToolType(WBToolType type) {
+    return _invokeCodeMethod(
         'setToolType', {'type': WBToolTypeConverter(type).value()});
   }
 
   @override
   Future<WBToolType> getToolType() {
     return _invokeMethod('getToolType')
-        .then((value) => WBToolTypeConverter.fromValue(value).e!);
+        .then((value) => WBToolTypeConverter.fromValue(value).e);
   }
 
   @override
-  Future<ResultCode?> setLineWidth(int width) {
-    return _invokeMethod('setLineWidth', {'width': width});
+  Future<ResultCode> setLineWidth(int width) {
+    return _invokeCodeMethod('setLineWidth', {'width': width});
   }
 
   @override
-  Future<ResultCode?> setFillType(WBFillType type) {
-    return _invokeMethod(
+  Future<ResultCode> setFillType(WBFillType type) {
+    return _invokeCodeMethod(
         'setFillType', {'type': WBFillTypeConverter(type).value()});
   }
 
   @override
-  Future<ResultCode?> setFillColor(WBColor color) {
-    return _invokeMethod('setFillColor', {'color': color.toJson()});
+  Future<ResultCode> setFillColor(WBColor color) {
+    return _invokeCodeMethod('setFillColor', {'color': color.toJson()});
   }
 
   @override
-  Future<ResultCode?> setForegroundColor(WBColor color) {
-    return _invokeMethod('setForegroundColor', {'color': color.toJson()});
+  Future<ResultCode> setForegroundColor(WBColor color) {
+    return _invokeCodeMethod('setForegroundColor', {'color': color.toJson()});
   }
 
   @override
-  Future<ResultCode?> setBackgroundColor(WBColor color) {
-    return _invokeMethod('setBackgroundColor', {'color': color.toJson()});
+  Future<ResultCode> setBackgroundColor(WBColor color) {
+    return _invokeCodeMethod('setBackgroundColor', {'color': color.toJson()});
   }
 
   @override
-  Future<ResultCode?> setFontStyle(WBFontStyle style) {
-    return _invokeMethod(
+  Future<ResultCode> setFontStyle(WBFontStyle style) {
+    return _invokeCodeMethod(
         'setFontStyle', {'style': WBFontStyleConverter(style).value()});
   }
 
   @override
-  Future<ResultCode?> setFontSize(int size) {
-    return _invokeMethod('setFontSize', {'size': size});
+  Future<ResultCode> setFontSize(int size) {
+    return _invokeCodeMethod('setFontSize', {'size': size});
   }
 
   @override
-  Future<ResultCode?> addStamp(WBStamp stamp) {
-    return _invokeMethod('addStamp', {'stamp': stamp.toJson()});
+  Future<ResultCode> addStamp(WBStamp stamp) {
+    return _invokeCodeMethod('addStamp', {'stamp': stamp.toJson()});
   }
 
   @override
-  Future<ResultCode?> setStamp(String stampId) {
-    return _invokeMethod('setStamp', {'stampId': stampId});
+  Future<ResultCode> setStamp(String stampId) {
+    return _invokeCodeMethod('setStamp', {'stampId': stampId});
   }
 
   @override
-  Future<ResultCode?> setBackgroundImageScalingMode(WBImageScalingMode mode) {
-    return _invokeMethod('setBackgroundImageScalingMode',
+  Future<ResultCode> setBackgroundImageScalingMode(WBImageScalingMode mode) {
+    return _invokeCodeMethod('setBackgroundImageScalingMode',
         {'mode': WBImageScalingModeConverter(mode).value()});
   }
 
   @override
-  Future<ResultCode?> setBackgroundImage(String imageUrl) {
-    return _invokeMethod('setBackgroundImage', {'imageUrl': imageUrl});
+  Future<ResultCode> setBackgroundImage(String imageUrl) {
+    return _invokeCodeMethod('setBackgroundImage', {'imageUrl': imageUrl});
   }
 
   @override
-  Future<ResultCode?> setBackgroundImageWithPage(String imageUrl, int pageNo) {
-    return _invokeMethod(
+  Future<ResultCode> setBackgroundImageWithPage(String imageUrl, int pageNo) {
+    return _invokeCodeMethod(
         'setBackgroundImageWithPage', {'imageUrl': imageUrl, 'pageNo': pageNo});
   }
 
   @override
-  Future<int?> getCurrentPageNumber() {
-    return _invokeMethod('getCurrentPageNumber');
+  Future<int> getCurrentPageNumber() {
+    return _invokeMethod('getCurrentPageNumber').then((value) => value);
   }
 
   @override
-  Future<int?> getTotalNumberOfPages() {
-    return _invokeMethod('getTotalNumberOfPages');
+  Future<int> getTotalNumberOfPages() {
+    return _invokeMethod('getTotalNumberOfPages').then((value) => value);
   }
 
   @override
-  Future<ResultCode?> addPage(bool autoSwitch) {
-    return _invokeMethod('addPage', {'autoSwitch': autoSwitch});
+  Future<ResultCode> addPage(bool autoSwitch) {
+    return _invokeCodeMethod('addPage', {'autoSwitch': autoSwitch});
   }
 
   @override
-  Future<ResultCode?> insertPage(int pageNo, bool autoSwitch) {
-    return _invokeMethod(
+  Future<ResultCode> insertPage(int pageNo, bool autoSwitch) {
+    return _invokeCodeMethod(
         'insertPage', {'pageNo': pageNo, 'autoSwitch': autoSwitch});
   }
 
   @override
-  Future<ResultCode?> removePage(int pageNo, {bool switchNext = false}) {
-    return _invokeMethod(
+  Future<ResultCode> removePage(int pageNo, {bool switchNext = false}) {
+    return _invokeCodeMethod(
         'removePage', {'pageNo': pageNo, 'switchNext': switchNext});
   }
 
   @override
-  Future<ResultCode?> gotoPage(int pageNo) {
-    return _invokeMethod('gotoPage', {'pageNo': pageNo});
+  Future<ResultCode> gotoPage(int pageNo) {
+    return _invokeCodeMethod('gotoPage', {'pageNo': pageNo});
   }
 
   @override
-  Future<ResultCode?> nextPage() {
-    return _invokeMethod('nextPage');
+  Future<ResultCode> nextPage() {
+    return _invokeCodeMethod('nextPage');
   }
 
   @override
-  Future<ResultCode?> prevPage() {
-    return _invokeMethod('prevPage');
+  Future<ResultCode> prevPage() {
+    return _invokeCodeMethod('prevPage');
   }
 
   @override
-  Future<ResultCode?> nextStep() {
-    return _invokeMethod('nextStep');
+  Future<ResultCode> nextStep() {
+    return _invokeCodeMethod('nextStep');
   }
 
   @override
-  Future<ResultCode?> prevStep() {
-    return _invokeMethod('prevStep');
+  Future<ResultCode> prevStep() {
+    return _invokeCodeMethod('prevStep');
   }
 
   @override
-  Future<ResultCode?> addImageFile(String imageUrl) {
-    return _invokeMethod('addImageFile', {'imageUrl': imageUrl});
+  Future<ResultCode> addImageFile(String imageUrl) {
+    return _invokeCodeMethod('addImageFile', {'imageUrl': imageUrl});
   }
 
   @override
-  Future<ResultCode?> addAudioFile(String mediaUrl) {
-    return _invokeMethod('addAudioFile', {'mediaUrl': mediaUrl});
+  Future<ResultCode> addAudioFile(String mediaUrl) {
+    return _invokeCodeMethod('addAudioFile', {'mediaUrl': mediaUrl});
   }
 
   @override
-  Future<ResultCode?> addVideoFile(String mediaUrl) {
-    return _invokeMethod('addVideoFile', {'mediaUrl': mediaUrl});
+  Future<ResultCode> addVideoFile(String mediaUrl) {
+    return _invokeCodeMethod('addVideoFile', {'mediaUrl': mediaUrl});
   }
 
   @override
@@ -271,18 +269,18 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
-  Future<ResultCode?> deleteDoc(String fileId) {
-    return _invokeMethod('deleteDoc', {'fileId': fileId});
+  Future<ResultCode> deleteDoc(String fileId) {
+    return _invokeCodeMethod('deleteDoc', {'fileId': fileId});
   }
 
   @override
-  Future<ResultCode?> switchDoc(String fileId) {
-    return _invokeMethod('switchDoc', {'fileId': fileId});
+  Future<ResultCode> switchDoc(String fileId) {
+    return _invokeCodeMethod('switchDoc', {'fileId': fileId});
   }
 
   @override
-  Future<ResultCode?> saveDocToImages(String fileId, String outputDir) {
-    return _invokeMethod(
+  Future<ResultCode> saveDocToImages(String fileId, String outputDir) {
+    return _invokeCodeMethod(
         'saveDocToImages', {'fileId': fileId, 'outputDir': outputDir});
   }
 
@@ -303,20 +301,21 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
-  Future<ResultCode?> sendToExternalHtml(String fileId, String msg) {
-    return _invokeMethod('sendToExternalHtml', {'fileId': fileId, 'msg': msg});
+  Future<ResultCode> sendToExternalHtml(String fileId, String msg) {
+    return _invokeCodeMethod(
+        'sendToExternalHtml', {'fileId': fileId, 'msg': msg});
   }
 
   @override
-  Future<ResultCode?> clearContents(bool curPage, WBClearType type) {
-    return _invokeMethod('clearContents',
+  Future<ResultCode> clearContents(bool curPage, WBClearType type) {
+    return _invokeCodeMethod('clearContents',
         {'curPage': curPage, 'type': WBClearTypeConverter(type).value()});
   }
 
   @override
-  Future<ResultCode?> clearUserContents(
+  Future<ResultCode> clearUserContents(
       String userId, bool curPage, WBClearType type) {
-    return _invokeMethod('clearUserContents', {
+    return _invokeCodeMethod('clearUserContents', {
       'userId': userId,
       'curPage': curPage,
       'type': WBClearTypeConverter(type).value()
@@ -324,80 +323,81 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
-  Future<ResultCode?> undo() {
-    return _invokeMethod('undo');
+  Future<ResultCode> undo() {
+    return _invokeCodeMethod('undo');
   }
 
   @override
-  Future<ResultCode?> redo() {
-    return _invokeMethod('redo');
+  Future<ResultCode> redo() {
+    return _invokeCodeMethod('redo');
   }
 
   @override
-  Future<double?> getCurrentScaleFactor() {
-    return _invokeMethod('getCurrentScaleFactor');
+  Future<double> getCurrentScaleFactor() {
+    return _invokeMethod('getCurrentScaleFactor').then((value) => value);
   }
 
   @override
-  Future<ResultCode?> setCurrentScaleFactor(double scale) {
-    return _invokeMethod('setCurrentScaleFactor', {'scale': scale});
+  Future<ResultCode> setCurrentScaleFactor(double scale) {
+    return _invokeCodeMethod('setCurrentScaleFactor', {'scale': scale});
   }
 
   @override
-  Future<ResultCode?> snapshot(WBSnapshotMode mode, String outputDir) {
-    return _invokeMethod('snapshot', {
+  Future<ResultCode> snapshot(WBSnapshotMode mode, String outputDir) {
+    return _invokeCodeMethod('snapshot', {
       'mode': WBSnapshotModeConverter(mode).value(),
       'outputDir': outputDir
     });
   }
 
   @override
-  Future<ResultCode?> initVision(WBVisionConfig config) {
-    return _invokeMethod('initVision', {'config': config.toJson()});
+  Future<ResultCode> initVision(WBVisionConfig config) {
+    return _invokeCodeMethod('initVision', {'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode?> resetVision() {
-    return _invokeMethod('resetVision');
+  Future<ResultCode> resetVision() {
+    return _invokeCodeMethod('resetVision');
   }
 
   @override
-  Future<ResultCode?> startFollowVision() {
-    return _invokeMethod('startFollowVision');
+  Future<ResultCode> startFollowVision() {
+    return _invokeCodeMethod('startFollowVision');
   }
 
   @override
-  Future<ResultCode?> startShareVision() {
-    return _invokeMethod('startShareVision');
+  Future<ResultCode> startShareVision() {
+    return _invokeCodeMethod('startShareVision');
   }
 
   @override
-  Future<ResultCode?> stopFollowVision() {
-    return _invokeMethod('stopFollowVision');
+  Future<ResultCode> stopFollowVision() {
+    return _invokeCodeMethod('stopFollowVision');
   }
 
   @override
-  Future<ResultCode?> stopShareVision() {
-    return _invokeMethod('stopShareVision');
+  Future<ResultCode> stopShareVision() {
+    return _invokeCodeMethod('stopShareVision');
   }
 
   @override
-  Future<ResultCode?> syncVision() {
-    return _invokeMethod('syncVision');
+  Future<ResultCode> syncVision() {
+    return _invokeCodeMethod('syncVision');
   }
 
   @override
-  Future<ResultCode?> sendMessage(Uint8List message, String userId) {
-    return _invokeMethod('sendMessage', {'message': message, 'userId': userId});
+  Future<ResultCode> sendMessage(Uint8List message, String userId) {
+    return _invokeCodeMethod(
+        'sendMessage', {'message': message, 'userId': userId});
   }
 
   @override
-  Future<ResultCode?> broadcastMessage(Uint8List message) {
-    return _invokeMethod('broadcastMessage', {'message': message});
+  Future<ResultCode> broadcastMessage(Uint8List message) {
+    return _invokeCodeMethod('broadcastMessage', {'message': message});
   }
 
   @override
-  Future<ResultCode?> setOption(option, WBOptionType type) {
+  Future<ResultCode> setOption(option, WBOptionType type) {
     var params = <String, dynamic>{};
     params['type'] = WBOptionTypeConverter(type).value();
     var isValid = true;
@@ -437,13 +437,27 @@ class RtcWhiteboard with RtcWhiteboardInterface {
           isValid = false;
         }
         break;
+      case WBOptionType.CursorPosSync:
+        if (option is bool) {
+          params['option'] = option;
+        } else {
+          isValid = false;
+        }
+        break;
+      case WBOptionType.ShowRemoteCursor:
+        if (option is bool) {
+          params['option'] = option;
+        } else {
+          isValid = false;
+        }
+        break;
       default:
         isValid = false;
     }
 
     if (!isValid) return Future.value(ResultCode.InvalidArgs);
 
-    return _invokeMethod('setOption', params);
+    return _invokeCodeMethod('setOption', params);
   }
 }
 
@@ -472,7 +486,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> open(RtcWhiteboardSurfaceViewModel viewModel);
+  Future<ResultCode> open(RtcWhiteboardSurfaceViewModel viewModel);
 
   /// Close the whiteboard.
   ///
@@ -485,7 +499,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> close();
+  Future<ResultCode> close();
 
   /// Leave the whiteboard.
   ///
@@ -498,7 +512,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> leave();
+  Future<ResultCode> leave();
 
   /// Stop the whiteboard.
   ///
@@ -517,7 +531,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 默认白板不能被停止
-  Future<ResultCode?> stop();
+  Future<ResultCode> stop();
 
   /// get current Whiteboard Id
   ///
@@ -545,7 +559,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setRoleType(WBRoleType type);
+  Future<ResultCode> setRoleType(WBRoleType type);
 
   /// Set the whiteboard tool.
   ///
@@ -562,7 +576,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setToolType(WBToolType type);
+  Future<ResultCode> setToolType(WBToolType type);
 
   /// Get tool type
   ///
@@ -590,7 +604,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setLineWidth(int width);
+  Future<ResultCode> setLineWidth(int width);
 
   /// Set the whiteboard fill type.
   ///
@@ -607,7 +621,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setFillType(WBFillType type);
+  Future<ResultCode> setFillType(WBFillType type);
 
   /// Set the whiteboard fill color.
   ///
@@ -630,7 +644,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 仅当设置填充类型为[WBFillType.Color]起效。
-  Future<ResultCode?> setFillColor(WBColor color);
+  Future<ResultCode> setFillColor(WBColor color);
 
   /// Set the whiteboard foreground color.
   ///
@@ -647,7 +661,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setForegroundColor(WBColor color);
+  Future<ResultCode> setForegroundColor(WBColor color);
 
   /// Set the whiteboard background color.
   ///
@@ -664,7 +678,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setBackgroundColor(WBColor color);
+  Future<ResultCode> setBackgroundColor(WBColor color);
 
   /// Set the whiteboard font style.
   ///
@@ -681,7 +695,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setFontStyle(WBFontStyle style);
+  Future<ResultCode> setFontStyle(WBFontStyle style);
 
   /// Set the font size.
   ///
@@ -698,7 +712,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setFontSize(int size);
+  Future<ResultCode> setFontSize(int size);
 
   /// Add Stamp Resource
   ///
@@ -715,7 +729,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> addStamp(WBStamp stamp);
+  Future<ResultCode> addStamp(WBStamp stamp);
 
   /// Set Stamp Resource
   ///
@@ -732,7 +746,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setStamp(String stampId);
+  Future<ResultCode> setStamp(String stampId);
 
   /// Set background image scaling mode.
   ///
@@ -749,7 +763,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setBackgroundImageScalingMode(WBImageScalingMode mode);
+  Future<ResultCode> setBackgroundImageScalingMode(WBImageScalingMode mode);
 
   /// Set the background image of current whiteboard page.
   ///
@@ -766,7 +780,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setBackgroundImage(String imageUrl);
+  Future<ResultCode> setBackgroundImage(String imageUrl);
 
   /// Set background image of specified whiteboard page.
   ///
@@ -787,7 +801,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setBackgroundImageWithPage(String imageUrl, int pageNo);
+  Future<ResultCode> setBackgroundImageWithPage(String imageUrl, int pageNo);
 
   /// Get current page number.
   ///
@@ -800,7 +814,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - `-1`：白板未打开
   /// - Others：白板页码
-  Future<int?> getCurrentPageNumber();
+  Future<int> getCurrentPageNumber();
 
   /// Get total number of pages.
   ///
@@ -809,7 +823,7 @@ mixin RtcWhiteboardInterface {
   /// 获取总白板页码数。
   ///
   /// **Returns** 页码数
-  Future<int?> getTotalNumberOfPages();
+  Future<int> getTotalNumberOfPages();
 
   /// Add new page to the end.
   ///
@@ -826,7 +840,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> addPage(bool autoSwitch);
+  Future<ResultCode> addPage(bool autoSwitch);
 
   /// Add new page after the page number.
   ///
@@ -847,7 +861,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> insertPage(int pageNo, bool autoSwitch);
+  Future<ResultCode> insertPage(int pageNo, bool autoSwitch);
 
   /// goto the page pageNo
   ///
@@ -875,7 +889,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> removePage(int pageNo, {bool switchNext = false});
+  Future<ResultCode> removePage(int pageNo, {bool switchNext = false});
 
   /// Goto the page with the page number.
   ///
@@ -892,7 +906,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> gotoPage(int pageNo);
+  Future<ResultCode> gotoPage(int pageNo);
 
   /// Switch to next page.
   ///
@@ -905,7 +919,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> nextPage();
+  Future<ResultCode> nextPage();
 
   /// Switch to previous page.
   ///
@@ -918,7 +932,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> prevPage();
+  Future<ResultCode> prevPage();
 
   /// next step for H5 doc
   ///
@@ -931,7 +945,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> nextStep();
+  Future<ResultCode> nextStep();
 
   /// previous step for H5 doc
   ///
@@ -944,7 +958,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> prevStep();
+  Future<ResultCode> prevStep();
 
   /// Add image file to current whiteboard page
   ///
@@ -961,7 +975,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> addImageFile(String imageUrl);
+  Future<ResultCode> addImageFile(String imageUrl);
 
   /// add audio media file to current whiteboard page
   ///
@@ -978,7 +992,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> addAudioFile(String mediaUrl);
+  Future<ResultCode> addAudioFile(String mediaUrl);
 
   /// add video media file to current whiteboard page
   ///
@@ -995,7 +1009,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> addVideoFile(String mediaUrl);
+  Future<ResultCode> addVideoFile(String mediaUrl);
 
   /// Add some background images to current whiteboard file
   ///
@@ -1152,7 +1166,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// `default` 白板文件不能被删除
-  Future<ResultCode?> deleteDoc(String fileId);
+  Future<ResultCode> deleteDoc(String fileId);
 
   /// Switch whiteboard file
   ///
@@ -1169,7 +1183,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> switchDoc(String fileId);
+  Future<ResultCode> switchDoc(String fileId);
 
   /// Save whiteboard file. Save each page to one image.
   ///
@@ -1194,7 +1208,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> saveDocToImages(String fileId, String outputDir);
+  Future<ResultCode> saveDocToImages(String fileId, String outputDir);
 
   /// Enumerate whiteboard files
   ///
@@ -1258,7 +1272,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 只支持外部HTML
-  Future<ResultCode?> sendToExternalHtml(String fileId, String msg);
+  Future<ResultCode> sendToExternalHtml(String fileId, String msg);
 
   /// clear whiteboard content
   ///
@@ -1285,7 +1299,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 此操作需要管理员角色。
-  Future<ResultCode?> clearContents(bool curPage, WBClearType type);
+  Future<ResultCode> clearContents(bool curPage, WBClearType type);
 
   /// clear whiteboard content by specific user ID
   ///
@@ -1316,7 +1330,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 如果指定用户不是当前用户，此操作需要管理员角色。
-  Future<ResultCode?> clearUserContents(
+  Future<ResultCode> clearUserContents(
       String userId, bool curPage, WBClearType type);
 
   /// Undo the last operation of the whiteboard.
@@ -1330,7 +1344,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> undo();
+  Future<ResultCode> undo();
 
   /// Redo the last undone operation of the whiteboard.
   ///
@@ -1343,7 +1357,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> redo();
+  Future<ResultCode> redo();
 
   /// Get current whiteboard scale factor.
   ///
@@ -1352,7 +1366,7 @@ mixin RtcWhiteboardInterface {
   /// 获取当前白板视图的缩放比例。
   ///
   /// **Returns** 缩放比例值。
-  Future<double?> getCurrentScaleFactor();
+  Future<double> getCurrentScaleFactor();
 
   /// set current whiteboard scale factor
   ///
@@ -1369,7 +1383,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setCurrentScaleFactor(double scale);
+  Future<ResultCode> setCurrentScaleFactor(double scale);
 
   /// Save whiteboard contents to image.
   ///
@@ -1396,7 +1410,7 @@ mixin RtcWhiteboardInterface {
   ///
   /// **Note**
   /// 快照结果和图像文件名通过回调函数[WhiteboardEventHandler.onSnapshotComplete]返回
-  Future<ResultCode?> snapshot(WBSnapshotMode mode, String outputDir);
+  Future<ResultCode> snapshot(WBSnapshotMode mode, String outputDir);
 
   /// Configure whiteboard initial size
   ///
@@ -1413,7 +1427,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> initVision(WBVisionConfig config);
+  Future<ResultCode> initVision(WBVisionConfig config);
 
   /// Reset vision of current page
   ///
@@ -1426,7 +1440,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> resetVision();
+  Future<ResultCode> resetVision();
 
   /// Start share vision
   ///
@@ -1439,7 +1453,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> startShareVision();
+  Future<ResultCode> startShareVision();
 
   /// Stop share vision
   ///
@@ -1452,7 +1466,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> stopShareVision();
+  Future<ResultCode> stopShareVision();
 
   /// Start follow vision
   ///
@@ -1465,7 +1479,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> startFollowVision();
+  Future<ResultCode> startFollowVision();
 
   /// Stop follow vision
   ///
@@ -1478,7 +1492,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> stopFollowVision();
+  Future<ResultCode> stopFollowVision();
 
   /// @Sync vision of current page
   ///
@@ -1491,7 +1505,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> syncVision();
+  Future<ResultCode> syncVision();
 
   /// Send message to the user specified by userId.
   ///
@@ -1512,7 +1526,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> sendMessage(Uint8List message, String userId);
+  Future<ResultCode> sendMessage(Uint8List message, String userId);
 
   /// Broadcast message to all users.
   ///
@@ -1529,7 +1543,7 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> broadcastMessage(Uint8List message);
+  Future<ResultCode> broadcastMessage(Uint8List message);
 
   /// Set whiteboard option object.
   ///
@@ -1550,5 +1564,5 @@ mixin RtcWhiteboardInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setOption(dynamic option, WBOptionType type);
+  Future<ResultCode> setOption(dynamic option, WBOptionType type);
 }

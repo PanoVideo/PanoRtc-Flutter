@@ -1,8 +1,6 @@
 import 'package:flutter/services.dart';
-import 'package:pano_rtc/src/rtc_annotation.dart';
 
 import '../pano_rtc.dart';
-import 'enum_converter.dart';
 
 /// The RtcAnnotationManager class.
 class RtcAnnotationManager with RtcAnnotationManagerInterface {
@@ -25,14 +23,10 @@ class RtcAnnotationManager with RtcAnnotationManagerInterface {
     });
   }
 
-  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, arguments).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, arguments);
-    }
+  /// @nodoc
+  Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _methodChannel.invokeMethod(method, arguments);
   }
 
   /// @nodoc

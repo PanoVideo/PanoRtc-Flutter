@@ -21,14 +21,16 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
     });
   }
 
-  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, arguments).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, arguments);
-    }
+  Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _methodChannel.invokeMethod(method, arguments);
+  }
+
+  Future<ResultCode> _invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// Sets the video stream manager event handler.
@@ -41,13 +43,14 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
   }
 
   @override
-  Future<int?> createVideoStream(String deviceId) {
-    return _invokeMethod('createVideoStream', {'deviceId': deviceId});
+  Future<int> createVideoStream(String deviceId) {
+    return _invokeMethod('createVideoStream', {'deviceId': deviceId})
+        .then((value) => value);
   }
 
   @override
-  Future<ResultCode?> destroyVideoStream(int streamId) {
-    return _invokeMethod('destroyVideoStream', {'streamId': streamId});
+  Future<ResultCode> destroyVideoStream(int streamId) {
+    return _invokeCodeMethod('destroyVideoStream', {'streamId': streamId});
   }
 
   @override
@@ -56,21 +59,22 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
   }
 
   @override
-  Future<ResultCode?> muteVideo(int streamId) {
-    return _invokeMethod('muteVideo', {'streamId': streamId});
+  Future<ResultCode> muteVideo(int streamId) {
+    return _invokeCodeMethod('muteVideo', {'streamId': streamId});
   }
 
   @override
-  Future<ResultCode?> setCaptureDevice(int streamId, String deviceId) {
-    return _invokeMethod(
+  Future<ResultCode> setCaptureDevice(int streamId, String deviceId) {
+    return _invokeCodeMethod(
         'setCaptureDevice', {'streamId': streamId, 'deviceId': deviceId});
   }
 
   @override
-  Future<ResultCode?> snapshotVideo(String userId, int streamId, String outputDir,
+  Future<ResultCode> snapshotVideo(
+      String userId, int streamId, String outputDir,
       {RtcSnapshotVideoOption? option}) {
     option ??= RtcSnapshotVideoOption();
-    return _invokeMethod('snapshotVideo', {
+    return _invokeCodeMethod('snapshotVideo', {
       'userId': userId,
       'streamId': streamId,
       'outputDir': outputDir,
@@ -79,35 +83,35 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
   }
 
   @override
-  Future<ResultCode?> startVideo(int streamId, RtcSurfaceViewModel viewModel,
+  Future<ResultCode> startVideo(int streamId, RtcSurfaceViewModel viewModel,
       {RtcRenderConfig? config}) {
     config ??= RtcRenderConfig();
-    return viewModel.invokeMethod('startVideoWithStreamId',
+    return viewModel.invokeCodeMethod('startVideoWithStreamId',
         {'streamId': streamId, 'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode?> stopVideo(int streamId) {
-    return _invokeMethod('stopVideo', {'streamId': streamId});
+  Future<ResultCode> stopVideo(int streamId) {
+    return _invokeCodeMethod('stopVideo', {'streamId': streamId});
   }
 
   @override
-  Future<ResultCode?> subscribeVideo(
+  Future<ResultCode> subscribeVideo(
       String userId, int streamId, RtcSurfaceViewModel viewModel,
       {RtcRenderConfig? config}) {
     config ??= RtcRenderConfig();
-    return viewModel.invokeMethod('subscribeVideoWithStreamId',
+    return viewModel.invokeCodeMethod('subscribeVideoWithStreamId',
         {'userId': userId, 'streamId': streamId, 'config': config.toJson()});
   }
 
   @override
-  Future<ResultCode?> unmuteVideo(int streamId) {
-    return _invokeMethod('unmuteVideo', {'streamId': streamId});
+  Future<ResultCode> unmuteVideo(int streamId) {
+    return _invokeCodeMethod('unmuteVideo', {'streamId': streamId});
   }
 
   @override
-  Future<ResultCode?> unsubscribeVideo(String userId, int streamId) {
-    return _invokeMethod(
+  Future<ResultCode> unsubscribeVideo(String userId, int streamId) {
+    return _invokeCodeMethod(
         'unsubscribeVideo', {'userId': userId, 'streamId': streamId});
   }
 }
@@ -158,7 +162,7 @@ mixin RtcVideoStreamInterface {
   ///
   /// **Note**
   /// 默认视频流不可销毁。
-  Future<ResultCode?> destroyVideoStream(int streamId);
+  Future<ResultCode> destroyVideoStream(int streamId);
 
   /// Set capture device for video stream.
   ///
@@ -179,7 +183,7 @@ mixin RtcVideoStreamInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> setCaptureDevice(int streamId, String deviceId);
+  Future<ResultCode> setCaptureDevice(int streamId, String deviceId);
 
   /// Get capture device of the stream.
   ///
@@ -227,7 +231,7 @@ mixin RtcVideoStreamInterface {
   ///
   /// **Note**
   /// 在 macOS iOS and Android 平台下必须从主线程调用。
-  Future<ResultCode?> startVideo(int streamId, RtcSurfaceViewModel viewModel,
+  Future<ResultCode> startVideo(int streamId, RtcSurfaceViewModel viewModel,
       {RtcRenderConfig? config});
 
   /// Stop video stream
@@ -245,7 +249,7 @@ mixin RtcVideoStreamInterface {
   /// **Returns**
   /// - [ResultCode.OK] 调用成功
   /// - others： 调用失败
-  Future<ResultCode?> stopVideo(int streamId);
+  Future<ResultCode> stopVideo(int streamId);
 
   /// Pause video stream.
   ///
@@ -268,7 +272,7 @@ mixin RtcVideoStreamInterface {
   ///
   /// **Note**
   /// 暂停视频流前请先开启视频流，否则操作将无效。
-  Future<ResultCode?> muteVideo(int streamId);
+  Future<ResultCode> muteVideo(int streamId);
 
   /// Resume video stream.
   ///
@@ -291,7 +295,7 @@ mixin RtcVideoStreamInterface {
   ///
   /// **Note**
   /// 恢复视频流前请先开启视频流，否则操作将无效。
-  Future<ResultCode?> unmuteVideo(int streamId);
+  Future<ResultCode> unmuteVideo(int streamId);
 
   /// Subscribe to a user's video stream with render window.
   ///
@@ -328,7 +332,7 @@ mixin RtcVideoStreamInterface {
   /// **Note**
   /// 订阅用户的视频流前，请确保用户已开启视频流。
   ///      在 macOS iOS and Android 平台下必须从主线程调用。
-  Future<ResultCode?> subscribeVideo(
+  Future<ResultCode> subscribeVideo(
       String userId, int streamId, RtcSurfaceViewModel viewModel,
       {RtcRenderConfig? config});
 
@@ -357,7 +361,7 @@ mixin RtcVideoStreamInterface {
   ///
   /// **Note**
   /// 当用户停止视频流或者离开频道的时候，用户的视频流将会被自动取消订阅。
-  Future<ResultCode?> unsubscribeVideo(String userId, int streamId);
+  Future<ResultCode> unsubscribeVideo(String userId, int streamId);
 
   /// Capture specific user's video stream content
   ///
@@ -386,6 +390,7 @@ mixin RtcVideoStreamInterface {
   /// **Returns**
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
-  Future<ResultCode?> snapshotVideo(String userId, int streamId, String outputDir,
+  Future<ResultCode> snapshotVideo(
+      String userId, int streamId, String outputDir,
       {RtcSnapshotVideoOption? option});
 }

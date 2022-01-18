@@ -176,7 +176,7 @@ class _MyAppState extends State<MyApp> {
                   color: const Color(0xff000000),
                 ),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () async {
                   if (txtChannelID.text == '') {
                     return;

@@ -1,50 +1,99 @@
 import 'dart:typed_data';
 
-import 'package:pano_rtc/pano_rtc.dart';
-
+import '../pano_rtc.dart';
 import 'enum_converter.dart';
-import 'rtc_enums.dart';
 
+/// @nodoc
 typedef EmptyCallback = void Function();
+
+/// @nodoc
 typedef ResultCallback = void Function(ResultCode? result);
+
+/// @nodoc
 typedef UserIdCallback = void Function(String userId);
 
 //Engine
+/// @nodoc
 typedef OnChannelCountDown = void Function(int remain);
+
+/// @nodoc
 typedef OnUserJoinIndication = void Function(String userId, String userName);
+
+/// @nodoc
 typedef OnUserLeaveIndication = void Function(
     String userId, UserLeaveReason? reason);
+
+/// @nodoc
 typedef OnUserAudioSubscribe = void Function(
     String userId, SubscribeResult? result);
+
+/// @nodoc
 typedef OnUserVideoStart = void Function(
     String userId, VideoProfileType? maxProfile);
+
+/// @nodoc
 typedef OnUserVideoSubscribe = void Function(
     String userId, SubscribeResult? result);
+
+/// @nodoc
 typedef OnUserScreenSubscribe = void Function(
     String userId, SubscribeResult? result);
+
+/// @nodoc
 typedef OnWhiteboardStartWithId = void Function(String whiteboardId);
+
+/// @nodoc
 typedef OnWhiteboardStopWithId = void Function(String whiteboardId);
+
+/// @nodoc
 typedef OnVideoCaptureStateChanged = void Function(
     String deviceId, VideoCaptureState? state);
+
+/// @nodoc
 typedef OnScreenCaptureStateChanged = void Function(
     ScreenCaptureState? state, ResultCode? reason);
+
+/// @nodoc
 typedef OnChannelFailover = void Function(FailoverState? state);
+
+/// @nodoc
 typedef OnActiveSpeakerListUpdated = void Function(List<String>? userIds);
+
+/// @nodoc
 typedef OnAudioMixingStateChanged = void Function(
     int taskId, AudioMixingState? state);
+
+/// @nodoc
 typedef OnVideoSnapshotCompleted = void Function(
     bool succeed, String userId, String fileName);
+
+/// @nodoc
 typedef OnNetworkQuality = void Function(String userId, QualityRating? quality);
+
+/// @nodoc
 typedef OnUserAudioLevel = void Function(RtcAudioLevel level);
 
+/// @nodoc
 typedef RtcVideoSendStatsCallback = void Function(RtcVideoSendStats stats);
+
+/// @nodoc
 typedef RtcVideoRecvStatsCallback = void Function(RtcVideoRecvStats stats);
+
+/// @nodoc
 typedef RtcAudioSendStatsCallback = void Function(RtcAudioSendStats stats);
+
+/// @nodoc
 typedef RtcAudioRecvStatsCallback = void Function(RtcAudioRecvStats stats);
+
+/// @nodoc
 typedef RtcVideoSendBweStatsCallback = void Function(
     RtcVideoSendBweStats stats);
+
+/// @nodoc
 typedef RtcVideoRecvBweStatsCallback = void Function(
     RtcVideoRecvBweStats stats);
+
+/// @nodoc
 typedef RtcSystemStatsCallback = void Function(RtcSystemStats stats);
 
 /// Callback of RtcEngine,  the callbacks must to set to RtcEngine to get events notification.
@@ -795,19 +844,40 @@ class RtcEngineEventHandler {
 }
 
 //Whiteboard
+/// @nodoc
 typedef FileIdCallback = void Function(ResultCode? result, String fileId);
+
+/// @nodoc
 typedef OnPageNumberChanged = void Function(int curPage, int totalPages);
+
+/// @nodoc
 typedef OnImageStateChanged = void Function(String url, WBImageState? status);
+
+/// @nodoc
 typedef OnViewScaleChanged = void Function(double scale);
+
+/// @nodoc
 typedef OnRoleTypeChanged = void Function(WBRoleType? newRole);
+
+/// @nodoc
 typedef OnMessage = void Function(String userId, Uint8List byte);
+
+/// @nodoc
 typedef OnDocTranscodeStatus = void Function(
     ResultCode? result, String fileId, int progress, int totalPages);
+
+/// @nodoc
 typedef OnSaveDoc = void Function(
     ResultCode? result, String fileId, String outputDir);
+
+/// @nodoc
 typedef OnDocThumbnailReady = void Function(String fileId, List<String>? urls);
+
+/// @nodoc
 typedef OnExternalHtmlMessageReceived = void Function(
     String msg, String fileId);
+
+/// @nodoc
 typedef OnUserJoined = void Function(String userId, String userName);
 
 /// Callback of RtcWhiteboard,  the callback must set to RtcWhiteboard to get events notification.
@@ -1159,8 +1229,13 @@ class WhiteboardEventHandler {
 }
 
 //AnnotationManager
+/// @nodoc
 typedef OnVideoAnnotationStart = void Function(String userId, int streamId);
+
+/// @nodoc
 typedef OnVideoAnnotationStop = void Function(String userId, int streamId);
+
+/// @nodoc
 typedef OnUserVideoMute = void Function(String userId, int streamId);
 
 /// Annotation Manager
@@ -1237,7 +1312,10 @@ class AnnotationMgrEventHandler {
   }
 }
 
+/// @nodoc
 typedef OnAnnoRoleChanged = void Function(WBRoleType? newRole);
+
+/// @nodoc
 typedef OnSnapshotComplete = void Function(ResultCode? result, String filename);
 
 /// Callback of PanoAnnotation,  the callback must set to PanoAnnotation to get events notification.
@@ -1284,13 +1362,22 @@ class AnnotationEventHandler {
 }
 
 //VideoStreamManager
+/// @nodoc
 typedef UserStreamCallback = void Function(String userId, int streamId);
+
+/// @nodoc
 typedef OnUserVideoStreamStart = void Function(
     String userId, int streamId, VideoProfileType? maxProfile);
+
+/// @nodoc
 typedef OnUserVideoStreamSubscribe = void Function(
     String userId, int streamId, SubscribeResult? result);
+
+/// @nodoc
 typedef OnVideoStreamSnapshotCompleted = void Function(
     String userId, int streamId, bool succeed, String filename);
+
+/// @nodoc
 typedef OnVideoStreamCaptureStateChanged = void Function(
     int streamId, String deviceId, VideoCaptureState? state);
 
@@ -1481,6 +1568,7 @@ class VideoStreamEventHandler {
   }
 }
 
+/// @nodoc
 typedef OnNetworkTestComplete = void Function(RtcNetworkQuality quality);
 
 /// Callback of RtcNetworkManager, the callback must be set to network manager to get events notification.
@@ -1510,11 +1598,20 @@ class RtcNetworkMgrHandler {
   }
 }
 
+/// @nodoc
 typedef OnServiceStateChanged = void Function(MessageServiceState? state);
+
+/// @nodoc
 typedef OnUserMessage = void Function(String userId, Uint8List byte);
+
+/// @nodoc
 typedef OnSubscribeResult = void Function(String topic, ResultCode? result);
+
+/// @nodoc
 typedef OnTopicMessage = void Function(
     String topic, String userId, Uint8List data);
+
+/// @nodoc
 typedef OnPropertyChanged = void Function(List<RtcPropertyAction> props);
 
 /// Callback of RtcMessageService, the callback must be set to RtcMessageService to get events notification.
@@ -1607,8 +1704,7 @@ class RtcMessageServiceHandler {
         var props = <RtcPropertyAction>[];
         var propList = data[0] as List<dynamic>;
         propList.forEach((element) {
-          var actionType =
-              ActionTypeConverter.fromValue(element['actionType']).e;
+          var actionType = ActionTypeConverter.fromValue(element['type']).e;
           var propName = element['propName'];
           var propValue = element['propValue'];
           props.add(RtcPropertyAction(actionType, propName, propValue));

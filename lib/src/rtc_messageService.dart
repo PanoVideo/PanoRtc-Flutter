@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 
 import '../pano_rtc.dart';
 import 'enum_converter.dart';
-import 'rtc_enums.dart';
 
 /// The RtcMessageService class.
 class RtcMessageService with RtcMessageServiceInterface {
@@ -23,14 +22,16 @@ class RtcMessageService with RtcMessageServiceInterface {
     });
   }
 
-  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, arguments).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, arguments);
-    }
+  Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _methodChannel.invokeMethod(method, arguments);
+  }
+
+  Future<ResultCode> _invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// Sets the RtcMessageService event handler.
@@ -43,41 +44,41 @@ class RtcMessageService with RtcMessageServiceInterface {
   }
 
   @override
-  Future<ResultCode?> setProperty(String name, Uint8List value) {
-    return _invokeMethod('setProperty', {'name': name, 'value': value});
+  Future<ResultCode> setProperty(String name, Uint8List value) {
+    return _invokeCodeMethod('setProperty', {'name': name, 'value': value});
   }
 
   @override
-  Future<ResultCode?> sendMessage(Uint8List message, String userId) {
-    return _invokeMethod('sendMessage', {'message': message, 'userId': userId});
+  Future<ResultCode> sendMessage(Uint8List message, String userId) {
+    return _invokeCodeMethod(
+        'sendMessage', {'message': message, 'userId': userId});
   }
 
   @override
-  Future<ResultCode?> broadcastMessage(Uint8List message,
+  Future<ResultCode> broadcastMessage(Uint8List message,
       {bool sendBack = true}) {
-    return _invokeMethod(
+    return _invokeCodeMethod(
         'broadcastMessage', {'message': message, 'sendBack': sendBack});
   }
 
   @override
-  Future<ResultCode?> publish(String topic, Uint8List data) {
-    return _invokeMethod('publish', {'topic': topic, 'data': data});
+  Future<ResultCode> publish(String topic, Uint8List data) {
+    return _invokeCodeMethod('publish', {'topic': topic, 'data': data});
   }
 
   @override
-  Future<ResultCode?> subscribe(String topic) {
-    return _invokeMethod('subscribe', {'topic': topic});
+  Future<ResultCode> subscribe(String topic) {
+    return _invokeCodeMethod('subscribe', {'topic': topic});
   }
 
   @override
-  Future<ResultCode?> unsubscribe(String topic) {
-    return _invokeMethod('unsubscribe', {'topic': topic});
+  Future<ResultCode> unsubscribe(String topic) {
+    return _invokeCodeMethod('unsubscribe', {'topic': topic});
   }
 }
 
 /// The RtcMessageService interface
 mixin RtcMessageServiceInterface {
-
   ///  @~english
   ///  @brief Set or update meeting property.
   ///  @param name  The property name.
@@ -93,8 +94,8 @@ mixin RtcMessageServiceInterface {
   ///  @return
   ///   - OK: 调用成功。
   ///   - others: 调用失败。
-  Future<ResultCode?> setProperty(String name, Uint8List value);
-  
+  Future<ResultCode> setProperty(String name, Uint8List value);
+
   /// Send message to the user specified by userId.
   ///
   /// **Parameter** [message] The message data.
@@ -120,7 +121,7 @@ mixin RtcMessageServiceInterface {
   ///
   /// **Note**
   /// 发送消息的调用频率上限为每 3 秒 150 次。请确保二进制消息大小不超过 4 KB。
-  Future<ResultCode?> sendMessage(Uint8List message, String userId);
+  Future<ResultCode> sendMessage(Uint8List message, String userId);
 
   /// Broadcast message to all users.
   ///
@@ -145,7 +146,7 @@ mixin RtcMessageServiceInterface {
   ///
   /// **Note**
   /// 发送消息的调用频率上限为每 3 秒 150 次。请确保二进制消息大小不超过 4 KB。
-  Future<ResultCode?> broadcastMessage(Uint8List message,
+  Future<ResultCode> broadcastMessage(Uint8List message,
       {bool sendBack = true});
 
   /// @~english
@@ -166,7 +167,7 @@ mixin RtcMessageServiceInterface {
   ///   - 其他: 失败。
   /// @note 发送消息的调用频率上限为每 3 秒 150 次。
   ///       请确保二进制消息大小不超过 4 KB。
-  Future<ResultCode?> publish(String topic, Uint8List data);
+  Future<ResultCode> publish(String topic, Uint8List data);
 
   /// @~english
   /// @brief Subscribe topic.
@@ -180,7 +181,7 @@ mixin RtcMessageServiceInterface {
   /// @return
   ///   - OK: 成功。
   ///   - 其他: 失败。
-  Future<ResultCode?> subscribe(String topic);
+  Future<ResultCode> subscribe(String topic);
 
   /// @~english
   /// @brief Unsubscribe topic.
@@ -194,7 +195,7 @@ mixin RtcMessageServiceInterface {
   /// @return
   ///   - OK: 成功。
   ///   - 其他: 失败。
-  Future<ResultCode?> unsubscribe(String topic);
+  Future<ResultCode> unsubscribe(String topic);
 }
 
 /// Property action type.
@@ -204,7 +205,7 @@ class RtcPropertyAction {
   /// Action type.
   ///
   /// 属性操作类型。
-  final ActionType? actionType;
+  final ActionType? type;
 
   /// The property name.
   ///
@@ -216,5 +217,6 @@ class RtcPropertyAction {
   /// 属性值。
   final Uint8List? propValue;
 
-  RtcPropertyAction(this.actionType, this.propName, this.propValue);
+  /// Constructs a [RtcPropertyAction]
+  RtcPropertyAction(this.type, this.propName, this.propValue);
 }

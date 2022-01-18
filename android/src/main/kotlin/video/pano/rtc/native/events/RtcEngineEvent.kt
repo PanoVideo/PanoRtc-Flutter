@@ -206,6 +206,7 @@ class RtcEngineEvent(
             val map = mapOf(
                     "streamId" to stats.streamId,
                     "bytesSent" to stats.bytesSent,
+                    "sendBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "rtt" to stats.rtt,
@@ -224,8 +225,8 @@ class RtcEngineEvent(
             val map = mapOf(
                     "userId" to stats.userId.toString(),
                     "streamId" to stats.streamId,
-                    "bytesReceived" to stats.bytesReceived,
-                    "bitrate" to stats.bitrate,
+                    "bytesRecv" to stats.bytesReceived,
+                    "recvBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "width" to stats.width,
@@ -267,6 +268,7 @@ class RtcEngineEvent(
             val map = mapOf(
                     "streamId" to stats.streamId,
                     "bytesSent" to stats.bytesSent,
+                    "sendBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "rtt" to stats.rtt,
@@ -284,8 +286,8 @@ class RtcEngineEvent(
         stats?.let {
             val map = mapOf(
                     "userId" to stats.userId.toString(),
-                    "bytesReceived" to stats.bytesReceived,
-                    "bitrate" to stats.bitrate,
+                    "bytesRecv" to stats.bytesReceived,
+                    "recvBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "outputLevel" to stats.outputLevel,
@@ -300,8 +302,8 @@ class RtcEngineEvent(
             val map = mapOf(
                     "userId" to stats.userId.toString(),
                     "streamId" to stats.streamId,
-                    "bytesReceived" to stats.bytesReceived,
-                    "bitrate" to stats.bitrate,
+                    "bytesRecv" to stats.bytesReceived,
+                    "recvBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "width" to stats.width,
@@ -318,7 +320,7 @@ class RtcEngineEvent(
         stats?.let {
             val map = mapOf(
                     "bytesSent" to stats.bytesSent,
-                    "bitrate" to stats.bitrate,
+                    "sendBitrate" to stats.bitrate,
                     "packetsLost" to stats.packetsLost,
                     "lossRatio" to stats.lossRatio,
                     "rtt" to stats.rtt,
@@ -326,7 +328,7 @@ class RtcEngineEvent(
                     "inputActiveFlag" to stats.inputActiveFlag,
                     "codecType" to stats.codecType.value
             )
-            callback("onAudioRecvStats", map)
+            callback("onAudioSendStats", map)
         }
     }
 }

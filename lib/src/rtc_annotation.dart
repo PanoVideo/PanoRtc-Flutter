@@ -22,17 +22,19 @@ class RtcAnnotation with RtcAnnotationInterface {
   /// @nodoc
   RtcAnnotation(this.annotationId);
 
-  Future<T?> _invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
+  Future<T?> _invokeMethod<T>(String method,
+      [Map<String, dynamic>? arguments]) {
     var args = arguments == null
         ? {'annotationId': annotationId}
         : {'annotationId': annotationId, ...arguments};
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, args).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, args);
-    }
+    return _methodChannel.invokeMethod(method, args);
+  }
+
+  Future<ResultCode> _invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return _invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// Sets the annotation event handler.
@@ -53,77 +55,77 @@ class RtcAnnotation with RtcAnnotationInterface {
   }
 
   @override
-  Future<ResultCode?> clearContents() {
-    return _invokeMethod('clearContents');
+  Future<ResultCode> clearContents() {
+    return _invokeCodeMethod('clearContents');
   }
 
   @override
-  Future<ResultCode?> clearUserContents(String userId) {
-    return _invokeMethod('clearUserContents', {'userId': userId});
+  Future<ResultCode> clearUserContents(String userId) {
+    return _invokeCodeMethod('clearUserContents', {'userId': userId});
   }
 
   @override
-  Future<ResultCode?> redo() {
-    return _invokeMethod('redo');
+  Future<ResultCode> redo() {
+    return _invokeCodeMethod('redo');
   }
 
   @override
-  Future<ResultCode?> setColor(WBColor color) {
-    return _invokeMethod('setColor', {'color': color.toJson()});
+  Future<ResultCode> setColor(WBColor color) {
+    return _invokeCodeMethod('setColor', {'color': color.toJson()});
   }
 
   @override
-  Future<ResultCode?> setFontSize(int size) {
-    return _invokeMethod('setFontSize', {'size': size});
+  Future<ResultCode> setFontSize(int size) {
+    return _invokeCodeMethod('setFontSize', {'size': size});
   }
 
   @override
-  Future<ResultCode?> setFontStyle(WBFontStyle style) {
-    return _invokeMethod(
+  Future<ResultCode> setFontStyle(WBFontStyle style) {
+    return _invokeCodeMethod(
         'setFontStyle', {'style': WBFontStyleConverter(style).value()});
   }
 
   @override
-  Future<ResultCode?> setLineWidth(int size) {
-    return _invokeMethod('setLineWidth', {'size': size});
+  Future<ResultCode> setLineWidth(int size) {
+    return _invokeCodeMethod('setLineWidth', {'size': size});
   }
 
   @override
-  Future<ResultCode?> setRoleType(WBRoleType type) {
-    return _invokeMethod(
+  Future<ResultCode> setRoleType(WBRoleType type) {
+    return _invokeCodeMethod(
         'setRoleType', {'type': WBRoleTypeConverter(type).value()});
   }
 
   @override
-  Future<ResultCode?> setToolType(WBToolType type) {
-    return _invokeMethod(
+  Future<ResultCode> setToolType(WBToolType type) {
+    return _invokeCodeMethod(
         'setToolType', {'type': WBToolTypeConverter(type).value()});
   }
 
   @override
-  Future<ResultCode?> setVisible(bool visible) {
-    return _invokeMethod('setVisible', {'visible': visible});
+  Future<ResultCode> setVisible(bool visible) {
+    return _invokeCodeMethod('setVisible', {'visible': visible});
   }
 
   @override
-  Future<ResultCode?> snapshot(String outputDir) {
-    return _invokeMethod('snapshot', {'outputDir': outputDir});
+  Future<ResultCode> snapshot(String outputDir) {
+    return _invokeCodeMethod('snapshot', {'outputDir': outputDir});
   }
 
   @override
-  Future<ResultCode?> startAnnotation(RtcSurfaceViewModel viewModel) {
+  Future<ResultCode> startAnnotation(RtcSurfaceViewModel viewModel) {
     return viewModel
-        .invokeMethod('startAnnotation', {'annotationId': annotationId});
+        .invokeCodeMethod('startAnnotation', {'annotationId': annotationId});
   }
 
   @override
-  Future<ResultCode?> stopAnnotation() {
-    return _invokeMethod('stopAnnotation');
+  Future<ResultCode> stopAnnotation() {
+    return _invokeCodeMethod('stopAnnotation');
   }
 
   @override
-  Future<ResultCode?> undo() {
-    return _invokeMethod('undo');
+  Future<ResultCode> undo() {
+    return _invokeCodeMethod('undo');
   }
 }
 
@@ -136,7 +138,7 @@ mixin RtcAnnotationInterface {
   /// 设置标注角色类型
   ///
   /// **Parameter** type 标注角色
-  Future<ResultCode?> setRoleType(WBRoleType type);
+  Future<ResultCode> setRoleType(WBRoleType type);
 
   /// Start annotation  and set render window
   ///
@@ -159,7 +161,7 @@ mixin RtcAnnotationInterface {
   ///
   /// **Note**
   /// 开启标注前需要保证白板服务是正常的。
-  Future<ResultCode?> startAnnotation(RtcSurfaceViewModel viewModel);
+  Future<ResultCode> startAnnotation(RtcSurfaceViewModel viewModel);
 
   /// Stop the annotation.
   ///
@@ -172,7 +174,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> stopAnnotation();
+  Future<ResultCode> stopAnnotation();
 
   /// Set annotation view visible/invisible.
   ///
@@ -195,7 +197,7 @@ mixin RtcAnnotationInterface {
   ///
   /// **Note**
   /// 标注视图默认是可见的
-  Future<ResultCode?> setVisible(bool visible);
+  Future<ResultCode> setVisible(bool visible);
 
   /// Set tool type
   ///
@@ -212,7 +214,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setToolType(WBToolType type);
+  Future<ResultCode> setToolType(WBToolType type);
 
   /// Set line width
   ///
@@ -229,7 +231,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setLineWidth(int size);
+  Future<ResultCode> setLineWidth(int size);
 
   /// Set color
   ///
@@ -246,7 +248,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setColor(WBColor color);
+  Future<ResultCode> setColor(WBColor color);
 
   /// Set font style
   ///
@@ -263,7 +265,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setFontStyle(WBFontStyle style);
+  Future<ResultCode> setFontStyle(WBFontStyle style);
 
   /// Set font size
   ///
@@ -280,7 +282,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> setFontSize(int size);
+  Future<ResultCode> setFontSize(int size);
 
   /// Undo
   ///
@@ -293,7 +295,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> undo();
+  Future<ResultCode> undo();
 
   /// Redo
   ///
@@ -306,7 +308,7 @@ mixin RtcAnnotationInterface {
   /// **Returns**
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
-  Future<ResultCode?> redo();
+  Future<ResultCode> redo();
 
   /// Clear annotation content by specific user ID
   ///
@@ -331,7 +333,7 @@ mixin RtcAnnotationInterface {
   ///
   /// **Note**
   /// 只有 ADMIN 角色才可以清除非本地用户的内容
-  Future<ResultCode?> clearUserContents(String userId);
+  Future<ResultCode> clearUserContents(String userId);
 
   /// Clear annotation content
   ///
@@ -352,7 +354,7 @@ mixin RtcAnnotationInterface {
   ///
   /// **Note**
   /// 此接口只有 ADMIN 角色才可调用
-  Future<ResultCode?> clearContents();
+  Future<ResultCode> clearContents();
 
   /// Save annotation contents to image.
   ///
@@ -375,5 +377,5 @@ mixin RtcAnnotationInterface {
   ///
   /// **Note**
   /// 快照结果和图像文件名通过回调函数[AnnotationEventHandler.onSnapshotComplete]返回
-  Future<ResultCode?> snapshot(String outputDir);
+  Future<ResultCode> snapshot(String outputDir);
 }

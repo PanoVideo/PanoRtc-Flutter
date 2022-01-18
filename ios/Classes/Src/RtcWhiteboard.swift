@@ -474,6 +474,10 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
             option = NSNumber(value: params["option"] as! Bool)
         case .autoSelected:
             option = NSNumber(value: params["option"] as! Bool)
+        case .cursorPosSync:
+            option = NSNumber(value: params["option"] as! Bool)
+        case .showRemoteCursor:
+            option = NSNumber(value: params["option"] as! Bool)
         default:
             isValid = false
         }

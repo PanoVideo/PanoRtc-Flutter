@@ -5,7 +5,7 @@ class UserManager {
   static final UserManager _singleton = UserManager._internal();
 
   factory UserManager() => _singleton;
-  final List<UserInfo> userInfos = List<UserInfo>();
+  final List<UserInfo?> userInfos = <UserInfo?>[];
 
   UserManager._internal();
 
@@ -18,7 +18,7 @@ class UserManager {
     return userInfo;
   }
 
-  UserInfo removeUser(String userId) {
+  UserInfo? removeUser(String userId) {
     var userInfo = findUser(userId);
     if (userInfo != null) {
       userInfos.remove(userInfo);
@@ -26,31 +26,31 @@ class UserManager {
     return userInfo;
   }
 
-  UserInfo findUser(String userId) {
-    return userInfos.firstWhere((userInfoObj) => userInfoObj.userId == userId,
+  UserInfo? findUser(String userId) {
+    return userInfos.firstWhere((userInfoObj) => userInfoObj!.userId == userId,
         orElse: () => null);
   }
 
-  UserInfo findLocalUser() {
-    return userInfos.firstWhere((userInfoObj) => userInfoObj.isLocal == true,
+  UserInfo? findLocalUser() {
+    return userInfos.firstWhere((userInfoObj) => userInfoObj!.isLocal == true,
         orElse: () => null);
   }
 
-  UserInfo findUserWithView(RtcSurfaceViewModel view) {
-    return userInfos.firstWhere((userInfoObj) => userInfoObj.videoView == view,
+  UserInfo? findUserWithView(RtcSurfaceViewModel view) {
+    return userInfos.firstWhere((userInfoObj) => userInfoObj!.videoView == view,
         orElse: () => null);
   }
 
-  UserInfo findWatingUser() {
+  UserInfo? findWatingUser() {
     return userInfos.firstWhere(
         (userInfoObj) =>
-            userInfoObj.videoEnable && userInfoObj.videoView == null,
+            userInfoObj!.videoEnable && userInfoObj.videoView == null,
         orElse: () => null);
   }
 
   void removeAllUser() {
     userInfos.forEach((element) {
-      element.videoView = null;
+      element!.videoView = null;
     });
     userInfos.clear();
   }

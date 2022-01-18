@@ -1,5 +1,11 @@
 # Change log
 
+## 1.0.5
+
+* Migrate example to null safety
+* Fix RtcEngineKit null safety runtime error
+* Fix RtcMessageServiceHandler onPropertyChanged callback parameter parsing error
+
 ## 1.0.4
 
 * Support Pano SDK to 1.6.1.1

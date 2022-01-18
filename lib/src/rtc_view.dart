@@ -19,13 +19,15 @@ class RtcSurfaceViewModel {
 
   /// @nodoc
   Future<T?> invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, arguments).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, arguments);
-    }
+    return _methodChannel.invokeMethod(method, arguments);
+  }
+
+  /// @nodoc
+  Future<ResultCode> invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// @nodoc
@@ -115,13 +117,15 @@ class RtcWhiteboardSurfaceViewModel {
 
   /// @nodoc
   Future<T?> invokeMethod<T>(String method, [Map<String, dynamic>? arguments]) {
-    if (T == ResultCode) {
-      return _methodChannel.invokeMethod(method, arguments).then((value) {
-        return ResultCodeConverter.fromValue(value).e as T;
-      });
-    } else {
-      return _methodChannel.invokeMethod(method, arguments);
-    }
+    return _methodChannel.invokeMethod(method, arguments);
+  }
+
+  /// @nodoc
+  Future<ResultCode> invokeCodeMethod(String method,
+      [Map<String, dynamic>? arguments]) {
+    return invokeMethod(method, arguments).then((value) {
+      return ResultCodeConverter.fromValue(value).e;
+    });
   }
 
   /// @nodoc

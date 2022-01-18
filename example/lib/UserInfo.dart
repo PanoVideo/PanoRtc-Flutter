@@ -8,14 +8,14 @@ class UserInfo {
   bool audioMute;
   bool videoEnable;
   bool videoMute;
-  RtcSurfaceViewModel videoView;
+  RtcSurfaceViewModel? videoView;
   bool isLocal;
   bool isReadyVideo;
 
   UserInfo(
-      {Key key,
-      @required this.userId,
-      @required this.userName,
+      {Key? key,
+      required this.userId,
+      required this.userName,
       this.audioEnable = false,
       this.audioMute = false,
       this.videoEnable = false,

@@ -10,26 +10,26 @@ import 'package:pano_rtc/pano_rtc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ChannelViewController extends StatefulWidget {
-  ChannelViewController({Key key}) : super(key: key);
+  ChannelViewController({Key? key}) : super(key: key);
 
   @override
   _ChannelViewControllerState createState() => _ChannelViewControllerState();
 }
 
 class _ChannelViewControllerState extends State<ChannelViewController> {
-  RtcEngineKit engineKit;
+  RtcEngineKit? engineKit;
 
   bool isWhiteboardEnable = false;
   bool isEnableAudio = true;
   bool isEnableVideo = true;
   bool isSpeaker = false;
 
-  RtcSurfaceViewModel bigRemoteView;
+  RtcSurfaceViewModel? bigRemoteView;
   bool isBigView = false;
-  RtcWhiteboard whiteboardEngine;
-  RtcMessageService rtcMessageService;
+  RtcWhiteboard? whiteboardEngine;
+  RtcMessageService? rtcMessageService;
 
-  UserInfo bigScreenUser;
+  UserInfo? bigScreenUser;
 
   @override
   void initState() {
@@ -46,16 +46,16 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
   void enableAudio() {
     isEnableAudio = !isEnableAudio;
     if (isEnableAudio) {
-      engineKit.unmuteAudio();
+      engineKit!.unmuteAudio();
     } else {
-      engineKit.muteAudio();
+      engineKit!.muteAudio();
     }
     if (mounted) setState(() {});
   }
 
   void switchSpeaker() {
     isSpeaker = !isSpeaker;
-    engineKit.setLoudspeakerStatus(isSpeaker);
+    engineKit!.setLoudspeakerStatus(isSpeaker);
 
     if (mounted) setState(() {});
   }
@@ -67,7 +67,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
 
       print('---------------------------- muteVideo start ' + res.toString());
     } else {
-      var res = await engineKit.stopVideo();
+      var res = await engineKit!.stopVideo();
       print('---------------------------- muteVideo end ' + res.toString());
     }
     if (mounted) setState(() {});
@@ -81,8 +81,8 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
           profileType: VideoProfileType.HD720P,
           scalingMode: VideoScalingMode.FullFill,
           mirror: true);
-      return await engineKit.startVideo(localUser.videoView,
-          config: renderConfig);
+      return await engineKit!
+          .startVideo(localUser.videoView!, config: renderConfig);
     } else {
       return ResultCode.Failed;
     }
@@ -90,24 +90,24 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
 
   void bigSubscribeVideo(UserInfo userObj) async {
     if (userObj.isLocal) {
-      await engineKit.stopVideo();
+      await engineKit!.stopVideo();
       await Future.delayed(Duration(milliseconds: 400));
     }
 
     if (bigScreenUser != null) {
-      bigScreenUser.isReadyVideo = false;
-      bigScreenUser.videoView = null;
+      bigScreenUser!.isReadyVideo = false;
+      bigScreenUser!.videoView = null;
       UserManager.shared().userInfos.add(bigScreenUser);
     }
     isBigView = true;
     bigScreenUser = userObj;
 
     if (bigRemoteView != null) {
-      bigScreenUser.isReadyVideo = true;
-      bigScreenUser.videoView = bigRemoteView;
+      bigScreenUser!.isReadyVideo = true;
+      bigScreenUser!.videoView = bigRemoteView;
     } else {
-      bigScreenUser.isReadyVideo = false;
-      bigScreenUser.videoView = null;
+      bigScreenUser!.isReadyVideo = false;
+      bigScreenUser!.videoView = null;
     }
     UserManager.shared().removeUser(userObj.userId);
     if (mounted) setState(() {});
@@ -115,18 +115,18 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
   }
 
   void bigScreenRenderStart() async {
-    if (bigScreenUser != null && bigScreenUser.videoView != null) {
-      if (bigScreenUser.isLocal) {
+    if (bigScreenUser != null && bigScreenUser!.videoView != null) {
+      if (bigScreenUser!.isLocal) {
         var renderConfig = RtcRenderConfig(
             profileType: VideoProfileType.HD720P,
             scalingMode: VideoScalingMode.CropFill,
             mirror: true);
-        await engineKit.startVideo(bigRemoteView, config: renderConfig);
+        await engineKit!.startVideo(bigRemoteView!, config: renderConfig);
       } else {
         var renderConfig = RtcRenderConfig(
             profileType: VideoProfileType.HD720P,
             scalingMode: VideoScalingMode.CropFill);
-        await engineKit.subscribeVideo(bigScreenUser.userId, bigRemoteView,
+        await engineKit!.subscribeVideo(bigScreenUser!.userId, bigRemoteView!,
             config: renderConfig);
       }
     }
@@ -137,7 +137,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
     var renderConfig = RtcRenderConfig(
         profileType: VideoProfileType.Low,
         scalingMode: VideoScalingMode.CropFill);
-    return await engineKit.subscribeVideo(userId, view, config: renderConfig);
+    return await engineKit!.subscribeVideo(userId, view, config: renderConfig);
   }
 
   void createEngineKit() async {
@@ -152,56 +152,56 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
     var engineConfig = RtcEngineConfig(ChannelInfo.appId, ChannelInfo.server);
     engineConfig.videoCodecHwAcceleration = true;
     engineKit = await RtcEngineKit.engine(engineConfig);
-    rtcMessageService = await engineKit.messageService();
+    rtcMessageService = await engineKit!.messageService();
 
-    engineKit.setEventHandler(
-      RtcEngineEventHandler(onChannelJoinConfirm: (ResultCode result) async {
+    engineKit!.setEventHandler(
+      RtcEngineEventHandler(onChannelJoinConfirm: (ResultCode? result) async {
         print('onChannelJoinConfirm $result');
         if (result == ResultCode.OK) {
           isSpeaker = true;
-          await engineKit.setLoudspeakerStatus(true);
-          await engineKit.startAudio();
+          await engineKit!.setLoudspeakerStatus(true);
+          await engineKit!.startAudio();
 
           UserManager.shared()
               .addUser(ChannelInfo.userId, ChannelInfo.userName, isLocal: true);
         } else {
           print('Join channel failed with error $result');
         }
-      }, onChannelLeaveIndication: (ResultCode result) {
+      }, onChannelLeaveIndication: (ResultCode? result) {
         print('onChannelLeaveIndication result $result');
       }, onUserAudioStart: (String userId) {
         print('onUserAudioStart userId $userId');
         var user = UserManager.shared().findUser(userId);
         if (user == null) {
-          if (bigScreenUser.userId == userId) {
+          if (bigScreenUser!.userId == userId) {
             user = bigScreenUser;
           }
           return;
         }
         user.audioEnable = true;
-      }, onUserVideoStart: (String userId, VideoProfileType maxProfile) async {
+      }, onUserVideoStart: (String userId, VideoProfileType? maxProfile) async {
         print('onUserVideoStart userId $userId');
         print('onUserVideoStart maxProfile $maxProfile');
 
-        var user = UserManager.shared().findUser(userId);
+        var user = UserManager.shared().findUser(userId)!;
         user.videoEnable = true;
         if (user.videoView != null) {
-          await subscribeVideo(userId, user.videoView);
+          await subscribeVideo(userId, user.videoView!);
         }
-      }, onActiveSpeakerListUpdated: (List<dynamic> userIds) {
+      }, onActiveSpeakerListUpdated: (List<dynamic>? userIds) {
         print('onActiveSpeakerListUpdated userIds $userIds');
       }, onFirstVideoFrameRendered: (String userId) {
         print('onFirstVideoFrameRendered userIds $userId');
       }, onFirstVideoDataReceived: (String userId) {
         print('onFirstVideoDataReceived userIds $userId');
       }, onVideoCaptureStateChanged:
-          (String deviceId, VideoCaptureState state) {
+          (String deviceId, VideoCaptureState? state) {
         print('onVideoCaptureStateChanged deviceId $deviceId');
         print('onVideoCaptureStateChanged state $state');
       }, onWhiteboardAvailable: () async {
         print('onWhiteboardAvailable');
 
-        whiteboardEngine = await engineKit.whiteboardEngine();
+        whiteboardEngine = await engineKit!.whiteboardEngine();
 
         if (mounted) {
           setState(() {
@@ -222,7 +222,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         print('onUserVideoMute userId $userId');
         var user = UserManager.shared().findUser(userId);
         if (user == null) {
-          if (bigScreenUser.userId == userId) {
+          if (bigScreenUser!.userId == userId) {
             user = bigScreenUser;
           }
           return;
@@ -233,7 +233,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
 
         var user = UserManager.shared().findUser(userId);
         if (user == null) {
-          if (bigScreenUser.userId == userId) {
+          if (bigScreenUser!.userId == userId) {
             user = bigScreenUser;
           }
           return;
@@ -241,7 +241,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         user.videoMute = false;
       }, onChannelCountDown: (int remain) {
         print('onChannelCountDown remain $remain');
-      }, onUserLeaveIndication: (String userId, UserLeaveReason reason) {
+      }, onUserLeaveIndication: (String userId, UserLeaveReason? reason) {
         print('onUserLeaveIndication userId $userId');
         print('onUserLeaveIndication reason $reason');
 
@@ -252,7 +252,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         }
 
         if (user == null) {
-          if (bigScreenUser.userId == userId) {
+          if (bigScreenUser!.userId == userId) {
             closeBigVideo(isLeave: true);
           }
         } else {
@@ -263,36 +263,36 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         var user = UserManager.shared().findUser(userId);
 
         if (user == null) {
-          if (bigScreenUser.userId == userId) {
+          if (bigScreenUser!.userId == userId) {
             user = bigScreenUser;
           }
           return;
         }
         user.audioEnable = false;
-      }, onUserAudioSubscribe: (String userId, SubscribeResult result) {
+      }, onUserAudioSubscribe: (String userId, SubscribeResult? result) {
         print('onUserAudioSubscribe userId $userId');
         print('onUserAudioSubscribe result $result');
       }, onUserVideoStop: (String userId) {
         print('onUserVideoStop userId $userId');
-        var user = UserManager.shared().findUser(userId);
+        var user = UserManager.shared().findUser(userId)!;
         user.videoEnable = false;
         if (mounted) setState(() {});
-      }, onUserVideoSubscribe: (String userId, SubscribeResult result) {
+      }, onUserVideoSubscribe: (String userId, SubscribeResult? result) {
         print('onUserVideoSubscribe userId $userId');
         print('onUserVideoSubscribe result $result');
       }, onUserAudioMute: (String userId) {
         print('onUserVideoSubscribe userId $userId');
-        var user = UserManager.shared().findUser(userId);
+        var user = UserManager.shared().findUser(userId)!;
         user.audioMute = true;
       }, onUserAudioUnmute: (String userId) {
         print('onUserAudioUnmute userId $userId');
-        var user = UserManager.shared().findUser(userId);
+        var user = UserManager.shared().findUser(userId)!;
         user.audioMute = false;
       }, onUserScreenStart: (String userId) {
         print('onUserScreenStart userId $userId');
       }, onUserScreenStop: (String userId) {
         print('onUserScreenStop userId $userId');
-      }, onUserScreenSubscribe: (String userId, SubscribeResult result) {
+      }, onUserScreenSubscribe: (String userId, SubscribeResult? result) {
         print('onUserScreenSubscribe userId $userId');
         print('onUserScreenSubscribe result $result');
       }, onUserScreenMute: (String userId) {
@@ -313,9 +313,9 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         print('onFirstScreenDataReceived userId $userId');
       }, onFirstScreenFrameRendered: (String userId) {
         print('onFirstScreenFrameRendered userId $userId');
-      }, onChannelFailover: (FailoverState state) {
+      }, onChannelFailover: (FailoverState? state) {
         print('onChannelFailover state $state');
-      }, onAudioMixingStateChanged: (int taskId, AudioMixingState state) {
+      }, onAudioMixingStateChanged: (int taskId, AudioMixingState? state) {
         print('onAudioMixingStateChanged taskId $taskId');
         print('onAudioMixingStateChanged state $state');
       }, onVideoSnapshotCompleted:
@@ -325,20 +325,23 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         print('onVideoSnapshotCompleted fileName $fileName');
       }),
     );
-    rtcMessageService.setEventHandler(RtcMessageServiceHandler(
-        onServiceStateChanged: (MessageServiceState state) {
+    rtcMessageService!.setEventHandler(RtcMessageServiceHandler(
+        onServiceStateChanged: (MessageServiceState? state) {
       print('onServiceStateChanged state $state');
       if (state == MessageServiceState.Available) {
-        rtcMessageService.broadcastMessage(utf8.encode('broadcastMessage'));
-        rtcMessageService.setProperty("setProperty", utf8.encode('setProperty value'));
-        rtcMessageService.publish("publish", utf8.encode('publish value'));
-        rtcMessageService.subscribe("publish");
-        rtcMessageService.unsubscribe("publish");
+        rtcMessageService!
+            .broadcastMessage(utf8.encode('broadcastMessage') as Uint8List);
+        rtcMessageService!.setProperty(
+            "setProperty", utf8.encode('setProperty value') as Uint8List);
+        rtcMessageService!
+            .publish("publish", utf8.encode('publish value') as Uint8List);
+        rtcMessageService!.subscribe("publish");
+        rtcMessageService!.unsubscribe("publish");
       }
     }, onUserMessage: (String userId, Uint8List byte) {
       print('onMessage userId: $userId');
       print('onMessage byte:' + utf8.decode(byte));
-    }, onSubscribeResult: (String topic, ResultCode result) {
+    }, onSubscribeResult: (String topic, ResultCode? result) {
       print('onSubscribeResult topic: $topic');
       print('onSubscribeResult result: $result');
     }, onTopicMessage: (String topic, String userId, Uint8List data) {
@@ -348,22 +351,22 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
     }, onPropertyChanged: (List<RtcPropertyAction> props) {
       print('onPropertyChanged props length: ' + props.length.toString());
       RtcPropertyAction action = props[0];
-      print('onPropertyChanged actionType: ' + action.actionType.toString());
-      print('onPropertyChanged propName: ' + action.propName);
-      print('onPropertyChanged propValue: ' + utf8.decode(action.propValue));
+      print('onPropertyChanged actionType: ' + action.type.toString());
+      print('onPropertyChanged propName: ' + action.propName!);
+      print('onPropertyChanged propValue: ' + utf8.decode(action.propValue!));
     }));
     joinChannel();
   }
 
   void destroyEngineKit() {
-    engineKit.destroy();
+    engineKit!.destroy();
     engineKit = null;
   }
 
   void joinChannel() async {
     var channelConfig = RtcChannelConfig(
         mode: ChannelInfo.channelMode, userName: ChannelInfo.userName);
-    var result = await engineKit.joinChannel(
+    var result = await engineKit!.joinChannel(
         ChannelInfo.token, ChannelInfo.channelId, ChannelInfo.userId,
         config: channelConfig);
     if (result != ResultCode.OK) {
@@ -372,19 +375,19 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
   }
 
   void leaveChannel() {
-    engineKit.leaveChannel();
+    engineKit!.leaveChannel();
   }
 
   void closeBigVideo({bool isLeave = false}) async {
     isBigView = false;
     bigRemoteView = null;
     if (bigScreenUser != null) {
-      if (bigScreenUser.isLocal) {
-        await engineKit.stopVideo();
+      if (bigScreenUser!.isLocal) {
+        await engineKit!.stopVideo();
         await Future.delayed(Duration(milliseconds: 500));
       }
-      bigScreenUser.isReadyVideo = false;
-      bigScreenUser.videoView = null;
+      bigScreenUser!.isReadyVideo = false;
+      bigScreenUser!.videoView = null;
 
       if (!isLeave) {
         UserManager.shared().userInfos.add(bigScreenUser);
@@ -418,7 +421,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
                 scrollDirection: Axis.horizontal,
                 itemCount: UserManager.shared().userInfos.length,
                 itemBuilder: (context, index) {
-                  var userObj = UserManager.shared().userInfos[index];
+                  var userObj = UserManager.shared().userInfos[index]!;
                   return Container(
                     key: Key('${userObj.userId}'),
                     width: 100,
@@ -446,7 +449,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
                                       startVideo();
                                     } else {
                                       subscribeVideo(
-                                          userObj.userId, userObj.videoView);
+                                          userObj.userId, userObj.videoView!);
                                     }
                                   }
                                 }),
@@ -485,7 +488,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
                                     RtcSurfaceView(onViewCreated: ((viewModel) {
                                   bigRemoteView = viewModel;
                                   if (bigScreenUser != null) {
-                                    bigScreenUser.videoView = bigRemoteView;
+                                    bigScreenUser!.videoView = bigRemoteView;
                                   }
                                   bigScreenRenderStart();
                                 })),

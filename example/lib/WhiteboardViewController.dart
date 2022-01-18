@@ -1,14 +1,14 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pano_rtc/pano_rtc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:stepper_counter_swipe/stepper_counter_swipe.dart';
+import 'package:count_stepper/count_stepper.dart';
 import 'dart:convert';
 
 class WhiteboardViewController extends StatefulWidget {
-  RtcWhiteboard whiteboardEngine;
-  WhiteboardViewController({Key key, @required this.whiteboardEngine})
+  RtcWhiteboard? whiteboardEngine;
+  WhiteboardViewController({Key? key, required this.whiteboardEngine})
       : super(key: key);
 
   @override
@@ -17,8 +17,8 @@ class WhiteboardViewController extends StatefulWidget {
 }
 
 class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
-  RtcWhiteboard whiteboardEngine;
-  RtcWhiteboardSurfaceViewModel drawView;
+  RtcWhiteboard? whiteboardEngine;
+  late RtcWhiteboardSurfaceViewModel drawView;
   int kDefaultLineWidth = 5;
   int kDefaultFontSize = 100;
 
@@ -26,17 +26,17 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
   bool isItalicStyle = false;
   int lineWidth = 5;
   int fontSize = 100;
-  int curPage = 0;
-  int totalPages = 1;
+  int? curPage = 0;
+  int? totalPages = 1;
   double zoomScale = 100;
 
   bool isDrawTool = false;
   bool isStyleView = false;
   bool isPickImage = false;
-  WBToolType selectTool;
+  WBToolType? selectTool;
   Color selColor = Colors.black;
 
-  File selectFile;
+  File? selectFile;
 
   String txtDocId = '';
 
@@ -49,40 +49,40 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
 
   Future<ResultCode> initToolType() async {
     selectTool = WBToolType.Path;
-    return whiteboardEngine.setToolType(WBToolType.Path);
+    return whiteboardEngine!.setToolType(WBToolType.Path);
   }
 
   Future<ResultCode> initLineWidth() {
     lineWidth = kDefaultLineWidth;
-    return whiteboardEngine.setLineWidth(lineWidth);
+    return whiteboardEngine!.setLineWidth(lineWidth);
   }
 
   Future<ResultCode> initForegroundColor() {
-    return whiteboardEngine.setForegroundColor(convertWBColor(Colors.black));
+    return whiteboardEngine!.setForegroundColor(convertWBColor(Colors.black));
   }
 
   Future<ResultCode> initFontStyle() {
-    return whiteboardEngine.setFontStyle(getFontStyle());
+    return whiteboardEngine!.setFontStyle(getFontStyle());
   }
 
   Future<ResultCode> initFontSize() {
     fontSize = kDefaultFontSize;
-    return whiteboardEngine.setFontSize(fontSize);
+    return whiteboardEngine!.setFontSize(fontSize);
   }
 
-  Future<int> initPageNumber() async {
-    curPage = await whiteboardEngine.getCurrentPageNumber();
-    totalPages = await whiteboardEngine.getTotalNumberOfPages();
+  Future<int?> initPageNumber() async {
+    curPage = await whiteboardEngine!.getCurrentPageNumber();
+    totalPages = await whiteboardEngine!.getTotalNumberOfPages();
     return totalPages;
   }
 
   Future<double> initZoomScale() async {
-    zoomScale = await whiteboardEngine.getCurrentScaleFactor() * 100.0;
+    zoomScale = (await whiteboardEngine!.getCurrentScaleFactor()) * 100.0;
     return zoomScale;
   }
 
   Future<ResultCode> addImageFile() async {
-    return await whiteboardEngine.addImageFile(
+    return await whiteboardEngine!.addImageFile(
         'https://www.pano.video/assets/img/optimized_logo-pano.png');
   }
 
@@ -96,7 +96,7 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
     await initZoomScale();
     await addImageFile();
 
-    whiteboardEngine.setEventHandler(
+    whiteboardEngine!.setEventHandler(
       WhiteboardEventHandler(
           onPageNumberChanged: (curPage, totalPages) {
             this.curPage = curPage;
@@ -114,11 +114,11 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           },
           onVisionShareStarted: (userId) {
             print('onVisionShareStarted $userId');
-            whiteboardEngine.startFollowVision();
+            whiteboardEngine!.startFollowVision();
           },
           onVisionShareStopped: (userId) {
             print('onVisionShareStopped $userId');
-            whiteboardEngine.stopFollowVision();
+            whiteboardEngine!.stopFollowVision();
           },
           onMessage: (userId, byte) {
             print('onMessage userId: $userId');
@@ -128,7 +128,7 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
   }
 
   void close() {
-    whiteboardEngine.close();
+    whiteboardEngine!.close();
   }
 
   @override
@@ -144,8 +144,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
         onViewCreated: (viewModel) {
           setState(() {
             drawView = viewModel;
-            whiteboardEngine.open(drawView);
-            whiteboardEngine.startShareVision();
+            whiteboardEngine!.open(drawView);
+            whiteboardEngine!.startShareVision();
           });
         },
       ),
@@ -167,8 +167,11 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                         ),
                         SizedBox(
                           width: 40,
-                          child: RaisedButton(
-                            padding: EdgeInsets.zero,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.grey[300],
+                              padding: EdgeInsets.zero,
+                            ),
                             onPressed: () {
                               setState(() {
                                 isBoldStyle = !isBoldStyle;
@@ -183,8 +186,11 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                         ),
                         SizedBox(
                           width: 40,
-                          child: RaisedButton(
-                            padding: EdgeInsets.zero,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.grey[300],
+                              padding: EdgeInsets.zero,
+                            ),
                             onPressed: () {
                               setState(() {
                                 isItalicStyle = !isItalicStyle;
@@ -201,32 +207,19 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                           width: 8,
                         ),
                         Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(25)),
-                          height: 50,
-                          child: StepperSwipe(
-                            initialValue: fontSize,
-                            speedTransitionLimitCount:
-                                3, //Trigger count for fast counting
-
-                            onChanged: (int value) {
+                          height: 36,
+                          child: CountStepper(
+                            iconColor: Theme.of(context).primaryColor,
+                            defaultValue: 10,
+                            max: 100,
+                            min: 1,
+                            // iconDecrementColor: Colors.red,
+                            splashRadius: 25,
+                            onPressed: (int value) {
                               print('Font Size: $value');
                               fontSize = value;
                               changeFontSize();
                             },
-                            firstIncrementDuration: Duration(
-                                milliseconds:
-                                    250), //Unit time before fast counting
-                            secondIncrementDuration: Duration(
-                                milliseconds:
-                                    100), //Unit time during fast counting
-                            direction: Axis.horizontal,
-                            dragButtonColor: Colors.blueAccent,
-                            withSpring: true,
-                            withFastCount: true,
-                            maxValue: 100,
-                            minValue: 10, stepperValue: fontSize,
                           ),
                         ),
                       ],
@@ -238,33 +231,18 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                       children: [
                         Text("Line width: "),
                         Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(25)),
                           height: 50,
-                          child: StepperSwipe(
-                            initialValue: lineWidth,
-                            speedTransitionLimitCount:
-                                3, //Trigger count for fast counting
-
-                            onChanged: (int value) {
+                          child: CountStepper(
+                            iconColor: Theme.of(context).primaryColor,
+                            defaultValue: 4,
+                            max: 20,
+                            min: 1,
+                            splashRadius: 25,
+                            onPressed: (int value) {
                               print('Line Width: $value');
-
                               lineWidth = value;
                               changeLineWidth();
                             },
-                            firstIncrementDuration: Duration(
-                                milliseconds:
-                                    250), //Unit time before fast counting
-                            secondIncrementDuration: Duration(
-                                milliseconds:
-                                    100), //Unit time during fast counting
-                            direction: Axis.horizontal,
-                            dragButtonColor: Colors.blueAccent,
-                            withSpring: true,
-                            withFastCount: true,
-                            maxValue: 20,
-                            minValue: 1, stepperValue: lineWidth,
                           ),
                         ),
                       ],
@@ -287,10 +265,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.red,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.red,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.red);
                         },
@@ -304,10 +284,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.green,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.green);
                         },
@@ -321,10 +303,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.blue,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.blue);
                         },
@@ -338,10 +322,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.black,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.black,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.black);
                         },
@@ -355,10 +341,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.grey,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.grey,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.grey);
                         },
@@ -372,10 +360,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.white,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.white);
                         },
@@ -389,10 +379,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        color: Colors.yellow,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.yellow,
+                          padding: EdgeInsets.zero,
+                          shape: CircleBorder(),
+                        ),
                         onPressed: () {
                           selectColor(Colors.yellow);
                         },
@@ -421,9 +413,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
+                      child: ElevatedButton(
+                        style: toolButtonStyle,
                         onPressed: () {
                           setState(() {
                             setPathTool();
@@ -440,9 +431,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
+                      child: ElevatedButton(
+                        style: toolButtonStyle,
                         onPressed: () {
                           setState(() {
                             setLineTool();
@@ -459,9 +449,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
+                      child: ElevatedButton(
+                        style: toolButtonStyle,
                         onPressed: () {
                           setState(() {
                             setRectTool();
@@ -478,9 +467,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
+                      child: ElevatedButton(
+                        style: toolButtonStyle,
                         onPressed: () {
                           setState(() {
                             setEllipseTool();
@@ -497,9 +485,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: RaisedButton(
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
+                      child: ElevatedButton(
+                        style: toolButtonStyle,
                         onPressed: () {
                           setState(() {
                             setArrowTool();
@@ -529,9 +516,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         setState(() {
                           setSelectTool();
@@ -548,9 +534,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         setState(() {
                           showDrawToolbar();
@@ -573,9 +558,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         setState(() {
                           setTextTool();
@@ -592,9 +576,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         setState(() {
                           setEraserTool();
@@ -611,9 +594,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         setState(() {
                           showStyleView();
@@ -621,20 +603,21 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                       },
                       child: Icon(
                         Icons.style,
+                        color: Colors.black,
                       ),
                     ),
                   ),
                   SizedBox(
                     width: 40,
                     height: 40,
-                    child: RaisedButton(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.zero,
+                    child: ElevatedButton(
+                      style: toolButtonStyle,
                       onPressed: () {
                         snapshotWhiteboard();
                       },
                       child: Icon(
                         Icons.camera_alt,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -652,12 +635,15 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: pageButtonStyle,
               onPressed: () {
                 prevPage();
               },
-              child: Icon(Icons.navigate_before),
+              child: Icon(
+                Icons.navigate_before,
+                color: Colors.black,
+              ),
             ),
           ),
           SizedBox(
@@ -670,12 +656,15 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: pageButtonStyle,
               onPressed: () {
                 nextPage();
               },
-              child: Icon(Icons.navigate_next),
+              child: Icon(
+                Icons.navigate_next,
+                color: Colors.black,
+              ),
             ),
           ),
           SizedBox(
@@ -684,12 +673,15 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: pageButtonStyle,
               onPressed: () {
                 addPage();
               },
-              child: Icon(Icons.add_circle),
+              child: Icon(
+                Icons.add_circle,
+                color: Colors.black,
+              ),
             ),
           ),
           SizedBox(
@@ -698,12 +690,15 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: pageButtonStyle,
               onPressed: () {
                 removePage();
               },
-              child: Icon(Icons.remove_circle),
+              child: Icon(
+                Icons.remove_circle,
+                color: Colors.black,
+              ),
             ),
           ),
           Text(" ${zoomScale.toInt()}%"),
@@ -714,9 +709,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              shape: CircleBorder(),
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: toolButtonStyle,
               onPressed: () {
                 setState(() {
                   undoOperation();
@@ -724,15 +718,15 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
               },
               child: Icon(
                 Icons.undo,
+                color: Colors.black,
               ),
             ),
           ),
           SizedBox(
             width: 40,
             height: 40,
-            child: RaisedButton(
-              shape: CircleBorder(),
-              padding: EdgeInsets.zero,
+            child: ElevatedButton(
+              style: toolButtonStyle,
               onPressed: () {
                 setState(() {
                   redoOperation();
@@ -740,11 +734,12 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
               },
               child: Icon(
                 Icons.redo,
+                color: Colors.black,
               ),
             ),
           ),
           SizedBox(
-            width: 80,
+            width: 140,
           ),
         ],
       )
@@ -752,6 +747,18 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
         // ),
         );
   }
+
+  final ButtonStyle toolButtonStyle = ElevatedButton.styleFrom(
+    primary: Colors.grey[300],
+    padding: EdgeInsets.zero,
+    shape: CircleBorder(),
+  );
+
+  final ButtonStyle pageButtonStyle = ElevatedButton.styleFrom(
+    primary: Colors.grey[300],
+    padding: EdgeInsets.zero,
+    // shape: CircleBorder(),
+  );
 
   WBFontStyle getFontStyle() {
     var style = WBFontStyle.Normal;
@@ -781,7 +788,7 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
   void setSelectTool() {
     hideAllSubToolViews();
     selectTool = WBToolType.Select;
-    whiteboardEngine.setToolType(WBToolType.Select);
+    whiteboardEngine!.setToolType(WBToolType.Select);
   }
 
   void showDrawToolbar() {
@@ -791,39 +798,39 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
 
   void setPathTool() {
     selectTool = WBToolType.Path;
-    whiteboardEngine.setToolType(WBToolType.Path);
+    whiteboardEngine!.setToolType(WBToolType.Path);
   }
 
   void setLineTool() {
     selectTool = WBToolType.Line;
-    whiteboardEngine.setToolType(WBToolType.Line);
+    whiteboardEngine!.setToolType(WBToolType.Line);
   }
 
   void setRectTool() {
     selectTool = WBToolType.Rect;
-    whiteboardEngine.setToolType(WBToolType.Rect);
+    whiteboardEngine!.setToolType(WBToolType.Rect);
   }
 
   void setEllipseTool() {
     selectTool = WBToolType.Ellipse;
-    whiteboardEngine.setToolType(WBToolType.Ellipse);
+    whiteboardEngine!.setToolType(WBToolType.Ellipse);
   }
 
   void setArrowTool() {
     selectTool = WBToolType.Arrow;
-    whiteboardEngine.setToolType(WBToolType.Arrow);
+    whiteboardEngine!.setToolType(WBToolType.Arrow);
   }
 
   void setTextTool() {
     hideAllSubToolViews();
     selectTool = WBToolType.Text;
-    whiteboardEngine.setToolType(WBToolType.Text);
+    whiteboardEngine!.setToolType(WBToolType.Text);
   }
 
   void setEraserTool() {
     hideAllSubToolViews();
     selectTool = WBToolType.Eraser;
-    whiteboardEngine.setToolType(WBToolType.Eraser);
+    whiteboardEngine!.setToolType(WBToolType.Eraser);
   }
 
   void showStyleView() {
@@ -834,28 +841,26 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
   void setImage(String url,
       {WBImageScalingMode scalMode = WBImageScalingMode.Fit}) {
     hideAllSubToolViews();
-    whiteboardEngine.setBackgroundImageScalingMode(scalMode);
-    whiteboardEngine.setBackgroundImage(url);
+    whiteboardEngine!.setBackgroundImageScalingMode(scalMode);
+    whiteboardEngine!.setBackgroundImage(url);
   }
 
   void snapshotWhiteboard() async {
     var path = await getApplicationDocumentsDirectory();
-    if (path != null) {
-      print(path.path);
-      var code = await whiteboardEngine.snapshot(WBSnapshotMode.All, path.path);
+    print(path.path);
+    var code = await whiteboardEngine!.snapshot(WBSnapshotMode.All, path.path);
 
-      print(code.toString());
-    }
+    print(code.toString());
   }
 
   void undoOperation() {
     hideAllSubToolViews();
-    whiteboardEngine.undo();
+    whiteboardEngine!.undo();
   }
 
   void redoOperation() {
     hideAllSubToolViews();
-    whiteboardEngine.redo();
+    whiteboardEngine!.redo();
   }
 
   void selectColor(Color color) {
@@ -864,39 +869,39 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
     });
 
     var fgColor = convertWBColor(color);
-    whiteboardEngine.setForegroundColor(fgColor);
+    whiteboardEngine!.setForegroundColor(fgColor);
   }
 
   void changeLineWidth() {
-    whiteboardEngine.setLineWidth(lineWidth);
+    whiteboardEngine!.setLineWidth(lineWidth);
   }
 
   void selectFontStyle() {
-    whiteboardEngine.setFontStyle(getFontStyle());
+    whiteboardEngine!.setFontStyle(getFontStyle());
   }
 
   void changeFontSize() {
-    whiteboardEngine.setFontSize(fontSize);
+    whiteboardEngine!.setFontSize(fontSize);
   }
 
   void prevPage() {
-    whiteboardEngine.prevPage();
+    whiteboardEngine!.prevPage();
   }
 
   void nextPage() {
-    whiteboardEngine.nextPage();
+    whiteboardEngine!.nextPage();
   }
 
   void addPage() {
-    whiteboardEngine.addPage(true);
+    whiteboardEngine!.addPage(true);
   }
 
   void broadcastMessage(String str) {
     List<int> bytes = utf8.encode(str);
-    whiteboardEngine.broadcastMessage(bytes);
+    whiteboardEngine!.broadcastMessage(bytes as Uint8List);
   }
 
   void removePage() {
-    whiteboardEngine.removePage(curPage);
+    whiteboardEngine!.removePage(curPage!);
   }
 }
