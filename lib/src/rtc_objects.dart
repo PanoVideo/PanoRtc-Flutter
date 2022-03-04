@@ -30,8 +30,10 @@ class RtcEngineConfig {
   int? audioScenario;
 
   /// Constructs a [RtcEngineConfig]
-  RtcEngineConfig(this.appId, this.rtcServer,
-      {this.videoCodecHwAcceleration = false, this.audioScenario = 0});
+  RtcEngineConfig(this.appId,
+      {this.rtcServer = '',
+      this.videoCodecHwAcceleration = false,
+      this.audioScenario = 0});
 
   /// @nodoc
   factory RtcEngineConfig.fromJson(Map<String, dynamic> json) =>
@@ -93,7 +95,7 @@ class RtcChannelConfig {
 ///
 /// 视频渲染器的配置类。
 @JsonSerializable(explicitToJson: true)
-class RtcRenderConfig {
+class RtcVideoConfig {
   /// The video profile. Default: Standard.
   ///
   /// 视频设定档。默认值：Standard。
@@ -114,19 +116,19 @@ class RtcRenderConfig {
   /// 是否启用视频镜像。默认值：NO。
   bool? mirror;
 
-  /// Constructs a [RtcRenderConfig]
-  RtcRenderConfig(
+  /// Constructs a [RtcVideoConfig]
+  RtcVideoConfig(
       {this.profileType = VideoProfileType.Standard,
       this.sourceMirror = false,
       this.scalingMode = VideoScalingMode.Fit,
       this.mirror = false});
 
   /// @nodoc
-  factory RtcRenderConfig.fromJson(Map<String, dynamic> json) =>
-      _$RtcRenderConfigFromJson(json);
+  factory RtcVideoConfig.fromJson(Map<String, dynamic> json) =>
+      _$RtcVideoConfigFromJson(json);
 
   /// @nodoc
-  Map<String, dynamic> toJson() => _$RtcRenderConfigToJson(this);
+  Map<String, dynamic> toJson() => _$RtcVideoConfigToJson(this);
 }
 
 /// The audio format class.
@@ -303,16 +305,16 @@ class RtcAudioProfile {
   /// 音频通道数。*/
   final AudioChannel? channel;
 
-  /// The audio quality Profile.
+  /// The audio codec sending bitrate per channel (32000bps-320000bps, defualt:64000bps).
   ///
-  /// 音频质量。
-  final AudioProfileQuality? profileQuality;
+  /// 音频发送码率(32000bps-320000bps, 默认:64000bps)。
+  final int? encodeBitrate;
 
   /// Constructs a [RtcAudioProfile]
   RtcAudioProfile(
       {this.sampleRate = AudioSampleRate.Rate48K,
       this.channel = AudioChannel.Mono,
-      this.profileQuality = AudioProfileQuality.Default});
+      this.encodeBitrate = 64000});
 
   /// @nodoc
   factory RtcAudioProfile.fromJson(Map<String, dynamic> json) =>
@@ -1135,8 +1137,13 @@ class WBDocContents {
   /// 上传文档的ID。
   String docId;
 
+  /// WBDocType enum type. Default: Normal
+  /// WBDocType枚举类型。默认值：Normal
+  WBDocType type;
+
   /// Constructs a [WBDocContents]
-  WBDocContents(this.name, this.urls, this.thumbUrls, {this.docId = ''});
+  WBDocContents(this.name, this.urls, this.thumbUrls,
+      {this.docId = '', this.type = WBDocType.Normal});
 
   /// @nodoc
   factory WBDocContents.fromJson(Map<String, dynamic> json) =>
@@ -1181,6 +1188,49 @@ class WBDocExtHtml {
 
   /// @nodoc
   Map<String, dynamic> toJson() => _$WBDocExtHtmlToJson(this);
+}
+
+/// Whiteboard doc external background contents.
+///
+/// **Note**
+/// Whiteboard would be transparent and sync draws only for external contents.
+/// Application should sync external background contents by itself.
+///
+/// 白板文件外部内容。
+///
+/// **Note**
+/// 对外部背景内容，白板是透明的且仅同步绘制内容。应用层需要自行同步外部背景内容。
+@JsonSerializable(explicitToJson: true)
+class WBDocExtContents {
+  /// Whiteboard file name.
+  ///
+  /// 白板文件名称。
+  String? name;
+
+  /// total page number.
+  ///
+  /// 总页数。
+  int totalPages;
+
+  /// Whiteboard file width.
+  ///
+  /// 白板文件宽度。
+  int width;
+
+  /// Whiteboard file height.
+  ///
+  /// 白板文件高度。
+  int height;
+
+  /// Constructs a [WBDocExtContents]
+  WBDocExtContents(this.totalPages, this.width, this.height, {this.name = ''});
+
+  /// @nodoc
+  factory WBDocExtContents.fromJson(Map<String, dynamic> json) =>
+      _$WBDocExtContentsFromJson(json);
+
+  /// @nodoc
+  Map<String, dynamic> toJson() => _$WBDocExtContentsToJson(this);
 }
 
 /// The configurations class of whiteboard doc convert.
@@ -1601,4 +1651,52 @@ class RtcNetworkQuality {
 
   /// @nodoc
   Map<String, dynamic> toJson() => _$RtcNetworkQualityToJson(this);
+}
+
+/// The parameters when joining a group.
+///
+/// 分组配置参数，用于加入分组。
+@JsonSerializable(explicitToJson: true)
+class GroupConfig {
+
+  /// Extra data defined by APP, it will be sent to all users in group, max length is 128 bytes.
+  ///
+  /// 用户定义的附加数据，此数据会广播给所有分组用户。最大长度 128 字节。
+  String? userData;
+
+  /// Constructs a [GroupConfig]
+  GroupConfig(this.userData);
+
+  /// @nodoc
+  factory GroupConfig.fromJson(Map<String, dynamic> json) =>
+      _$GroupConfigFromJson(json);
+
+  /// @nodoc
+  Map<String, dynamic> toJson() => _$GroupConfigToJson(this);
+}
+
+/// The information of the group member.
+///
+/// 分组成员信息。
+@JsonSerializable(explicitToJson: true)
+class UserInfo {
+  /// The user ID.
+  ///
+  /// 用户ID。
+  String userId;
+
+  /// Extra data defined by APP, it will be sent to all users in group, max length is 128 bytes.
+  ///
+  /// 用户定义的附加数据，此数据会广播给所有分组用户。最大长度 128 字节。
+  String userData;
+
+  /// Constructs a [UserInfo]
+  UserInfo(this.userId, this.userData);
+
+  /// @nodoc
+  factory UserInfo.fromJson(Map<String, dynamic> json) =>
+      _$UserInfoFromJson(json);
+
+  /// @nodoc
+  Map<String, dynamic> toJson() => _$UserInfoToJson(this);
 }

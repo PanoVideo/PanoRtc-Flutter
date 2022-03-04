@@ -1,5 +1,12 @@
 # Change log
 
+## 1.0.6
+
+* Support Pano SDK to 1.7.1.1
+* Support RtcGroupManager api
+* Support Phone Call api
+* Add Whiteboard & Annotation api
+
 ## 1.0.5
 
 * Migrate example to null safety

@@ -1,6 +1,7 @@
 package video.pano.rtc.native.utils
 
 import com.pano.rtc.api.Constants
+import com.pano.rtc.api.PanoAnnotation
 import java.lang.IllegalArgumentException
 
 class EnumValueConvert {
@@ -84,8 +85,41 @@ class EnumValueConvert {
                 11 -> {
                     return Constants.PanoOptionType.VideoQuadTransform
                 }
+                12 -> {
+                    return Constants.PanoOptionType.AudioPreProcessMode
+                }
+                13 -> {
+                    return Constants.PanoOptionType.AudioNoiseSuppressionLevel
+                }
+                14 -> {
+                    return Constants.PanoOptionType.AudioAutoGainControl
+                }
+                15 -> {
+                    return Constants.PanoOptionType.EnableVideoQualityAdaption
+                }
+                16 -> {
+                    return Constants.PanoOptionType.AudioVoiceChangerMode
+                }
                 17 -> {
                     return Constants.PanoOptionType.ScreenOptimization
+                }
+                18 -> {
+                    return Constants.PanoOptionType.VideoBrightnessAdjuster
+                }
+                19 -> {
+                    return Constants.PanoOptionType.VideoCaptureStateCheckInterval
+                }
+                22 -> {
+                    return Constants.PanoOptionType.AudioBwe
+                }
+                23 -> {
+                    return Constants.PanoOptionType.AudioStartWithPlayback
+                }
+                24 -> {
+                    return Constants.PanoOptionType.AudioAecSuppressionLevel
+                }
+                25 -> {
+                    return Constants.PanoOptionType.DisableAV1Encoding
                 }
             }
             throw IllegalArgumentException("Unsupported OptionType($type)")
@@ -113,18 +147,6 @@ class EnumValueConvert {
                 }
             }
             return Constants.PanoAudioChannel.Mono
-        }
-
-        fun getAudioProfileQuality(type: Int): Constants.PanoAudioProfileQuality {
-            when (type) {
-                0 -> {
-                    return Constants.PanoAudioProfileQuality.Default
-                }
-                1 -> {
-                    return Constants.PanoAudioProfileQuality.High
-                }
-            }
-            return Constants.PanoAudioProfileQuality.Default
         }
 
         fun getAudioEqualizationMode(type: Int): Constants.AudioEqualizationMode {
@@ -278,6 +300,9 @@ class EnumValueConvert {
                 3 -> {
                     return Constants.WBImageScalingMode.FillHeight
                 }
+                4 -> {
+                    return Constants.WBImageScalingMode.FitCenter
+                }
             }
             return Constants.WBImageScalingMode.Fit
         }
@@ -309,13 +334,19 @@ class EnumValueConvert {
                     return Constants.WBToolType.Text
                 }
                 8 -> {
-                    return Constants.WBToolType.Eraser
+                    return Constants.WBToolType.Delete
                 }
                 9 -> {
                     return Constants.WBToolType.Brush
                 }
                 10 -> {
                     return Constants.WBToolType.Arrow
+                }
+                15 -> {
+                    return Constants.WBToolType.Laser
+                }
+                16 -> {
+                    return Constants.WBToolType.Stamp
                 }
             }
             return Constants.WBToolType.None
@@ -389,8 +420,23 @@ class EnumValueConvert {
                 3 -> {
                     return Constants.WBDocConvertType.H5
                 }
+                4 -> {
+                    return Constants.WBDocConvertType.PDF
+                }
             }
             return Constants.WBDocConvertType.JPG
+        }
+
+        fun getAnnoScalingMode(type: Int): PanoAnnotation.AnnoScalingMode {
+            when (type) {
+                0 -> {
+                    return PanoAnnotation.AnnoScalingMode.Fit
+                }
+                2 -> {
+                    return PanoAnnotation.AnnoScalingMode.CropFill
+                }
+            }
+            return PanoAnnotation.AnnoScalingMode.Fit
         }
     }
 }

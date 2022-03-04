@@ -2,7 +2,7 @@
 //  RtcAnnotationManager.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +12,8 @@ protocol RtcAnnotationManagerInterface {
     func getVideoAnnotation(_ params: NSDictionary, _ callback: Callback)
     
     func getShareAnnotation(_ params: NSDictionary, _ callback: Callback)
+    
+    func getExternalAnnotation(_ params: NSDictionary, _ callback: Callback)
 }
 
 protocol RtcAnnotationManagerDelegate: AnyObject {
@@ -58,6 +60,19 @@ class RtcAnnotationManager: NSObject, RtcAnnotationManagerInterface {
         let userId = UInt64(params["userId"] as! String) ?? 0
         if let annotation = manager?.shareAnnotation(userId) {
             let annotationId = "\(userId)"
+            delegate?.createAnnotationIfNeeded(annotationId, annotation)
+            callback.resolve(manager) { _ in
+                annotationId
+            }
+        } else {
+            callback.success(nil)
+        }
+    }
+    
+    @objc func getExternalAnnotation(_ params: NSDictionary, _ callback: Callback) {
+        let inputId = params["annotationId"] as! String
+        if let annotation = manager?.externalAnnotation(inputId) {
+            let annotationId = "\(inputId)"
             delegate?.createAnnotationIfNeeded(annotationId, annotation)
             callback.resolve(manager) { _ in
                 annotationId

@@ -197,6 +197,10 @@ class RtcEngineEvent(
         callback("onUserAudioLevel", map)
     }
 
+    override fun onEchoDelayChanged(newDelay: Int) {
+        callback("onUserAudioLevel", newDelay)
+    }
+
     override fun onAudioMixingStateChanged(taskId: Long, state: Constants.AudioMixingState?) {
         callback("onAudioMixingStateChanged", taskId, state?.value)
     }

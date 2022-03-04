@@ -1,5 +1,5 @@
 import 'UserInfo.dart';
-import 'package:pano_rtc/pano_rtc.dart';
+import 'package:pano_rtc/pano_rtc.dart' hide UserInfo;
 
 class UserManager {
   static final UserManager _singleton = UserManager._internal();

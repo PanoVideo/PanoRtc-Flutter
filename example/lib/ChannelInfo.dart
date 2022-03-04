@@ -4,7 +4,6 @@ import 'package:pano_rtc/pano_rtc.dart';
 
 class ChannelInfo {
   static String appId = YOUR APPID;
-  static String server = 'api.pano.video';
   static String token = YOUR TOKEN;
   static String channelId = '';
   static ChannelMode channelMode = ChannelMode.Meeting;

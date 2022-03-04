@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,7 @@ class RtcEngineKit with RtcEngineKitInterface {
   RtcAnnotationManager? _annotationManager;
   RtcNetworkManager? _networkManager;
   RtcMessageService? _messageService;
+  RtcGroupManager? _groupManager;
 
   RtcEngineKit._() {
     _eventChannel.receiveBroadcastStream().listen((event) {
@@ -147,8 +149,8 @@ class RtcEngineKit with RtcEngineKitInterface {
 
   @override
   Future<ResultCode> startVideo(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config}) {
-    config ??= RtcRenderConfig();
+      {RtcVideoConfig? config}) {
+    config ??= RtcVideoConfig();
     return viewModel
         .invokeCodeMethod('startVideo', {'config': config.toJson()});
   }
@@ -171,8 +173,8 @@ class RtcEngineKit with RtcEngineKitInterface {
   @override
   Future<ResultCode> subscribeVideo(
       String userId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config}) {
-    config ??= RtcRenderConfig();
+      {RtcVideoConfig? config}) {
+    config ??= RtcVideoConfig();
     return viewModel.invokeCodeMethod(
         'subscribeVideo', {'userId': userId, 'config': config.toJson()});
   }
@@ -206,6 +208,17 @@ class RtcEngineKit with RtcEngineKitInterface {
   @override
   Future<ResultCode> unsubscribeScreen(String userId) {
     return _invokeCodeMethod('unsubscribeScreen', {'userId': userId});
+  }
+
+  @override
+  Future<ResultCode> callout(String phoneNo, bool bindToUser) {
+    return _invokeCodeMethod(
+        'callout', {'phoneNo': phoneNo, 'bindToUser': bindToUser});
+  }
+
+  @override
+  Future<ResultCode> dropCall(String phoneNo) {
+    return _invokeCodeMethod('dropCall', {'phoneNo': phoneNo});
   }
 
   @override
@@ -253,6 +266,28 @@ class RtcEngineKit with RtcEngineKitInterface {
   @override
   Future<ResultCode> unmuteVideo() {
     return _invokeCodeMethod('unmuteVideo');
+  }
+
+  @override
+  Future<ResultCode> muteScreen() {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _invokeCodeMethod('muteScreen');
+    }
+    return Future.value(ResultCode.NotSupported);
+  }
+
+  @override
+  Future<ResultCode> unmuteScreen() {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _invokeCodeMethod('unmuteScreen');
+    }
+    return Future.value(ResultCode.NotSupported);
+  }
+
+  @override
+  Future<ResultCode> setAudioIndication(bool enable, int intervalMs) {
+    return _invokeCodeMethod(
+        'setAudioIndication', {'enable': enable, 'intervalMs': intervalMs});
   }
 
   @override
@@ -310,8 +345,8 @@ class RtcEngineKit with RtcEngineKitInterface {
 
   @override
   Future<ResultCode> startPreview(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config}) {
-    config ??= RtcRenderConfig();
+      {RtcVideoConfig? config}) {
+    config ??= RtcVideoConfig();
     return viewModel
         .invokeCodeMethod('startPreview', {'config': config.toJson()});
   }
@@ -319,6 +354,15 @@ class RtcEngineKit with RtcEngineKitInterface {
   @override
   Future<ResultCode> stopPreview() {
     return _invokeCodeMethod('stopPreview');
+  }
+
+  @override
+  Future<bool> isMultiCameraCaptureSupported() {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _invokeMethod('isMultiCameraCaptureSupported')
+          .then((value) => value);
+    }
+    return Future.value(false);
   }
 
   @override
@@ -418,6 +462,13 @@ class RtcEngineKit with RtcEngineKitInterface {
   @override
   Future<ResultCode> sendFeedback(FeedbackInfo info) {
     return _invokeCodeMethod('sendFeedback', {'info': info.toJson()});
+  }
+
+  @override
+  Future<DeviceRating> queryDeviceRating() {
+    return _invokeMethod('queryDeviceRating').then((value) {
+      return DeviceRatingConverter.fromValue(value).e;
+    });
   }
 
   @override
@@ -528,6 +579,11 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
+  Future<ResultCode> sendAudioControlMessage(Uint8List data) {
+    return _invokeCodeMethod('sendAudioControlMessage', {'data': data});
+  }
+
+  @override
   Future<RtcVideoStreamManager?> videoStreamManager() async {
     if (_videoStreamManager != null) return _videoStreamManager;
     await _invokeMethod('videoStreamManager');
@@ -557,6 +613,14 @@ class RtcEngineKit with RtcEngineKitInterface {
     await _invokeMethod('messageService');
     _messageService = RtcMessageService();
     return _messageService;
+  }
+
+  @override
+  Future<RtcGroupManager?> groupManager() async {
+    if (_groupManager != null) return _groupManager;
+    await _invokeMethod('groupManager');
+    _groupManager = RtcGroupManager();
+    return _groupManager;
   }
 }
 
@@ -696,7 +760,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] object.
   ///
-  /// **Parameter** [config] [RtcRenderConfig] object.
+  /// **Parameter** [config] [RtcVideoConfig] object.
   ///
   /// **Returns**
   /// - [ResultCode.OK] Success
@@ -710,7 +774,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] 对象。
   ///
-  /// **Parameter** [config] [RtcRenderConfig] 对象。
+  /// **Parameter** [config] [RtcVideoConfig] 对象。
   ///
   /// **Returns**
   /// - [ResultCode.OK] 成功
@@ -720,7 +784,7 @@ mixin RtcEngineKitInterface
   /// 开启视频前请先加入一个频道，否则将返回失败。
   /// 必须从主线程调用。
   Future<ResultCode> startVideo(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config});
+      {RtcVideoConfig? config});
 
   /// Stop video.
   ///
@@ -787,7 +851,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] object.
   ///
-  /// **Parameter** [config] [RtcRenderConfig] object.
+  /// **Parameter** [config] [RtcVideoConfig] object.
   ///
   /// **Returns**
   /// - [ResultCode.OK] Success
@@ -803,7 +867,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] 对象。
   ///
-  /// **Parameter** [config] [RtcRenderConfig] 对象。
+  /// **Parameter** [config] [RtcVideoConfig] 对象。
   ///
   /// **Returns**
   /// - [ResultCode.OK] 成功
@@ -814,7 +878,7 @@ mixin RtcEngineKitInterface
   /// 必须从主线程调用。
   Future<ResultCode> subscribeVideo(
       String userId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config});
+      {RtcVideoConfig? config});
 
   /// Unsubscribe to a user's video.
   ///
@@ -849,6 +913,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// iOS: This interface supports iPhone and iPad with iOS 11.0 and above
+  /// Android: This interface supports Android 5.0 and above
   ///
   /// 开始屏幕采集。
   ///
@@ -860,6 +925,7 @@ mixin RtcEngineKitInterface
   ///
   /// **Note**
   /// iOS: 该接口支持 iOS 11.0 及以上的 iPhone 和 iPad
+  /// Android: 该接口支持 Android 5.0 及以上
   Future<ResultCode> startScreen({String? appGroupId});
 
   /// Stop screen capture.
@@ -925,6 +991,44 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 当用户停止屏幕共享或者离开频道的时候，用户的屏幕共享将会被自动取消订阅。
   Future<ResultCode> unsubscribeScreen(String userId);
+
+  /// Call-out a phone number.
+  ///
+  /// **Parameter** [phoneNo]  The phone number.
+  ///
+  /// **Parameter** [bindToUser]  Bind the call to user.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 拨打电话号码。
+  ///
+  /// **Parameter** [phoneNo]  电话号码。
+  ///
+  /// **Parameter** [bindToUser]  是否绑定到用户。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  Future<ResultCode> callout(String phoneNo, bool bindToUser);
+
+  /// dropCall the call-out or call-in.
+  ///
+  /// **Parameter** [phoneNo]  The phone number. null or empty to drop calls bound to self.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 挂断拨出或拨入的电话。
+  ///
+  /// **Parameter** [phoneNo]  电话号码。空值为挂断绑定到自己的电话。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  Future<ResultCode> dropCall(String phoneNo);
 
   /// Update screen absolute scaling ratio.
   ///
@@ -1076,6 +1180,65 @@ mixin RtcEngineKitInterface
   /// **Note**
   /// 恢复视频前请先开启视频，否则操作将无效。
   Future<ResultCode> unmuteVideo();
+
+  /// Pause screen sharing.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// **Note**
+  /// Please start the screen sharing before pausing, otherwise it will not work. Support on iOS only.
+  ///
+  /// 暂停屏幕共享。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  ///
+  /// **Note**
+  /// 暂停屏幕共享前请先开启屏幕共享，否则操作将无效。仅支持iOS。
+  Future<ResultCode> muteScreen();
+
+  /// Resume screen sharing.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// **Note**
+  /// Please start the screen sharing before resuming, otherwise it will not work. Support on iOS only.
+  ///
+  /// 恢复屏幕共享。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  ///
+  /// *Note**
+  /// 恢复屏幕共享前请先开启屏幕共享，否则操作将无效。仅支持iOS。
+  Future<ResultCode> unmuteScreen();
+
+  /// Set User Audio indication.
+  ///
+  /// **Parameter** [enable] indication enable (default is true).
+  ///
+  /// **Parameter** [intervalMs] indication callback interval in ms(minimum is 10ms).
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 设置用户指示器。
+  ///
+  /// **Parameter** [enable] 提示汇报器开启标志位(默认开启回调)。
+  ///
+  /// **Parameter** [intervalMs] 回调时间间隔，单位毫秒，不能低于10ms。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  Future<ResultCode> setAudioIndication(bool enable, int intervalMs);
 }
 
 /// @nodoc
@@ -1226,7 +1389,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] object.
   ///
-  /// **Parameter** [config] [RtcRenderConfig] object.
+  /// **Parameter** [config] [RtcVideoConfig] object.
   ///
   /// **Returns**
   /// - [ResultCode.OK] Success
@@ -1239,7 +1402,7 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Parameter** [viewModel] [RtcSurfaceViewModel] 对象。
   ///
-  /// **Parameter** [config] [RtcRenderConfig] 对象。
+  /// **Parameter** [config] [RtcVideoConfig] 对象。
   ///
   /// **Returns**
   /// - [ResultCode.OK] 成功
@@ -1248,7 +1411,7 @@ mixin RtcDeviceManagerInterface {
   /// **Note**
   /// 必须从主线程调用。
   Future<ResultCode> startPreview(RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config});
+      {RtcVideoConfig? config});
 
   /// Stop current camera preview.
   ///
@@ -1262,6 +1425,24 @@ mixin RtcDeviceManagerInterface {
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
   Future<ResultCode> stopPreview();
+
+  /// Indicate whether this device supports multi-camera capture. (iOS only)
+  ///
+  /// **Returns**
+  /// A Boolean value that indicates whether it is supported.
+  ///
+  /// **Note**
+  /// It is supported on iPhone XR, iPhone XS, iPhone XS Max, iPad Pro (3rd generation) or later.
+  /// The iOS version need 13 or later.
+  ///
+  /// 指示此设备是否支持多摄像头采集。（仅限iOS）
+  ///
+  /// **Returns**
+  /// 一个布尔值，指示是否支持。
+  /// **Note**
+  /// iPhone XR，iPhone XS，iPhone XS Max，iPad Pro（第三代）或更高版本支持该功能。
+  /// iOS版本需要13或更高版本。
+  Future<bool> isMultiCameraCaptureSupported();
 }
 
 /// @nodoc
@@ -1592,6 +1773,21 @@ mixin RtcTroubleshootInterface {
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
   Future<ResultCode> sendFeedback(FeedbackInfo info);
+
+  /// Query the rating value of current device.
+  ///
+  /// **Returns** Device rating
+  ///
+  /// **Note**
+  /// Device rating is available only after channel is joined.
+  ///
+  /// 查询当前设备的评分值。
+  ///
+  /// **Returns** 设备评分
+  ///
+  /// **Note**
+  /// 设备评分只在频道加入成功后才有效。
+  Future<DeviceRating> queryDeviceRating();
 }
 
 /// @nodoc
@@ -1636,6 +1832,30 @@ mixin RtcCustomizedInterface {
   /// - [ResultCode.OK] 成功
   /// - 其他: 失败
   Future<ResultCode> setParameters(String param);
+
+  /// Send audio control message in audio RTC channel.
+  ///
+  /// **Parameter** [data]  audio control message data.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// **Note**
+  /// The message data max length is 1024 byte
+  /// and max frequency of this api is 5 times per second.
+  ///
+  /// 发送音频控制消息。
+  ///
+  /// **Parameter** [data]  音频控制消息数据。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  ///
+  /// **Note**
+  /// 这个消息的数据最大长度为1024个字节，且最多每秒发送5次消息。
+  Future<ResultCode> sendAudioControlMessage(Uint8List data);
 }
 
 /// @nodoc
@@ -1683,4 +1903,15 @@ mixin RtcManagersInterface {
   /// **Returns**
   /// [RtcMessageService] 对象。
   Future<RtcMessageService?> messageService();
+
+  /// Get the group manager interface.
+  ///
+  /// **Returns**
+  /// [RtcGroupManager] object.
+  ///
+  /// 获取分组管理器的接口对象。
+  ///
+  /// **Returns**
+  /// [RtcGroupManager] 对象。
+  Future<RtcGroupManager?> groupManager();
 }

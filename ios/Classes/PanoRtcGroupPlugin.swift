@@ -1,5 +1,5 @@
 //
-//  PanoRtcAnnotationManagerPlugin.swift
+//  PanoRtcGroupPlugin.swift
 //  pano_rtc
 //
 //  Copyright © 2022 Pano. All rights reserved.
@@ -9,13 +9,13 @@ import Foundation
 import Flutter
 import PanoRtc
 
-class PanoRtcAnnotationManagerPlugin: NSObject {
+class PanoRtcGroupPlugin: NSObject {
     private final weak var rtcEnginePlugin: SwiftPanoRtcPlugin?
     private var methodChannel: FlutterMethodChannel?
     private var eventChannel: FlutterEventChannel?
     private var eventSink: FlutterEventSink?
-    private(set) lazy var manager: RtcAnnotationManager = {
-        let `manager` = RtcAnnotationManager()
+    private(set) lazy var manager: RtcGroupManager = {
+        let manager = RtcGroupManager()
         manager.delegate = self
         return manager
     }()
@@ -25,14 +25,14 @@ class PanoRtcAnnotationManagerPlugin: NSObject {
     }
     
     func initPlugin(with registrar: FlutterPluginRegistrar) {
-        methodChannel = FlutterMethodChannel(name: "pano_rtc/api_annotationMgr", binaryMessenger: registrar.messenger())
-        eventChannel = FlutterEventChannel(name: "pano_rtc/events_annotationMgr", binaryMessenger: registrar.messenger())
+        methodChannel = FlutterMethodChannel(name: "pano_rtc/api_group", binaryMessenger: registrar.messenger())
+        eventChannel = FlutterEventChannel(name: "pano_rtc/events_group", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(self, channel: methodChannel!)
         eventChannel?.setStreamHandler(self)
     }
 }
 
-extension PanoRtcAnnotationManagerPlugin: FlutterPlugin {
+extension PanoRtcGroupPlugin: FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         
     }
@@ -61,7 +61,7 @@ extension PanoRtcAnnotationManagerPlugin: FlutterPlugin {
     }
 }
 
-extension PanoRtcAnnotationManagerPlugin: FlutterStreamHandler {
+extension PanoRtcGroupPlugin: FlutterStreamHandler {
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         eventSink = events
         return nil
@@ -73,14 +73,7 @@ extension PanoRtcAnnotationManagerPlugin: FlutterStreamHandler {
     }
 }
 
-extension PanoRtcAnnotationManagerPlugin: RtcAnnotationManagerDelegate {
-    func createAnnotationIfNeeded(_ annotationId: String, _ annotation: PanoRtcAnnotation) {
-        let annotationCache = rtcEnginePlugin?.rtcAnnotationPlugin.manager
-        if annotationCache?[annotationId] == nil {
-            annotationCache?.create(annotationId, annotation)
-        }
-    }
-    
+extension PanoRtcGroupPlugin: RtcGroupManagerDelegate {
     func emit(_ methodName: String, _ data: Dictionary<String, Any?>?) {
         var event: Dictionary<String, Any?> = ["methodName": methodName]
         if let `data` = data {

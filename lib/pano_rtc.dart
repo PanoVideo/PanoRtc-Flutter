@@ -9,3 +9,4 @@ export 'src/rtc_videoStreamManager.dart';
 export 'src/rtc_view.dart';
 export 'src/rtc_whiteboard.dart';
 export 'src/rtc_messageService.dart';
+export 'src/rtc_groupManager.dart';

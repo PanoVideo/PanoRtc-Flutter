@@ -2,7 +2,7 @@
 //  RtcVideoStreamManager.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -77,8 +77,8 @@ class RtcVideoStreamManager: NSObject, RtcVideoStreamManagerInterface {
     @objc func startVideoWithStreamId(_ params: NSDictionary, _ callback: Callback) {
         callback.code(
             manager?.startVideo(params["streamId"] as! Int32,
-                                view: params["view"] as! UIView,
-                                config: PanoRtcRenderConfig(map: params["config"] as! Dictionary)))
+                                view: params["view"] as? UIView,
+                                config: PanoRtcVideoConfig(map: params["config"] as! Dictionary)))
     }
     
     @objc func stopVideo(_ params: NSDictionary, _ callback: Callback) {
@@ -97,8 +97,8 @@ class RtcVideoStreamManager: NSObject, RtcVideoStreamManagerInterface {
         callback.code(
             manager?.subscribeVideo(UInt64(params["userId"] as! String) ?? 0,
                                     stream: params["streamId"] as! Int32,
-                                    view: params["view"] as! UIView,
-                                    config: PanoRtcRenderConfig(map: params["config"] as! Dictionary)))
+                                    view: params["view"] as? UIView,
+                                    config: PanoRtcVideoConfig(map: params["config"] as! Dictionary)))
     }
     
     @objc func unsubscribeVideo(_ params: NSDictionary, _ callback: Callback) {

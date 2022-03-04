@@ -26,6 +26,9 @@ public class SwiftPanoRtcPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private(set) lazy var rtcMessagePlugin: PanoRtcMessagePlugin = {
         return PanoRtcMessagePlugin(self)
     }()
+    private(set) lazy var rtcGroupPlugin: PanoRtcGroupPlugin = {
+        return PanoRtcGroupPlugin(self)
+    }()
     private(set) lazy var rtcNetworkManagerPlugin: PanoRtcNetworkManagerPlugin = {
         return PanoRtcNetworkManagerPlugin(self)
     }()
@@ -37,6 +40,7 @@ public class SwiftPanoRtcPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         rtcEnginePlugin.rtcAnnotationManagerPlugin.initPlugin(with: registrar)
         rtcEnginePlugin.rtcAnnotationPlugin.initPlugin(with: registrar)
         rtcEnginePlugin.rtcMessagePlugin.initPlugin(with: registrar)
+        rtcEnginePlugin.rtcGroupPlugin.initPlugin(with: registrar)
         rtcEnginePlugin.rtcNetworkManagerPlugin.initPlugin(with: registrar)
         rtcEnginePlugin.initPlugin(registrar)
     }
@@ -60,6 +64,7 @@ public class SwiftPanoRtcPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         rtcAnnotationManagerPlugin.detachFromEngine(for: registrar)
         rtcAnnotationPlugin.detachFromEngine(for: registrar)
         rtcMessagePlugin.detachFromEngine(for: registrar)
+        rtcGroupPlugin.detachFromEngine(for: registrar)
         rtcNetworkManagerPlugin.detachFromEngine(for: registrar)
         
         methodChannel?.setMethodCallHandler(nil)
@@ -131,6 +136,12 @@ extension SwiftPanoRtcPlugin: RtcEngineManagerDelegate {
         return messageService
     }
     
+    func createGroupManager(panoObj: PanoRtcGroupManager?) -> RtcGroupManager? {
+        let groupManager = rtcGroupPlugin.manager
+        groupManager.setup(manager: panoObj)
+        return groupManager
+    }
+    
     func createNetworkManager(panoObj: PanoRtcEngineKit?) -> RtcNetworkManager? {
         let networkManager = rtcNetworkManagerPlugin.manager
         networkManager.setup(engine: panoObj)
@@ -143,6 +154,7 @@ extension SwiftPanoRtcPlugin: RtcEngineManagerDelegate {
         rtcAnnotationManagerPlugin.manager.cleanup()
         rtcAnnotationPlugin.manager.cleanup()
         rtcMessagePlugin.service.cleanup()
+        rtcGroupPlugin.manager.cleanup()
         rtcNetworkManagerPlugin.manager.cleanup()
     }
 }

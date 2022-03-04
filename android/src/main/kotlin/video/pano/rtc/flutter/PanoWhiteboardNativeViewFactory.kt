@@ -66,7 +66,7 @@ class PanoWhiteboardNativeView(context: Context, viewId: Int) : PlatformView,
     fun open(params: Map<String, *>, callback: Callback) {
         val whiteboardId = params["whiteboardId"] as String
         val whiteboardEngine = PanoRtcPlugin.engineManager().getRtcWhiteboardEngine(whiteboardId)
-        view.open(whiteboardEngine, mapOf("view" to view.attachRtcWbView), callback)
+        view.open(whiteboardEngine, mapOf("view" to view), callback)
     }
 
     fun startAnnotation(params: Map<String, *>, callback: Callback) {

@@ -2,7 +2,7 @@
 //  PanoRtcWhiteboardPlugin.swift
 //  pano_rtc
 //
-//  Created by mark on 2020/12/24.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation

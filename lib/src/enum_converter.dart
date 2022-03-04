@@ -322,6 +322,18 @@ class WBImageStateConverter extends EnumConverter<WBImageState, int> {
 }
 
 @JsonSerializable()
+class WBHtmlStateConverter extends EnumConverter<WBHtmlState, int> {
+  WBHtmlStateConverter(WBHtmlState e) : super(e);
+
+  WBHtmlStateConverter.fromValue(int value)
+      : super.fromValue(_$WBHtmlStateEnumMap, value);
+
+  int value() {
+    return super.toValue(_$WBHtmlStateEnumMap);
+  }
+}
+
+@JsonSerializable()
 class WBConvertTypeConverter extends EnumConverter<WBConvertType, int> {
   WBConvertTypeConverter(WBConvertType e) : super(e);
 
@@ -378,6 +390,18 @@ class WBOptionTypeConverter extends EnumConverter<WBOptionType, int> {
 
   int value() {
     return super.toValue(_$WBOptionTypeEnumMap);
+  }
+}
+
+@JsonSerializable()
+class AnnoOptionTypeConverter extends EnumConverter<AnnoOptionType, int> {
+  AnnoOptionTypeConverter(AnnoOptionType e) : super(e);
+
+  AnnoOptionTypeConverter.fromValue(int value)
+      : super.fromValue(_$AnnoOptionTypeEnumMap, value);
+
+  int value() {
+    return super.toValue(_$AnnoOptionTypeEnumMap);
   }
 }
 
@@ -528,15 +552,14 @@ class AudioChannelConverter extends EnumConverter<AudioChannel, int> {
 }
 
 @JsonSerializable()
-class AudioProfileQualityConverter
-    extends EnumConverter<AudioProfileQuality, int> {
-  AudioProfileQualityConverter(AudioProfileQuality e) : super(e);
+class AudioCallTypeConverter extends EnumConverter<AudioCallType, int> {
+  AudioCallTypeConverter(AudioCallType e) : super(e);
 
-  AudioProfileQualityConverter.fromValue(int value)
-      : super.fromValue(_$AudioProfileQualityEnumMap, value);
+  AudioCallTypeConverter.fromValue(int value)
+      : super.fromValue(_$AudioCallTypeEnumMap, value);
 
   int value() {
-    return super.toValue(_$AudioProfileQualityEnumMap);
+    return super.toValue(_$AudioCallTypeEnumMap);
   }
 }
 
@@ -549,6 +572,18 @@ class QualityRatingConverter extends EnumConverter<QualityRating, int> {
 
   int value() {
     return super.toValue(_$QualityRatingEnumMap);
+  }
+}
+
+@JsonSerializable()
+class DeviceRatingConverter extends EnumConverter<DeviceRating, int> {
+  DeviceRatingConverter(DeviceRating e) : super(e);
+
+  DeviceRatingConverter.fromValue(int value)
+      : super.fromValue(_$DeviceRatingEnumMap, value);
+
+  int value() {
+    return super.toValue(_$DeviceRatingEnumMap);
   }
 }
 

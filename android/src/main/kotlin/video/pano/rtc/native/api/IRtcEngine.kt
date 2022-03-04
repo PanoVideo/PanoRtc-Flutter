@@ -8,8 +8,6 @@ interface IRtcEngine {
 
     fun destroy(callback: Callback)
     
-    fun setParameters(params: Map<String, *>, callback: Callback)
-
     fun joinChannel(params: Map<String, *>, callback: Callback)
 
     fun leaveChannel(callback: Callback)
@@ -81,6 +79,8 @@ interface IRtcEngine {
     fun videoStreamManager(callback: Callback)
 
     fun messageService(callback: Callback)
+    
+    fun groupManager(callback: Callback)
 
     fun setOption(params: Map<String, *>, callback: Callback)
 
@@ -91,6 +91,12 @@ interface IRtcEngine {
     fun stopAudioDump(callback: Callback)
 
     fun sendFeedback(params: Map<String, *>, callback: Callback)
+
+    fun setParameters(params: Map<String, *>, callback: Callback)
+    
+    fun callout(params: Map<String, *>, callback: Callback)
+
+    fun dropCall(params: Map<String, *>, callback: Callback)
 
     fun getSdkVersion(callback: Callback)
 }

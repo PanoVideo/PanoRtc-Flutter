@@ -31,7 +31,7 @@ class RtcWhiteboardEngine(
     }
 
     override fun open(params: Map<String, *>, callback: Callback) {
-        val view = params["view"] as RtcWbView
+        val view = params["view"] as PanoCoursePageView
         callback.success(whiteboard?.open(view))
     }
 
@@ -255,6 +255,16 @@ class RtcWhiteboardEngine(
         }))
     }
 
+    override fun addDocWithExternal(params: Map<String, *>, callback: Callback) {
+        val contents = params["contents"] as Map<*, *>
+        callback.success(whiteboard?.addDoc(WBDocExtContents().apply {
+            this.name = contents["name"] as String
+            this.totalPages = (contents["totalPages"] as Number).toInt()
+            this.width = (contents["width"] as Number).toInt()
+            this.height = (contents["height"] as Number).toInt()
+        }))
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun createDocWithImages(params: Map<String, *>, callback: Callback) {
         val urls = params["urls"] as List<String>
@@ -308,7 +318,7 @@ class RtcWhiteboardEngine(
                 "creator" to info?.creator.toString()))
     }
 
-    override fun sendMessageToExternalHtml(params: Map<String, *>, callback: Callback) {
+    override fun sendToExternalHtml(params: Map<String, *>, callback: Callback) {
         val fileId = params["fileId"] as String
         val msg = params["msg"] as String
         callback.success(whiteboard?.sendMessageToExternalHtml(fileId, msg))
@@ -325,6 +335,12 @@ class RtcWhiteboardEngine(
         val curPage = params["curPage"] as Boolean
         val type = (params["type"] as Number).toInt()
         callback.success(whiteboard?.clearUserContents(userId, curPage, getWBClearType(type)))
+    }
+
+    override fun clearDocContents(params: Map<String, *>, callback: Callback) {
+        val fileId = params["fileId"] as String
+        val type = (params["type"] as Number).toInt()
+        callback.success(whiteboard?.clearDocContents(fileId, getWBClearType(type)))
     }
 
     override fun snapshot(params: Map<String, *>, callback: Callback) {
@@ -398,6 +414,14 @@ class RtcWhiteboardEngine(
             5 -> { //AutoSelected
                 val enable = params["option"] as Boolean
                 callback.success(whiteboard?.enableAutoSelected(enable))
+            }
+            6 -> { //CursorPosSync
+                val enable = params["option"] as Boolean
+                callback.success(whiteboard?.enableCursorPosSync(enable))
+            }
+            7 -> { //ShowRemoteCursor
+                val enable = params["option"] as Boolean
+                callback.success(whiteboard?.enableShowRemoteCursor(enable))
             }
         }
     }

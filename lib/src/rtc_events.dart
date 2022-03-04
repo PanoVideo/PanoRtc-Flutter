@@ -7,7 +7,7 @@ import 'enum_converter.dart';
 typedef EmptyCallback = void Function();
 
 /// @nodoc
-typedef ResultCallback = void Function(ResultCode? result);
+typedef ResultCallback = void Function(ResultCode result);
 
 /// @nodoc
 typedef UserIdCallback = void Function(String userId);
@@ -21,23 +21,23 @@ typedef OnUserJoinIndication = void Function(String userId, String userName);
 
 /// @nodoc
 typedef OnUserLeaveIndication = void Function(
-    String userId, UserLeaveReason? reason);
+    String userId, UserLeaveReason reason);
 
 /// @nodoc
 typedef OnUserAudioSubscribe = void Function(
-    String userId, SubscribeResult? result);
+    String userId, SubscribeResult result);
 
 /// @nodoc
 typedef OnUserVideoStart = void Function(
-    String userId, VideoProfileType? maxProfile);
+    String userId, VideoProfileType maxProfile);
 
 /// @nodoc
 typedef OnUserVideoSubscribe = void Function(
-    String userId, SubscribeResult? result);
+    String userId, SubscribeResult result);
 
 /// @nodoc
 typedef OnUserScreenSubscribe = void Function(
-    String userId, SubscribeResult? result);
+    String userId, SubscribeResult result);
 
 /// @nodoc
 typedef OnWhiteboardStartWithId = void Function(String whiteboardId);
@@ -47,31 +47,45 @@ typedef OnWhiteboardStopWithId = void Function(String whiteboardId);
 
 /// @nodoc
 typedef OnVideoCaptureStateChanged = void Function(
-    String deviceId, VideoCaptureState? state);
+    String deviceId, VideoCaptureState state);
 
 /// @nodoc
 typedef OnScreenCaptureStateChanged = void Function(
-    ScreenCaptureState? state, ResultCode? reason);
+    ScreenCaptureState state, ResultCode reason);
 
 /// @nodoc
-typedef OnChannelFailover = void Function(FailoverState? state);
+typedef OnChannelFailover = void Function(FailoverState state);
 
 /// @nodoc
 typedef OnActiveSpeakerListUpdated = void Function(List<String>? userIds);
 
 /// @nodoc
+typedef OnUserAudioControlMessageReceived = void Function(
+    String userId, Uint8List data);
+
+/// @nodoc
 typedef OnAudioMixingStateChanged = void Function(
-    int taskId, AudioMixingState? state);
+    int taskId, AudioMixingState state);
 
 /// @nodoc
 typedef OnVideoSnapshotCompleted = void Function(
     bool succeed, String userId, String fileName);
 
 /// @nodoc
-typedef OnNetworkQuality = void Function(String userId, QualityRating? quality);
+typedef OnNetworkQuality = void Function(String userId, QualityRating quality);
 
 /// @nodoc
 typedef OnUserAudioLevel = void Function(RtcAudioLevel level);
+
+/// @nodoc
+typedef OnEchoDelayChanged = void Function(int newDelay);
+
+/// @nodoc
+typedef OnUserAudioCallTypeChanged = void Function(
+    String userId, AudioCallType type);
+
+/// @nodoc
+typedef OnCalloutResult = void Function(String phoneNo, ResultCode result);
 
 /// @nodoc
 typedef RtcVideoSendStatsCallback = void Function(RtcVideoSendStats stats);
@@ -423,6 +437,19 @@ class RtcEngineEventHandler {
   /// **Parameter** [count] 用户列表大小
   OnActiveSpeakerListUpdated? onActiveSpeakerListUpdated;
 
+  /// Callback User Audio Control Message.
+  ///
+  /// **Parameter** [userId] User id
+  ///
+  /// **Parameter** [data]   User audio control message data
+  ///
+  /// 回调用户音频控制消息。
+  ///
+  /// **Parameter** [userId]  用户id
+  ///
+  /// **Parameter** [data]   用户音频控制消息数据。
+  OnUserAudioControlMessageReceived? onUserAudioControlMessageReceived;
+
   /// Notification of audio mixing state changing
   ///
   /// **Parameter** [taskId] Unique identifier of task.
@@ -514,6 +541,41 @@ class RtcEngineEventHandler {
   ///
   /// **Parameter** [level] 当前的用户强度。
   OnUserAudioLevel? onUserAudioLevel;
+
+  /// Callback new echo delay detected when using software aec.
+  ///
+  /// **Parameter** [newDelay]   New echo delay in ms.
+  ///
+  /// 回调回声新时延变更的提醒(软件aec计算出新delay的时候会回调)。
+  ///
+  /// **Parameter** [newDelay]   新的回声时延，单位是毫秒。
+  OnEchoDelayChanged? onEchoDelayChanged;
+
+  /// Notification of audio call type changed
+  ///
+  /// **Parameter** [userId] The user ID
+  ///
+  /// **Parameter** [type] The call type
+  ///
+  /// 音频接入类型变化的通知
+  ///
+  /// **Parameter** [userId] 用户ID
+  ///
+  /// **Parameter** [type] 音频接入类型
+  OnUserAudioCallTypeChanged? onUserAudioCallTypeChanged;
+
+  /// Notification of call-out result
+  ///
+  /// **Parameter** [phoneNo] The phone number
+  ///
+  /// **Parameter** [result] The result of call-out
+  ///
+  /// 电话拨出成功与否的通知
+  ///
+  /// **Parameter** [phoneNo] 电话号码
+  ///
+  /// **Parameter** [result] 电话拨打结果
+  OnCalloutResult? onCalloutResult;
 
   /// Callback statistics of sent video.
   ///
@@ -648,10 +710,14 @@ class RtcEngineEventHandler {
       this.onScreenCaptureStateChanged,
       this.onChannelFailover,
       this.onActiveSpeakerListUpdated,
+      this.onUserAudioControlMessageReceived,
       this.onAudioMixingStateChanged,
       this.onVideoSnapshotCompleted,
       this.onNetworkQuality,
       this.onUserAudioLevel,
+      this.onEchoDelayChanged,
+      this.onUserAudioCallTypeChanged,
+      this.onCalloutResult,
       this.onVideoSendStats,
       this.onVideoRecvStats,
       this.onAudioSendStats,
@@ -788,6 +854,9 @@ class RtcEngineEventHandler {
       case 'onActiveSpeakerListUpdated':
         onActiveSpeakerListUpdated?.call(data[0].cast<String>());
         break;
+      case 'onUserAudioControlMessageReceived':
+        onUserAudioControlMessageReceived?.call(data[0], data[1]);
+        break;
       case 'onAudioMixingStateChanged':
         onAudioMixingStateChanged?.call(
             data[0], AudioMixingStateConverter.fromValue(data[1]).e);
@@ -802,6 +871,17 @@ class RtcEngineEventHandler {
       case 'onUserAudioLevel':
         onUserAudioLevel
             ?.call(RtcAudioLevel.fromJson(Map<String, dynamic>.from(data[0])));
+        break;
+      case 'onEchoDelayChanged':
+        onEchoDelayChanged?.call(data[0]);
+        break;
+      case 'onUserAudioCallTypeChanged':
+        onUserAudioCallTypeChanged?.call(
+            data[0], AudioCallTypeConverter.fromValue(data[0]).e);
+        break;
+      case 'onCalloutResult':
+        onCalloutResult?.call(
+            data[0], ResultCodeConverter.fromValue(data[0]).e);
         break;
       case 'onVideoSendStats':
         onVideoSendStats?.call(
@@ -845,30 +925,34 @@ class RtcEngineEventHandler {
 
 //Whiteboard
 /// @nodoc
-typedef FileIdCallback = void Function(ResultCode? result, String fileId);
+typedef FileIdCallback = void Function(ResultCode result, String fileId);
 
 /// @nodoc
 typedef OnPageNumberChanged = void Function(int curPage, int totalPages);
 
 /// @nodoc
-typedef OnImageStateChanged = void Function(String url, WBImageState? status);
+typedef OnImageStateChanged = void Function(String url, WBImageState status);
+
+/// @nodoc
+typedef OnHtmlStateChanged = void Function(
+    String fileId, String url, WBHtmlState? state);
 
 /// @nodoc
 typedef OnViewScaleChanged = void Function(double scale);
 
 /// @nodoc
-typedef OnRoleTypeChanged = void Function(WBRoleType? newRole);
+typedef OnRoleTypeChanged = void Function(WBRoleType newRole);
 
 /// @nodoc
 typedef OnMessage = void Function(String userId, Uint8List byte);
 
 /// @nodoc
 typedef OnDocTranscodeStatus = void Function(
-    ResultCode? result, String fileId, int progress, int totalPages);
+    ResultCode result, String fileId, int progress, int totalPages);
 
 /// @nodoc
 typedef OnSaveDoc = void Function(
-    ResultCode? result, String fileId, String outputDir);
+    ResultCode result, String fileId, String outputDir);
 
 /// @nodoc
 typedef OnDocThumbnailReady = void Function(String fileId, List<String>? urls);
@@ -879,6 +963,12 @@ typedef OnExternalHtmlMessageReceived = void Function(
 
 /// @nodoc
 typedef OnUserJoined = void Function(String userId, String userName);
+
+/// @nodoc
+typedef OnUndoStatusChanged = void Function(bool canUndo);
+
+/// @nodoc
+typedef OnRedoStatusChanged = void Function(bool canRedo);
 
 /// Callback of RtcWhiteboard,  the callback must set to RtcWhiteboard to get events notification.
 ///
@@ -914,6 +1004,23 @@ class WhiteboardEventHandler {
   ///
   /// **Parameter** [state] 图片状态码。
   OnImageStateChanged? onImageStateChanged;
+
+  /// Notification of html state changed.
+  ///
+  /// **Parameter** [fileId] fileID.
+  ///
+  /// **Parameter** [url] Html url.
+  ///
+  /// **Parameter** [state] Html state.
+  ///
+  ///图片状态变化通知
+  ///
+  /// **Parameter** [fileId] 白板文件ID。
+  ///
+  /// **Parameter** [url] Html URL。
+  ///
+  /// **Parameter** [state]Html状态码。
+  OnHtmlStateChanged? onHtmlStateChanged;
 
   /// Notification of whiteboard view scale factor changed
   ///
@@ -1129,11 +1236,30 @@ class WhiteboardEventHandler {
   /// **Parameter** [userId] 用户ID。
   UserIdCallback? onUserLeft;
 
+  /// Notification of undo status changed
+  ///
+  /// **Parameter** [canUndo]   Whether can undo.
+  ///
+  /// 撤消操作状态通知
+  ///
+  /// **Parameter** [canUndo]   是否可以撤消。
+  OnUndoStatusChanged? onUndoStatusChanged;
+
+  /// Notification of redo status changed
+  ///
+  /// **Parameter** [canRedo]   Whether can redo.
+  ///
+  /// 重做操作状态通知
+  ///
+  /// **Parameter** [canRedo]   是否可以重做。
+  OnRedoStatusChanged? onRedoStatusChanged;
+
   /// Constructs a [WhiteboardEventHandler]
   WhiteboardEventHandler(
       {this.onStatusSynced,
       this.onPageNumberChanged,
       this.onImageStateChanged,
+      this.onHtmlStateChanged,
       this.onViewScaleChanged,
       this.onRoleTypeChanged,
       this.onContentUpdated,
@@ -1151,7 +1277,9 @@ class WhiteboardEventHandler {
       this.onVisionShareStarted,
       this.onVisionShareStopped,
       this.onUserJoined,
-      this.onUserLeft});
+      this.onUserLeft,
+      this.onUndoStatusChanged,
+      this.onRedoStatusChanged});
 
   /// @nodoc
   void process(String? methodName, List<dynamic> data) {
@@ -1165,6 +1293,10 @@ class WhiteboardEventHandler {
       case 'onImageStateChanged':
         onImageStateChanged?.call(
             data[0], WBImageStateConverter.fromValue(data[1]).e);
+        break;
+      case 'onHtmlStateChanged':
+        onHtmlStateChanged?.call(
+            data[0], data[1], WBHtmlStateConverter.fromValue(data[2]).e);
         break;
       case 'onViewScaleChanged':
         onViewScaleChanged?.call(data[0]);
@@ -1207,22 +1339,28 @@ class WhiteboardEventHandler {
             ResultCodeConverter.fromValue(data[0]).e, data[1], data[2]);
         break;
       case 'onDocThumbnailReady':
-        onDocThumbnailReady!.call(data[0], data[1].cast<String>());
+        onDocThumbnailReady?.call(data[0], data[1].cast<String>());
         break;
       case 'onExternalHtmlMessageReceived':
-        onExternalHtmlMessageReceived!.call(data[0], data[1]);
+        onExternalHtmlMessageReceived?.call(data[0], data[1]);
         break;
       case 'onVisionShareStarted':
-        onVisionShareStarted!.call(data[0]);
+        onVisionShareStarted?.call(data[0]);
         break;
       case 'onVisionShareStopped':
-        onVisionShareStopped!.call(data[0]);
+        onVisionShareStopped?.call(data[0]);
         break;
       case 'onUserJoined':
         onUserJoined?.call(data[0], data[1]);
         break;
       case 'onUserLeft':
         onUserLeft?.call(data[0]);
+        break;
+      case 'onUndoStatusChanged':
+        onUndoStatusChanged?.call(data[0]);
+        break;
+      case 'onRedoStatusChanged':
+        onRedoStatusChanged?.call(data[0]);
         break;
     }
   }
@@ -1237,6 +1375,9 @@ typedef OnVideoAnnotationStop = void Function(String userId, int streamId);
 
 /// @nodoc
 typedef OnUserVideoMute = void Function(String userId, int streamId);
+
+/// @nodoc
+typedef AnnotationIdCallback = void Function(String annotationId);
 
 /// Annotation Manager
 ///
@@ -1286,12 +1427,32 @@ class AnnotationMgrEventHandler {
   /// **Parameter** [userId] 用户ID
   UserIdCallback? onShareAnnotationStop;
 
+  /// Notification of external annotation start
+  ///
+  /// **Parameter** [annotationId] Annotation ID
+  ///
+  /// 外部标注开始通知
+  ///
+  /// **Parameter** [annotationId] 标注ID
+  AnnotationIdCallback? onExternalAnnotationStart;
+
+  /// Notification of external annotation stop
+  ///
+  /// **Parameter** annotationId Annotation ID
+  ///
+  /// 外部标注终止通知
+  ///
+  /// **Parameter** annotationId 标注ID
+  AnnotationIdCallback? onExternalAnnotationStop;
+
   /// Constructs a [AnnotationMgrEventHandler]
   AnnotationMgrEventHandler(
       {this.onVideoAnnotationStart,
       this.onVideoAnnotationStop,
       this.onShareAnnotationStart,
-      this.onShareAnnotationStop});
+      this.onShareAnnotationStop,
+      this.onExternalAnnotationStart,
+      this.onExternalAnnotationStop});
 
   /// @nodoc
   void process(String? methodName, List<dynamic> data) {
@@ -1308,15 +1469,21 @@ class AnnotationMgrEventHandler {
       case 'onShareAnnotationStop':
         onShareAnnotationStop?.call(data[0]);
         break;
+      case 'onExternalAnnotationStart':
+        onExternalAnnotationStart?.call(data[0]);
+        break;
+      case 'onExternalAnnotationStop':
+        onExternalAnnotationStop?.call(data[0]);
+        break;
     }
   }
 }
 
 /// @nodoc
-typedef OnAnnoRoleChanged = void Function(WBRoleType? newRole);
+typedef OnAnnoRoleChanged = void Function(WBRoleType newRole);
 
 /// @nodoc
-typedef OnSnapshotComplete = void Function(ResultCode? result, String filename);
+typedef OnSnapshotComplete = void Function(ResultCode result, String filename);
 
 /// Callback of PanoAnnotation,  the callback must set to PanoAnnotation to get events notification.
 ///
@@ -1367,11 +1534,11 @@ typedef UserStreamCallback = void Function(String userId, int streamId);
 
 /// @nodoc
 typedef OnUserVideoStreamStart = void Function(
-    String userId, int streamId, VideoProfileType? maxProfile);
+    String userId, int streamId, VideoProfileType maxProfile);
 
 /// @nodoc
 typedef OnUserVideoStreamSubscribe = void Function(
-    String userId, int streamId, SubscribeResult? result);
+    String userId, int streamId, SubscribeResult result);
 
 /// @nodoc
 typedef OnVideoStreamSnapshotCompleted = void Function(
@@ -1379,7 +1546,7 @@ typedef OnVideoStreamSnapshotCompleted = void Function(
 
 /// @nodoc
 typedef OnVideoStreamCaptureStateChanged = void Function(
-    int streamId, String deviceId, VideoCaptureState? state);
+    int streamId, String deviceId, VideoCaptureState state);
 
 /// Callback of VideoStreamManager, the callback must be set to stream manager to get events notification.
 ///
@@ -1599,13 +1766,13 @@ class RtcNetworkMgrHandler {
 }
 
 /// @nodoc
-typedef OnServiceStateChanged = void Function(MessageServiceState? state);
+typedef OnServiceStateChanged = void Function(MessageServiceState state);
 
 /// @nodoc
 typedef OnUserMessage = void Function(String userId, Uint8List byte);
 
 /// @nodoc
-typedef OnSubscribeResult = void Function(String topic, ResultCode? result);
+typedef OnSubscribeResult = void Function(String topic, ResultCode result);
 
 /// @nodoc
 typedef OnTopicMessage = void Function(
@@ -1710,6 +1877,148 @@ class RtcMessageServiceHandler {
           props.add(RtcPropertyAction(actionType, propName, propValue));
         });
         onPropertyChanged?.call(props);
+        break;
+    }
+  }
+}
+
+/// @nodoc
+typedef GroupIdCallback = void Function(String groupId);
+
+/// @nodoc
+typedef GroupResultCallback = void Function(String groupId, ResultCode result);
+
+/// @nodoc
+typedef GroupUserCallback = void Function(String groupId, String userId);
+
+/// @nodoc
+typedef GroupUserJoinIndicationCallback = void Function(
+    String groupId, UserInfo userInfo);
+
+/// @nodoc
+typedef OnGroupUserLeaveIndication = void Function(
+    String groupId, String userId, ResultCode reason);
+
+/// Callback of RtcGroupManager, the callbacks must to set to RtcGroupManager
+/// to get events notification.
+///
+/// RtcGroupManager 的回调函数，在使用 RtcGroupManager 之前必须要设置回调以获取事件通知。
+class RtcGroupEventHandler {
+  /// Notification of group join result.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [result] The result of group joining.
+  ///
+  /// 加入分组成功与否的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [result] 分组加入的结果。
+  GroupResultCallback? onGroupJoinConfirm;
+
+  /// Notification of group leaving indication.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [result] The reason of group leaving.
+  ///
+  /// 分组离开的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [result] 离开分组原因。
+  GroupResultCallback? onGroupLeaveIndication;
+
+  /// Notification of group user inviting.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [userId] The user who sent the invite.
+  ///
+  /// 用户分组邀请的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [userId] 发送邀请的用户ID。
+  GroupUserCallback? onGroupInviteIndication;
+
+  /// Notification of group dismiss result.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [result] The result of group dismiss.
+  ///
+  /// 解散分组成功与否的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [result] 分组解散的结果。
+  GroupResultCallback? onGroupDismissConfirm;
+
+  /// Notification of group user joining.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [userInfo] The information of the group member.
+  ///
+  /// 用户加入分组的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [userInfo] 分组成员信息。
+  GroupUserJoinIndicationCallback? onGroupUserJoinIndication;
+
+  /// Notification of group user leaving.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [userId] The user ID.
+  /// **Parameter** [reason] The reason of user leaving.
+  ///
+  /// 用户离开分组的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [userId] 用户ID。
+  /// **Parameter** [reason] 用户离开原因。
+  OnGroupUserLeaveIndication? onGroupUserLeaveIndication;
+
+  /// Notification of default group update.
+  /// **Parameter** [groupId] The default group ID.
+  ///
+  /// 默认分组变更的通知。
+  /// **Parameter** [groupId] 变更后的默认分组标识。
+  GroupIdCallback? onGroupDefaultUpdateIndication;
+
+  /// Notification of group event observe result.
+  /// **Parameter** [groupId] The group ID.
+  /// **Parameter** [result] The result of group event observation.
+  ///
+  /// 观察分组事件成功与否的通知。
+  /// **Parameter** [groupId] 分组标识。
+  /// **Parameter** [result] 分组事件订阅的结果。
+  GroupResultCallback? onGroupObserveConfirm;
+
+  /// Constructs a [RtcGroupEventHandler]
+  RtcGroupEventHandler(
+      {this.onGroupJoinConfirm,
+      this.onGroupLeaveIndication,
+      this.onGroupInviteIndication,
+      this.onGroupDismissConfirm,
+      this.onGroupUserJoinIndication,
+      this.onGroupUserLeaveIndication,
+      this.onGroupDefaultUpdateIndication,
+      this.onGroupObserveConfirm});
+
+  /// @nodoc
+  void process(String? methodName, List<dynamic> data) {
+    switch (methodName) {
+      case 'onGroupJoinConfirm':
+        onGroupJoinConfirm?.call(
+            data[0], ResultCodeConverter.fromValue(data[1]).e);
+        break;
+      case 'onGroupLeaveIndication':
+        onGroupLeaveIndication?.call(
+            data[0], ResultCodeConverter.fromValue(data[1]).e);
+        break;
+      case 'onGroupInviteIndication':
+        onGroupInviteIndication?.call(data[0], data[1]);
+        break;
+      case 'onGroupDismissConfirm':
+        onGroupDismissConfirm?.call(
+            data[0], ResultCodeConverter.fromValue(data[1]).e);
+        break;
+      case 'onGroupUserJoinIndication':
+        onGroupUserJoinIndication?.call(
+            data[0], UserInfo.fromJson(Map<String, dynamic>.from(data[1])));
+        break;
+      case 'onGroupUserLeaveIndication':
+        onGroupUserLeaveIndication?.call(
+            data[0], data[1], ResultCodeConverter.fromValue(data[2]).e);
+        break;
+      case 'onGroupDefaultUpdateIndication':
+        onGroupDefaultUpdateIndication?.call(data[0]);
+        break;
+      case 'onGroupObserveConfirm':
+        onGroupObserveConfirm?.call(
+            data[0], ResultCodeConverter.fromValue(data[1]).e);
         break;
     }
   }

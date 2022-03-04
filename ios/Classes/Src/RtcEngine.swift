@@ -2,7 +2,7 @@
 //  RtcEngine.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -55,6 +55,10 @@ protocol RtcEngineManagerInterface:
     
     func unsubscribeScreen(_ params: NSDictionary, _ callback: Callback)
     
+    func callout(_ params: NSDictionary, _ callback: Callback)
+    
+    func dropCall(_ params: NSDictionary, _ callback: Callback)
+    
     func updateScreenScaling(_ params: NSDictionary, _ callback: Callback)
     
     func updateScreenScalingWithFocus(_ params: NSDictionary, _ callback: Callback)
@@ -72,6 +76,8 @@ protocol RtcEngineManagerInterface:
     func muteScreen(_ callback: Callback)
     
     func unmuteScreen(_ callback: Callback)
+    
+    func setAudioIndication(_ params: NSDictionary, _ callback: Callback)
 }
 
 protocol RtcDeviceManagerInterface {
@@ -98,6 +104,8 @@ protocol RtcDeviceManagerInterface {
     func startPreview(_ params: NSDictionary, _ callback: Callback)
     
     func stopPreview(_ callback: Callback)
+    
+    func isMultiCameraCaptureSupported(_ callback: Callback)
 }
 
 protocol RtcAudioMixingManagerInterface {
@@ -138,6 +146,8 @@ protocol RtcTroubleshootInterface {
     func stopAudioDump(_ callback: Callback)
     
     func sendFeedback(_ params: NSDictionary, _ callback: Callback)
+    
+    func queryDeviceRating(_ callback: Callback)
 }
 
 protocol RtcOptionInterface {
@@ -146,6 +156,8 @@ protocol RtcOptionInterface {
 
 protocol RtcCustomizedInterface {
     func setParameters(_ params: NSDictionary, _ callback: Callback)
+    
+    func sendAudioControlMessage(_ params: NSDictionary, _ callback: Callback)
 }
 
 protocol RtcManagersInterface {
@@ -154,6 +166,8 @@ protocol RtcManagersInterface {
     func annotationManager(_ callback: Callback)
     
     func messageService(_ callback: Callback)
+    
+    func groupManager(_ callback: Callback)
     
     func networkManager(_ callback: Callback)
 }
@@ -170,6 +184,8 @@ protocol RtcEngineManagerDelegate: AnyObject {
     
     func createMessageService(panoObj: PanoRtcMessage?) -> RtcMessage?
     
+    func createGroupManager(panoObj: PanoRtcGroupManager?) -> RtcGroupManager?
+    
     func createNetworkManager(panoObj: PanoRtcEngineKit?) -> RtcNetworkManager?
     
     func cleanup()
@@ -184,6 +200,7 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     private(set) var videoStreamManager: RtcVideoStreamManager?
     private(set) var anntationManager: RtcAnnotationManager?
     private(set) var messageService: RtcMessage?
+    private(set) var groupManager: RtcGroupManager?
     private var networkManager: RtcNetworkManager?
     
     func cleanup() {
@@ -195,6 +212,7 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
         videoStreamManager = nil
         anntationManager = nil
         messageService = nil
+        groupManager = nil
         networkManager = nil
     }
     
@@ -251,8 +269,8 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     
     @objc func startVideo(_ params: NSDictionary, _ callback: Callback) {
         callback.code(
-            engine?.startVideo(with: params["view"] as! UIView,
-                               config: PanoRtcRenderConfig(map: params["config"] as! Dictionary)))
+            engine?.startVideo(with: params["view"] as? UIView,
+                               config: PanoRtcVideoConfig(map: params["config"] as! Dictionary)))
     }
     
     @objc func stopVideo(_ callback: Callback) {
@@ -282,8 +300,8 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     @objc func subscribeVideo(_ params: NSDictionary, _ callback: Callback) {
         callback.code(
             engine?.subscribeVideo(UInt64(params["userId"] as! String) ?? 0,
-                                   with: params["view"] as! UIView,
-                                   config: PanoRtcRenderConfig(map: params["config"] as! Dictionary)))
+                                   with: params["view"] as? UIView,
+                                   config: PanoRtcVideoConfig(map: params["config"] as! Dictionary)))
     }
     
     @objc func unsubscribeVideo(_ params: NSDictionary, _ callback: Callback) {
@@ -298,6 +316,15 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     
     @objc func unsubscribeScreen(_ params: NSDictionary, _ callback: Callback) {
         callback.code(engine?.unsubscribeScreen(UInt64(params["userId"] as! String) ?? 0));
+    }
+    
+    @objc func callout(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(engine?.callout(params["phoneNo"] as! String,
+                                      bindToUser: params["bindToUser"] as! Bool));
+    }
+    
+    @objc func dropCall(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(engine?.dropCall(params["phoneNo"] as! String));
     }
     
     @objc func updateScreenScaling(_ params: NSDictionary, _ callback: Callback) {
@@ -341,6 +368,11 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     
     @objc func unmuteScreen(_ callback: Callback) {
         callback.code(engine?.unmuteScreen())
+    }
+    
+    @objc func setAudioIndication(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(engine?.setAudioIndication(params["enable"] as! Bool,
+                                                 intervalMs: params["intervalMs"] as! UInt32))
     }
     
     @objc func setMicrophoneMuteStatus(_ params: NSDictionary, _ callback: Callback) {
@@ -400,11 +432,17 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
     @objc func startPreview(_ params: NSDictionary, _ callback: Callback) {
         callback.code(
             engine?.startPreview(with: params["view"] as! UIView,
-                                 config: PanoRtcRenderConfig(map: params["config"] as! Dictionary)))
+                                 config: PanoRtcVideoConfig(map: params["config"] as! Dictionary)))
     }
     
     @objc func stopPreview(_ callback: Callback) {
         callback.code(engine?.stopPreview())
+    }
+    
+    @objc func isMultiCameraCaptureSupported(_ callback: Callback) {
+        callback.resolve(engine) { it in
+            it.isMultiCameraCaptureSupported()
+        }
     }
     
     @objc func createAudioMixingTask(_ params: NSDictionary, _ callback: Callback) {
@@ -499,6 +537,12 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
         callback.code(engine?.sendFeedback(PanoFeedbackInfo(map: params["option"] as! Dictionary)))
     }
     
+    @objc func queryDeviceRating(_ callback: Callback) {
+        callback.resolve(engine) { it in
+            it.queryDeviceRating()
+        }
+    }
+    
     @objc func setOption(_ params: NSDictionary, _ callback: Callback) {
         var option: NSObject? = nil
         let type = PanoOptionType(rawValue: params["type"] as! Int)
@@ -542,6 +586,15 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
         callback.code(engine?.setParameters(params["param"] as! String))
     }
     
+    @objc func sendAudioControlMessage(_ params: NSDictionary, _ callback: Callback) {
+        guard let value = params["value"] as? Data else {
+            callback.code(PanoResult.invalidArgs)
+            return
+        }
+        
+        callback.code(engine?.sendAudioControlMessage(value))
+    }
+    
     @objc func videoStreamManager(_ callback: Callback) {
         if videoStreamManager == nil {
             let manager = delegate?.createVideoStreamManager(panoObj: engine?.videoStreamManager)
@@ -574,6 +627,18 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
                 return
             }
             messageService = service
+        }
+        callback.code(PanoResult.OK)
+    }
+    
+    @objc func groupManager(_ callback: Callback) {
+        if groupManager == nil {
+            let manager = delegate?.createGroupManager(panoObj: engine?.groupManager)
+            if manager == nil {
+                callback.code(PanoResult.invalidState)
+                return
+            }
+            groupManager = manager
         }
         callback.code(PanoResult.OK)
     }

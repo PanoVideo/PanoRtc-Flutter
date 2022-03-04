@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'ChannelInfo.dart';
-import 'UserInfo.dart';
+import 'UserInfo.dart' as CustomInfo;
 import 'UserManager.dart';
 import 'WhiteboardViewController.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +18,7 @@ class ChannelViewController extends StatefulWidget {
 
 class _ChannelViewControllerState extends State<ChannelViewController> {
   RtcEngineKit? engineKit;
+  RtcGroupManager? groupManager;
 
   bool isWhiteboardEnable = false;
   bool isEnableAudio = true;
@@ -29,7 +30,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
   RtcWhiteboard? whiteboardEngine;
   RtcMessageService? rtcMessageService;
 
-  UserInfo? bigScreenUser;
+  CustomInfo.UserInfo? bigScreenUser;
 
   @override
   void initState() {
@@ -77,18 +78,18 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
     var localUser = UserManager.shared().findLocalUser();
 
     if (localUser != null && localUser.videoView != null) {
-      var renderConfig = RtcRenderConfig(
+      var videoConfig = RtcVideoConfig(
           profileType: VideoProfileType.HD720P,
           scalingMode: VideoScalingMode.FullFill,
           mirror: true);
       return await engineKit!
-          .startVideo(localUser.videoView!, config: renderConfig);
+          .startVideo(localUser.videoView!, config: videoConfig);
     } else {
       return ResultCode.Failed;
     }
   }
 
-  void bigSubscribeVideo(UserInfo userObj) async {
+  void bigSubscribeVideo(CustomInfo.UserInfo userObj) async {
     if (userObj.isLocal) {
       await engineKit!.stopVideo();
       await Future.delayed(Duration(milliseconds: 400));
@@ -117,27 +118,27 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
   void bigScreenRenderStart() async {
     if (bigScreenUser != null && bigScreenUser!.videoView != null) {
       if (bigScreenUser!.isLocal) {
-        var renderConfig = RtcRenderConfig(
+        var videoConfig = RtcVideoConfig(
             profileType: VideoProfileType.HD720P,
             scalingMode: VideoScalingMode.CropFill,
             mirror: true);
-        await engineKit!.startVideo(bigRemoteView!, config: renderConfig);
+        await engineKit!.startVideo(bigRemoteView!, config: videoConfig);
       } else {
-        var renderConfig = RtcRenderConfig(
+        var videoConfig = RtcVideoConfig(
             profileType: VideoProfileType.HD720P,
             scalingMode: VideoScalingMode.CropFill);
         await engineKit!.subscribeVideo(bigScreenUser!.userId, bigRemoteView!,
-            config: renderConfig);
+            config: videoConfig);
       }
     }
   }
 
   Future<ResultCode> subscribeVideo(
       String userId, RtcSurfaceViewModel view) async {
-    var renderConfig = RtcRenderConfig(
+    var videoConfig = RtcVideoConfig(
         profileType: VideoProfileType.Low,
         scalingMode: VideoScalingMode.CropFill);
-    return await engineKit!.subscribeVideo(userId, view, config: renderConfig);
+    return await engineKit!.subscribeVideo(userId, view, config: videoConfig);
   }
 
   void createEngineKit() async {
@@ -149,7 +150,7 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
       return;
     }
 
-    var engineConfig = RtcEngineConfig(ChannelInfo.appId, ChannelInfo.server);
+    var engineConfig = RtcEngineConfig(ChannelInfo.appId);
     engineConfig.videoCodecHwAcceleration = true;
     engineKit = await RtcEngineKit.engine(engineConfig);
     rtcMessageService = await engineKit!.messageService();
@@ -325,6 +326,24 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
         print('onVideoSnapshotCompleted fileName $fileName');
       }),
     );
+    groupManager = await engineKit?.groupManager();
+    groupManager?.setEventHandler(RtcGroupEventHandler(
+        onGroupDefaultUpdateIndication: (String groupId) {
+      print('onGroupDefaultUpdateIndication groupId: $groupId');
+    }, onGroupUserJoinIndication: (String groupId, UserInfo userInfo) {
+      print('onGroupUserJoinIndication groupId: $groupId userInfo userId: ' +
+          userInfo.userId +
+          " userDada: " +
+          userInfo.userData);
+    }, onGroupDismissConfirm: (String groupId, ResultCode result) {
+      print('onGroupDismissConfirm groupId: $groupId result: $result');
+    }, onGroupLeaveIndication: (String groupId, ResultCode result) {
+      print('onGroupLeaveIndication groupId: $groupId result: $result');
+    }, onGroupUserLeaveIndication:
+            (String groupId, String userId, ResultCode reason) {
+      print(
+          'onGroupUserLeaveIndication groupId: $groupId userId: $userId reason: $reason');
+    }));
     rtcMessageService!.setEventHandler(RtcMessageServiceHandler(
         onServiceStateChanged: (MessageServiceState? state) {
       print('onServiceStateChanged state $state');

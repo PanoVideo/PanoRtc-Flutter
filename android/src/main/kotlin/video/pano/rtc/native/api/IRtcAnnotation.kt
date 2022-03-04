@@ -18,7 +18,13 @@ interface IRtcAnnotation {
 
     fun setColor(params: Map<String, *>, callback: Callback)
 
+    fun setFillType(params: Map<String, *>, callback: Callback)
+
+    fun setFillColor(params: Map<String, *>, callback: Callback)
+
     fun setFontStyle(params: Map<String, *>, callback: Callback)
+
+    fun setFontSize(params: Map<String, *>, callback: Callback)
 
     fun clearContents(params: Map<String, *>, callback: Callback)
 
@@ -29,4 +35,12 @@ interface IRtcAnnotation {
     fun redo(callback: Callback)
 
     fun snapshot(params: Map<String, *>, callback: Callback)
+
+    fun getToolType(callback: Callback)
+
+    fun setAspectSize(params: Map<String, *>, callback: Callback)
+
+    fun setScalingMode(params: Map<String, *>, callback: Callback)
+
+    fun setOption(params: Map<String, *>, callback: Callback)
 }

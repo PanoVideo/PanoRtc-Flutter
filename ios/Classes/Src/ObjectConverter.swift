@@ -2,7 +2,7 @@
 //  ObjectConverter.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -92,7 +92,7 @@ extension PanoRtcChannelConfig {
     }
 }
 
-extension PanoRtcRenderConfig {
+extension PanoRtcVideoConfig {
     convenience init(map: Dictionary<String, Any>) {
         self.init()
         if let profileType = map["profileType"] as? Int {
@@ -203,10 +203,8 @@ extension PanoRtcAudioProfile {
                 self.channel = channel
             }
         }
-        if let profileQuality = map["profileQuality"] as? Int {
-            if let profileQuality = PanoAudioProfileQuality(rawValue: profileQuality) {
-                self.profileQuality = profileQuality
-            }
+        if let encodeBitrate = map["encodeBitrate"] as? UInt32 {
+            self.encodeBitrate = encodeBitrate
         }
     }
 }
@@ -285,6 +283,11 @@ extension PanoWBDocContents {
         if let docId = map["docId"] as? String {
             self.docId = docId
         }
+        if let type = map["type"] as? Int {
+            if let type = PanoWBDocType(rawValue: type) {
+                self.type = type
+            }
+        }
     }
 }
 
@@ -328,6 +331,33 @@ extension PanoWBDocExtHtml {
         }
         if let thumbUrls = map["thumbUrls"] as? [String] {
             self.thumbUrls = thumbUrls
+        }
+    }
+}
+
+extension PanoWBDocExtContents {
+    convenience init(map: Dictionary<String, Any>) {
+        self.init()
+        if let name = map["name"] as? String {
+            self.name = name
+        }
+        if let totalPages = map["totalPages"] as? UInt32 {
+            self.totalPages = totalPages
+        }
+        if let width = map["width"] as? UInt32 {
+            self.width = width
+        }
+        if let height = map["height"] as? UInt32 {
+            self.height = height
+        }
+    }
+}
+
+extension PanoRtcGroupConfig {
+    convenience init(map: Dictionary<String, Any>) {
+        self.init()
+        if let userData = map["userData"] as? String {
+            self.userData = userData
         }
     }
 }
@@ -466,6 +496,15 @@ extension PanoPropertyAction {
             "type": type.rawValue,
             "propName": propName,
             "propValue": propValue
+        ]
+    }
+}
+
+extension PanoRtcGroupUserInfo {
+    func toMap() -> Dictionary<String, Any?> {
+        return [
+            "userId": String(userId),
+            "userData": userData
         ]
     }
 }

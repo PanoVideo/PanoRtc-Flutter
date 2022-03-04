@@ -9,7 +9,7 @@ part of 'rtc_objects.dart';
 RtcEngineConfig _$RtcEngineConfigFromJson(Map<String, dynamic> json) =>
     RtcEngineConfig(
       json['appId'] as String,
-      json['rtcServer'] as String,
+      rtcServer: json['rtcServer'] as String? ?? '',
       videoCodecHwAcceleration:
           json['videoCodecHwAcceleration'] as bool? ?? false,
       audioScenario: json['audioScenario'] as int? ?? 0,
@@ -60,8 +60,8 @@ const _$ChannelServiceEnumMap = {
   ChannelService.Message: 4,
 };
 
-RtcRenderConfig _$RtcRenderConfigFromJson(Map<String, dynamic> json) =>
-    RtcRenderConfig(
+RtcVideoConfig _$RtcVideoConfigFromJson(Map<String, dynamic> json) =>
+    RtcVideoConfig(
       profileType:
           $enumDecodeNullable(_$VideoProfileTypeEnumMap, json['profileType']) ??
               VideoProfileType.Standard,
@@ -72,7 +72,7 @@ RtcRenderConfig _$RtcRenderConfigFromJson(Map<String, dynamic> json) =>
       mirror: json['mirror'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$RtcRenderConfigToJson(RtcRenderConfig instance) =>
+Map<String, dynamic> _$RtcVideoConfigToJson(RtcVideoConfig instance) =>
     <String, dynamic>{
       'profileType': _$VideoProfileTypeEnumMap[instance.profileType],
       'sourceMirror': instance.sourceMirror,
@@ -173,16 +173,14 @@ RtcAudioProfile _$RtcAudioProfileFromJson(Map<String, dynamic> json) =>
               AudioSampleRate.Rate48K,
       channel: $enumDecodeNullable(_$AudioChannelEnumMap, json['channel']) ??
           AudioChannel.Mono,
-      profileQuality: $enumDecodeNullable(
-              _$AudioProfileQualityEnumMap, json['profileQuality']) ??
-          AudioProfileQuality.Default,
+      encodeBitrate: json['encodeBitrate'] as int? ?? 64000,
     );
 
 Map<String, dynamic> _$RtcAudioProfileToJson(RtcAudioProfile instance) =>
     <String, dynamic>{
       'sampleRate': _$AudioSampleRateEnumMap[instance.sampleRate],
       'channel': _$AudioChannelEnumMap[instance.channel],
-      'profileQuality': _$AudioProfileQualityEnumMap[instance.profileQuality],
+      'encodeBitrate': instance.encodeBitrate,
     };
 
 const _$AudioSampleRateEnumMap = {
@@ -193,11 +191,6 @@ const _$AudioSampleRateEnumMap = {
 const _$AudioChannelEnumMap = {
   AudioChannel.Mono: 1,
   AudioChannel.Stereo: 2,
-};
-
-const _$AudioProfileQualityEnumMap = {
-  AudioProfileQuality.Default: 0,
-  AudioProfileQuality.High: 1,
 };
 
 RtcAudioSendStats _$RtcAudioSendStatsFromJson(Map<String, dynamic> json) =>
@@ -445,6 +438,8 @@ WBDocContents _$WBDocContentsFromJson(Map<String, dynamic> json) =>
       (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
       (json['thumbUrls'] as List<dynamic>).map((e) => e as String).toList(),
       docId: json['docId'] as String? ?? '',
+      type: $enumDecodeNullable(_$WBDocTypeEnumMap, json['type']) ??
+          WBDocType.Normal,
     );
 
 Map<String, dynamic> _$WBDocContentsToJson(WBDocContents instance) =>
@@ -453,7 +448,16 @@ Map<String, dynamic> _$WBDocContentsToJson(WBDocContents instance) =>
       'urls': instance.urls,
       'thumbUrls': instance.thumbUrls,
       'docId': instance.docId,
+      'type': _$WBDocTypeEnumMap[instance.type],
     };
+
+const _$WBDocTypeEnumMap = {
+  WBDocType.Normal: 1,
+  WBDocType.H5: 2,
+  WBDocType.ExtHtml: 3,
+  WBDocType.External: 4,
+  WBDocType.PDF: 5,
+};
 
 WBDocExtHtml _$WBDocExtHtmlFromJson(Map<String, dynamic> json) => WBDocExtHtml(
       json['url'] as String,
@@ -466,6 +470,22 @@ Map<String, dynamic> _$WBDocExtHtmlToJson(WBDocExtHtml instance) =>
       'name': instance.name,
       'url': instance.url,
       'thumbUrls': instance.thumbUrls,
+    };
+
+WBDocExtContents _$WBDocExtContentsFromJson(Map<String, dynamic> json) =>
+    WBDocExtContents(
+      json['totalPages'] as int,
+      json['width'] as int,
+      json['height'] as int,
+      name: json['name'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$WBDocExtContentsToJson(WBDocExtContents instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'totalPages': instance.totalPages,
+      'width': instance.width,
+      'height': instance.height,
     };
 
 WBConvertConfig _$WBConvertConfigFromJson(Map<String, dynamic> json) =>
@@ -500,11 +520,6 @@ Map<String, dynamic> _$WBDocInfoToJson(WBDocInfo instance) => <String, dynamic>{
       'creator': instance.creator,
       'type': _$WBDocTypeEnumMap[instance.type],
     };
-
-const _$WBDocTypeEnumMap = {
-  WBDocType.Normal: 1,
-  WBDocType.H5: 2,
-};
 
 WBVisionConfig _$WBVisionConfigFromJson(Map<String, dynamic> json) =>
     WBVisionConfig(
@@ -684,3 +699,19 @@ const _$QualityRatingEnumMap = {
   QualityRating.Good: 4,
   QualityRating.Excellent: 5,
 };
+
+_$GroupConfigFromJson(Map<String, dynamic> json) =>
+    GroupConfig(
+      json['userData'] as String? ?? ''
+    );
+
+Map<String, dynamic> _$GroupConfigToJson(GroupConfig instance) =>
+    <String, dynamic>{'userData': instance.userData};
+
+_$UserInfoFromJson(Map<String, dynamic> json) => UserInfo(
+    json['userId'] as String,
+    json['userData'] as String? ?? ''
+);
+
+Map<String, dynamic> _$UserInfoToJson(UserInfo instance) =>
+    <String, dynamic>{'userId': instance.userId, 'userData': instance.userData};

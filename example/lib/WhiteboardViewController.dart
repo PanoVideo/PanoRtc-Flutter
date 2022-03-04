@@ -585,7 +585,7 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
                       },
                       child: Icon(
                         Icons.delete,
-                        color: WBToolType.Eraser == selectTool
+                        color: WBToolType.Delete == selectTool
                             ? Colors.blue
                             : Colors.black,
                       ),
@@ -829,8 +829,8 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
 
   void setEraserTool() {
     hideAllSubToolViews();
-    selectTool = WBToolType.Eraser;
-    whiteboardEngine!.setToolType(WBToolType.Eraser);
+    selectTool = WBToolType.Delete;
+    whiteboardEngine!.setToolType(WBToolType.Delete);
   }
 
   void showStyleView() {

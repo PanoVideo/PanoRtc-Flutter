@@ -662,11 +662,11 @@ enum WBToolType {
   @JsonValue(7)
   Text,
 
-  /// Eraser tool
+  /// Delete tool
   ///
-  /// 橡皮擦工具。
+  /// 删除工具。
   @JsonValue(8)
-  Eraser,
+  Delete,
 
   /// Brush tool
   ///
@@ -821,6 +821,35 @@ enum WBImageState {
   LoadFail,
 }
 
+/// Whiteboard html state.
+///
+/// 白板HTML状态码。
+enum WBHtmlState {
+  /// Start to load the html.
+  ///
+  /// 开始加载HTML。
+  @JsonValue(0)
+  LoadStart,
+
+  /// The html load complete.
+  ///
+  /// HTML加载成功。
+  @JsonValue(1)
+  LoadComplete,
+
+  /// The html load timeout.
+  ///
+  /// HTML加载超时。
+  @JsonValue(2)
+  LoadTimeout,
+
+  /// The html reloaded.
+  ///
+  /// HTML重新加载。
+  @JsonValue(3)
+  Reloaded,
+}
+
 /// Whiteboard file convert type.
 ///
 /// 白板文件转码类型。
@@ -882,6 +911,24 @@ enum WBDocType {
   /// H5类型。
   @JsonValue(2)
   H5,
+
+  /// External HTML type.
+  ///
+  /// 外部HTML类型
+  @JsonValue(3)
+  ExtHtml,
+
+  /// External doc content  type.
+  ///
+  /// 外部文档内容类型
+  @JsonValue(4)
+  External,
+
+  /// PDF type.
+  ///
+  /// PDF类型
+  @JsonValue(5)
+  PDF,
 }
 
 /// Whiteboard snapshot mode
@@ -952,6 +999,55 @@ enum WBOptionType {
   /// 开启显示远端光标，对象类型是bool。默认关闭
   @JsonValue(7)
   ShowRemoteCursor,
+
+  /// Use fake desktop user agent for external html, object type is bool value.
+  /// Default is false. Support on iOS only.
+  ///
+  /// 为外部HTML使用伪桌面 User Agent，对象类型是bool。默认关闭。仅支持iOS。
+  @JsonValue(8)
+  PCUAExthtml,
+}
+
+/// Annotation option type.
+///
+/// 标注选项。
+enum AnnoOptionType {
+  /// enable local annotation render, object type is bool value.
+  /// Default is true. Valid for external annotation
+  ///
+  /// **Note**
+  /// It should be set call before startAnnotation
+  ///
+  /// 启用本地标注渲染，对象类型是bool。默认启用。对外部标注对象有效
+  ///
+  /// **Note**
+  /// 该选项需要在调用startAnnotation前设置
+  @JsonValue(1)
+  EnableLocalRender,
+
+  /// show or hide annotation draws, object type is bool value. Default is show
+  ///
+  /// 显示或隐藏标注涂鸦，对象类型是bool。默认显示
+  @JsonValue(2)
+  EnableShowDraws,
+
+  /// enable annotation response UI event. Default is true.
+  ///
+  /// 启用标注响应UI事件。默认启用。
+  @JsonValue(3)
+  EnableUIResponse,
+
+  /// enable synchronize cursor position. Default is false.
+  ///
+  /// 启用光标位置同步。默认关闭。
+  @JsonValue(4)
+  EnableCursorposSync,
+
+  /// enable show remote cursor. Default is false.
+  ///
+  /// 开启显示远端光标。默认关闭。
+  @JsonValue(5)
+  EnableShowRemoteCursor,
 }
 
 /// Option type
@@ -1436,21 +1532,33 @@ enum AudioChannel {
   Stereo,
 }
 
-/// Audio Profile Quality
+/// Audio Call Type.
 ///
-/// 音频质量配置。
-enum AudioProfileQuality {
-  /// Audio quality default: encode bitrate - 48kbps
+/// 音频接入类型。
+enum AudioCallType {
+  /// Voice over IP.
   ///
-  /// 音频默认质量: 编码最大码率 48kbps
+  /// VoIP 类型。
   @JsonValue(0)
-  Default,
+  VoIP,
 
-  /// Audio high quality: encode bitrate - 128kbps
+  /// Phone call.
   ///
-  /// 音频质量: 编码最大码率 128kbps
+  /// 电话接入。
   @JsonValue(1)
-  High,
+  PSTN,
+
+  /// SIP call.
+  ///
+  /// SIP设备接入。
+  @JsonValue(2)
+  SIP,
+
+  /// H323 call.
+  ///
+  /// H323接入。
+  @JsonValue(3)
+  H323,
 }
 
 /// Quality rating values
@@ -1490,6 +1598,47 @@ enum QualityRating {
   /// The quality is excellent
   ///
   /// 服务质量非常好。
+  @JsonValue(5)
+  Excellent,
+}
+
+/// Device rating values
+///
+/// 设备评分分值
+enum DeviceRating {
+  /// The device performance is unknown.
+  ///
+  /// 设备评分未知。
+  @JsonValue(0)
+  Unavailable,
+
+  /// The device performance is very bad.
+  ///
+  /// 设备性能非常差，只能开启普通的音频功能。
+  @JsonValue(1)
+  VeryBad,
+
+  /// The device performance is bad.
+  ///
+  /// 设备性能比较差，可开启音频功能。
+  @JsonValue(2)
+  Bad,
+
+  /// The device performance is poor.
+  ///
+  /// 设备性能一般，可开启音频和低分辨率视频。
+  @JsonValue(3)
+  Poor,
+
+  /// The device performance is good.
+  ///
+  /// 设备性能较好，可开启音频和高清视频。
+  @JsonValue(4)
+  Good,
+
+  /// The device performance is excellent.
+  ///
+  /// 设备性能非常优秀，可开启音视频高级功能。
   @JsonValue(5)
   Excellent,
 }

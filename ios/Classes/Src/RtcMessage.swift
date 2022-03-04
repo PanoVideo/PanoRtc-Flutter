@@ -2,7 +2,7 @@
 //  RtcMessage.swift
 //  pano_rtc
 //
-//  Created by mark on 2021/4/6.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  SampleHandler.h
 //  Runner-Screen
 //
-//  Created by mark on 2021/5/10.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 #import <ReplayKit/ReplayKit.h>

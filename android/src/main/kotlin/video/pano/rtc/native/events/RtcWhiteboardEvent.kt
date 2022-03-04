@@ -32,6 +32,10 @@ class RtcWhiteboardEvent(
         callback("onImageStateChanged", url, state?.value)
     }
 
+    override fun onHtmlStateChanged(fileId: String?, url: String?, state: Constants.WBHtmlState?) {
+        callback("onHtmlStateChanged", url, state?.value)
+    }
+
     override fun onViewScaleChanged(scale: Float) {
         callback("onViewScaleChanged", scale)
     }
@@ -98,5 +102,13 @@ class RtcWhiteboardEvent(
 
     override fun onUserLeft(userId: Long) {
         callback("onUserLeft", userId.toString())
+    }
+
+    override fun onUndoStatusChanged(canUndo: Boolean) {
+        callback("onUndoStatusChanged", canUndo)
+    }
+
+    override fun onRedoStatusChanged(canRedo: Boolean) {
+        callback("onUndoStatusChanged", canRedo)
     }
 }

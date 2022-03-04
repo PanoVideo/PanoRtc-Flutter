@@ -60,32 +60,32 @@ mixin RtcNetworkManagerInterface {
   /// **Parameter** [token] the secure token that App Server got from PANO
   ///               the channelId can be PANO_NHC_NetworkTest when generating this token
   ///               NOTE: don't use the token which is used for joining RtcChannel
-  ///@return
+  /// **Returns**
   ///  - [ResultCode.OK] Success
   ///  - others: Failure
-  ///@note The RtcEngine must be initialized firstly before startNetworkTest
+  /// **Note** The RtcEngine must be initialized firstly before startNetworkTest
   ///      The network test will consume additional bandwidth, please avoid doing network test in call
   ///
   /// 启动网络测试。
   ///
   /// **Parameter** [token] App服务器向PANO获取的token。生成此 token 时 channelId 可为 PANO_NHC_NetworkTest
   ///               注意：不要使用加入 RtcChannel 时使用的 token
-  ///@return
+  /// **Returns**
   ///  - [ResultCode.OK] 成功
   ///  - 其他: 失败
-  ///@note 在启动 startNetworkTest 前必须先初始化 RtcEngine
+  /// **Note** 在启动 startNetworkTest 前必须先初始化 RtcEngine
   ///      网络测试会产生额外流量，尽量避免在通话过程中进行测试。
   Future<ResultCode> startNetworkTest(String token);
 
   /// Stop test network.
   ///
-  ///@return
+  /// **Returns**
   ///  - [ResultCode.OK] Success
   ///  - others: Failure
   ///
   /// 停止网络测试。
   ///
-  ///@return
+  /// **Returns**
   ///  - [ResultCode.OK] 成功
   ///  - 其他: 失败
   Future<ResultCode> stopNetworkTest();

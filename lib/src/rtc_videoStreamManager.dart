@@ -84,8 +84,8 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
 
   @override
   Future<ResultCode> startVideo(int streamId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config}) {
-    config ??= RtcRenderConfig();
+      {RtcVideoConfig? config}) {
+    config ??= RtcVideoConfig();
     return viewModel.invokeCodeMethod('startVideoWithStreamId',
         {'streamId': streamId, 'config': config.toJson()});
   }
@@ -98,8 +98,8 @@ class RtcVideoStreamManager with RtcVideoStreamInterface {
   @override
   Future<ResultCode> subscribeVideo(
       String userId, int streamId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config}) {
-    config ??= RtcRenderConfig();
+      {RtcVideoConfig? config}) {
+    config ??= RtcVideoConfig();
     return viewModel.invokeCodeMethod('subscribeVideoWithStreamId',
         {'userId': userId, 'streamId': streamId, 'config': config.toJson()});
   }
@@ -232,7 +232,7 @@ mixin RtcVideoStreamInterface {
   /// **Note**
   /// 在 macOS iOS and Android 平台下必须从主线程调用。
   Future<ResultCode> startVideo(int streamId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config});
+      {RtcVideoConfig? config});
 
   /// Stop video stream
   ///
@@ -334,7 +334,7 @@ mixin RtcVideoStreamInterface {
   ///      在 macOS iOS and Android 平台下必须从主线程调用。
   Future<ResultCode> subscribeVideo(
       String userId, int streamId, RtcSurfaceViewModel viewModel,
-      {RtcRenderConfig? config});
+      {RtcVideoConfig? config});
 
   /// Unsubscribe to a user's video stream.
   ///

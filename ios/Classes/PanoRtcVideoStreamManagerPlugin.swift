@@ -2,7 +2,7 @@
 //  PanoRtcVideoStreamManagerPlugin.swift
 //  pano_rtc
 //
-//  Created by mark on 2020/12/30.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation

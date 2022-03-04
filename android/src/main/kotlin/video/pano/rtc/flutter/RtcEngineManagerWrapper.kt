@@ -17,6 +17,7 @@ class RtcEngineManagerWrapper : FlutterWrapper(), IRtcManagerCreator {
     private var rtcNetworkMgrWrapper: RtcNetworkMgrWrapper? = null
     private var rtcVideoStreamMgrWrapper: RtcVideoStreamMgrWrapper? = null
     private var rtcMessageServiceWrapper: RtcMessageSrvWrapper? = null
+    private var rtcGroupManagerWrapper: RtcGroupMgrWrapper? = null
 
     init {
         methodChannel = PanoRtcPlugin.createMethodChannel("pano_rtc/api_engine")
@@ -33,6 +34,7 @@ class RtcEngineManagerWrapper : FlutterWrapper(), IRtcManagerCreator {
         rtcNetworkMgrWrapper?.onDetachedFromEngine()
         rtcVideoStreamMgrWrapper?.onDetachedFromEngine()
         rtcMessageServiceWrapper?.onDetachedFromEngine()
+        rtcGroupManagerWrapper?.onDetachedFromEngine()
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -78,5 +80,10 @@ class RtcEngineManagerWrapper : FlutterWrapper(), IRtcManagerCreator {
     override fun createRtcMessageSrv(service: RtcMessageService?): RtcMessageSrv? {
         rtcMessageServiceWrapper = RtcMessageSrvWrapper(service)
         return rtcMessageServiceWrapper?.server
+    }
+
+    override fun createRtcGroupMgr(manager: RtcGroupManager?): RtcGroupMgr? {
+        rtcGroupManagerWrapper = RtcGroupMgrWrapper(manager)
+        return rtcGroupManagerWrapper?.manager
     }
 }

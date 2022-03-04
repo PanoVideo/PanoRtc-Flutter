@@ -404,7 +404,7 @@ const _$WBToolTypeEnumMap = {
   WBToolType.Ellipse: 5,
   WBToolType.Image: 6,
   WBToolType.Text: 7,
-  WBToolType.Eraser: 8,
+  WBToolType.Delete: 8,
   WBToolType.Brush: 9,
   WBToolType.Arrow: 10,
   WBToolType.Polyline: 11,
@@ -488,6 +488,25 @@ const _$WBImageStateEnumMap = {
   WBImageState.LoadFail: 2,
 };
 
+WBHtmlStateConverter _$WBHtmlStateConverterFromJson(
+        Map<String, dynamic> json) =>
+    WBHtmlStateConverter(
+      $enumDecode(_$WBHtmlStateEnumMap, json['e']),
+    );
+
+Map<String, dynamic> _$WBHtmlStateConverterToJson(
+        WBHtmlStateConverter instance) =>
+    <String, dynamic>{
+      'e': _$WBHtmlStateEnumMap[instance.e],
+    };
+
+const _$WBHtmlStateEnumMap = {
+  WBHtmlState.LoadStart: 0,
+  WBHtmlState.LoadComplete: 1,
+  WBHtmlState.LoadTimeout: 2,
+  WBHtmlState.Reloaded: 3,
+};
+
 WBConvertTypeConverter _$WBConvertTypeConverterFromJson(
         Map<String, dynamic> json) =>
     WBConvertTypeConverter(
@@ -537,6 +556,9 @@ Map<String, dynamic> _$WBDocTypeConverterToJson(WBDocTypeConverter instance) =>
 const _$WBDocTypeEnumMap = {
   WBDocType.Normal: 1,
   WBDocType.H5: 2,
+  WBDocType.ExtHtml: 3,
+  WBDocType.External: 4,
+  WBDocType.PDF: 5,
 };
 
 WBSnapshotModeConverter _$WBSnapshotModeConverterFromJson(
@@ -576,6 +598,24 @@ const _$WBOptionTypeEnumMap = {
   WBOptionType.AutoSelected: 5,
   WBOptionType.CursorPosSync: 6,
   WBOptionType.ShowRemoteCursor: 7,
+  WBOptionType.PCUAExthtml: 8,
+};
+
+AnnoOptionTypeConverter _$AnnoOptionTypeConverterFromJson(
+        Map<String, dynamic> json) =>
+    AnnoOptionTypeConverter(
+      $enumDecode(_$AnnoOptionTypeEnumMap, json['e']),
+    );
+
+Map<String, dynamic> _$AnnoOptionTypeConverterToJson(
+        AnnoOptionTypeConverter instance) =>
+    <String, dynamic>{
+      'e': _$AnnoOptionTypeEnumMap[instance.e],
+    };
+
+const _$AnnoOptionTypeEnumMap = {
+  AnnoOptionType.EnableLocalRender: 1,
+  AnnoOptionType.EnableShowDraws: 2,
 };
 
 OptionTypeConverter _$OptionTypeConverterFromJson(Map<String, dynamic> json) =>
@@ -823,21 +863,23 @@ const _$AudioChannelEnumMap = {
   AudioChannel.Stereo: 2,
 };
 
-AudioProfileQualityConverter _$AudioProfileQualityConverterFromJson(
+AudioCallTypeConverter _$AudioCallTypeConverterFromJson(
         Map<String, dynamic> json) =>
-    AudioProfileQualityConverter(
-      $enumDecode(_$AudioProfileQualityEnumMap, json['e']),
+    AudioCallTypeConverter(
+      $enumDecode(_$AudioCallTypeEnumMap, json['e']),
     );
 
-Map<String, dynamic> _$AudioProfileQualityConverterToJson(
-        AudioProfileQualityConverter instance) =>
+Map<String, dynamic> _$AudioCallTypeConverterToJson(
+        AudioCallTypeConverter instance) =>
     <String, dynamic>{
-      'e': _$AudioProfileQualityEnumMap[instance.e],
+      'e': _$AudioCallTypeEnumMap[instance.e],
     };
 
-const _$AudioProfileQualityEnumMap = {
-  AudioProfileQuality.Default: 0,
-  AudioProfileQuality.High: 1,
+const _$AudioCallTypeEnumMap = {
+  AudioCallType.VoIP: 0,
+  AudioCallType.PSTN: 1,
+  AudioCallType.SIP: 2,
+  AudioCallType.H323: 3,
 };
 
 QualityRatingConverter _$QualityRatingConverterFromJson(
@@ -859,6 +901,27 @@ const _$QualityRatingEnumMap = {
   QualityRating.Poor: 3,
   QualityRating.Good: 4,
   QualityRating.Excellent: 5,
+};
+
+DeviceRatingConverter _$DeviceRatingConverterFromJson(
+        Map<String, dynamic> json) =>
+    DeviceRatingConverter(
+      $enumDecode(_$DeviceRatingEnumMap, json['e']),
+    );
+
+Map<String, dynamic> _$DeviceRatingConverterToJson(
+        DeviceRatingConverter instance) =>
+    <String, dynamic>{
+      'e': _$DeviceRatingEnumMap[instance.e],
+    };
+
+const _$DeviceRatingEnumMap = {
+  DeviceRating.Unavailable: 0,
+  DeviceRating.VeryBad: 1,
+  DeviceRating.Bad: 2,
+  DeviceRating.Poor: 3,
+  DeviceRating.Good: 4,
+  DeviceRating.Excellent: 5,
 };
 
 MediaProcessorTypeConverter _$MediaProcessorTypeConverterFromJson(

@@ -2,7 +2,7 @@
 //  DelegateHandler.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -61,6 +61,7 @@ enum RtcEngineDelegateType: String, CaseIterable {
     case onVideoCaptureStateChanged
     case onChannelFailover
     case onActiveSpeakerListUpdated
+    case onUserAudioControlMessageReceived
     case onAudioMixingStateChanged
     case onVideoSnapshotCompleted
     case onNetworkQuality
@@ -69,6 +70,9 @@ enum RtcEngineDelegateType: String, CaseIterable {
     case onScreenStartResult
     case onScreenCaptureStateChanged
     case onUserAudioLevel
+    case onEchoDelayChanged
+    case onUserAudioCallTypeChanged
+    case onCalloutResult
     case onVideoSendStats
     case onVideoRecvStats
     case onAudioSendStats
@@ -174,6 +178,10 @@ extension RtcEngineDelegateHandler: PanoRtcEngineDelegate {
     func onActiveSpeakerListUpdated(_ userIds: [NSNumber]?) {
         callback(.onActiveSpeakerListUpdated, userIds?.map { String($0.uint64Value) })
     }
+    
+    func onUserAudioControlMessageReceived(_ userId: UInt64, data: Data) {
+        callback(.onUserAudioControlMessageReceived, String(userId), data)
+    }
 
     func onFirstAudioDataReceived(_ userId: UInt64) {
         callback(.onFirstAudioDataReceived, String(userId))
@@ -238,6 +246,18 @@ extension RtcEngineDelegateHandler: PanoRtcEngineDelegate {
     func onUserAudioLevel(_ level: PanoRtcAudioLevel) {
         callback(.onUserAudioLevel, level.toMap())
     }
+    
+    func onEchoDelayChanged(_ newDelay: UInt32) {
+        callback(.onEchoDelayChanged, newDelay)
+    }
+    
+    func onUserAudioCallTypeChanged(_ userId: UInt64, type: PanoAudioCallType) {
+        callback(.onUserAudioCallTypeChanged, String(userId), type.rawValue)
+    }
+    
+    func onCalloutResult(_ phoneNo: String, result: PanoResult) {
+        callback(.onCalloutResult, phoneNo, result.rawValue)
+    }
 
     func onVideoCaptureStateChange(_ state: PanoVideoCaptureState, withDevice deviceId: String) {
         callback(.onVideoCaptureStateChanged, deviceId, state.rawValue)
@@ -298,6 +318,7 @@ enum PanoRtcWhiteboardDelegateType: String, CaseIterable {
     case onStatusSynced
     case onPageNumberChanged
     case onImageStateChanged
+    case onHtmlStateChanged
     case onViewScaleChanged
     case onRoleTypeChanged
     case onContentUpdated
@@ -316,6 +337,8 @@ enum PanoRtcWhiteboardDelegateType: String, CaseIterable {
     case onVisionShareStopped
     case onUserJoined
     case onUserLeft
+    case onUndoStatusChanged
+    case onRedoStatusChanged
 }
 
 class PanoRtcWhiteboardDelegateHandler: DelegateHandler<PanoRtcWhiteboardDelegateType> {}
@@ -335,6 +358,10 @@ extension PanoRtcWhiteboardDelegateHandler: PanoRtcWhiteboardDelegate {
     
     func onImageStateChanged(_ state: PanoWBImageState, withUrl url: String) {
         callback(.onImageStateChanged, url, state.rawValue)
+    }
+    
+    func onHtmlStateChanged(_ state: PanoWBHtmlState, withUrl url: String, file fileId: String) {
+        callback(.onHtmlStateChanged, fileId, url, state.rawValue)
     }
     
     func onViewScaleChanged(_ scale: Float32) {
@@ -408,6 +435,14 @@ extension PanoRtcWhiteboardDelegateHandler: PanoRtcWhiteboardDelegate {
     func onUserLeft(_ userId: UInt64) {
         callback(.onUserLeft, String(userId))
     }
+    
+    func onUndoStatusChanged(_ canUndo: Bool) {
+        callback(.onUndoStatusChanged, canUndo)
+    }
+    
+    func onRedoStatusChanged(_ canRedo: Bool) {
+        callback(.onRedoStatusChanged, canRedo)
+    }
 }
 
 //MARK: - PanoRtcVideoStreamDelegateHandler
@@ -476,6 +511,8 @@ enum PanoRtcAnnotationManagerDelegateType: String, CaseIterable {
     case onVideoAnnotationStop
     case onShareAnnotationStart
     case onShareAnnotationStop
+    case onExternalAnnotationStart
+    case onExternalAnnotationStop
 }
 
 class PanoRtcAnnotationManagerDelegateHandler: DelegateHandler<PanoRtcAnnotationManagerDelegateType> {}
@@ -499,6 +536,14 @@ extension PanoRtcAnnotationManagerDelegateHandler: PanoRtcAnnotationManagerDeleg
     
     func onShareAnnotationStop(_ userId: UInt64) {
         callback(.onShareAnnotationStop, String(userId))
+    }
+    
+    func onExternalAnnotationStart(_ annotationId: String) {
+        callback(.onExternalAnnotationStart, annotationId)
+    }
+    
+    func onExternalAnnotationStop(_ annotationId: String) {
+        callback(.onExternalAnnotationStop, annotationId)
     }
 }
 
@@ -578,5 +623,58 @@ extension PanoRtcMessageDelegateHandler: PanoRtcMessageDelegate {
     
     func onPropertyChanged(_ props: [PanoPropertyAction]) {
         callback(.onPropertyChanged, props.map { $0.toMap() })
+    }
+}
+
+//MARK： - PanoRtcGroupManagerDelegate
+
+enum PanoRtcGroupManagerDelegateType: String, CaseIterable {
+    case onGroupJoinConfirm
+    case onGroupLeaveIndication
+    case onGroupInviteIndication
+    case onGroupDismissConfirm
+    case onGroupUserJoinIndication
+    case onGroupUserLeaveIndication
+    case onGroupDefaultUpdateIndication
+    case onGroupObserveConfirm
+}
+
+class PanoRtcGroupManagerDelegateHandler: DelegateHandler<PanoRtcGroupManagerDelegateType> {}
+
+extension PanoRtcGroupManagerDelegateHandler {
+    static let PREFIX = "video.pano.rtc."
+}
+
+extension PanoRtcGroupManagerDelegateHandler: PanoRtcGroupManagerDelegate {
+    func onGroupJoinConfirm(_ groupId: String, result: PanoResult) {
+        callback(.onGroupJoinConfirm, groupId, result.rawValue)
+    }
+    
+    func onGroupLeaveIndication(_ groupId: String, reason: PanoResult) {
+        callback(.onGroupLeaveIndication, groupId, reason.rawValue)
+    }
+    
+    func onGroupInviteIndication(_ groupId: String, userId: UInt64) {
+        callback(.onGroupInviteIndication, groupId, String(userId))
+    }
+    
+    func onGroupDismissConfirm(_ groupId: String, result: PanoResult) {
+        callback(.onGroupDismissConfirm, groupId, result.rawValue)
+    }
+    
+    func onGroupUserJoinIndication(_ groupId: String, userInfo: PanoRtcGroupUserInfo) {
+        callback(.onGroupUserJoinIndication, groupId, userInfo.toMap())
+    }
+    
+    func onGroupUserLeaveIndication(_ groupId: String, userId: UInt64, reason: PanoResult) {
+        callback(.onGroupUserLeaveIndication, groupId, String(userId), reason.rawValue)
+    }
+    
+    func onGroupDefaultUpdateIndication(_ groupId: String) {
+        callback(.onGroupDefaultUpdateIndication, groupId)
+    }
+    
+    func onGroupObserveConfirm(_ groupId: String, result: PanoResult) {
+        callback(.onGroupObserveConfirm, groupId, result.rawValue)
     }
 }

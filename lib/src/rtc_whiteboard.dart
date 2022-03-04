@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../pano_rtc.dart';
@@ -254,6 +255,11 @@ class RtcWhiteboard with RtcWhiteboardInterface {
   }
 
   @override
+  Future<String?> addDocWithExternal(WBDocExtContents contents) {
+    return _invokeMethod('addDocWithExternal', {'contents': contents.toJson()});
+  }
+
+  @override
   Future<String?> createDocWithImages(List<String> urls) {
     return _invokeMethod('createDocWithImages', {'urls': urls});
   }
@@ -320,6 +326,12 @@ class RtcWhiteboard with RtcWhiteboardInterface {
       'curPage': curPage,
       'type': WBClearTypeConverter(type).value()
     });
+  }
+
+  @override
+  Future<ResultCode> clearDocContents(String fileId, WBClearType type) {
+    return _invokeCodeMethod('clearDocContents',
+        {'fileId': fileId, 'type': WBClearTypeConverter(type).value()});
   }
 
   @override
@@ -449,6 +461,17 @@ class RtcWhiteboard with RtcWhiteboardInterface {
           params['option'] = option;
         } else {
           isValid = false;
+        }
+        break;
+      case WBOptionType.PCUAExthtml:
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          if (option is bool) {
+            params['option'] = option;
+          } else {
+            isValid = false;
+          }
+        } else {
+          return Future.value(ResultCode.NotSupported);
         }
         break;
       default:
@@ -1098,6 +1121,27 @@ mixin RtcWhiteboardInterface {
   /// PanoWhiteboard创建时会生成白板文件ID为"default"的白板文件
   Future<String?> addDocWithExtHtml(WBDocExtHtml extHtml);
 
+  /// Add a new whiteboard file with external contents
+  ///
+  /// **Parameter** [contents] Whiteboard file contents with external contents
+  ///
+  /// **Returns**
+  /// - Current whiteboard file ID, if fail return null
+  ///
+  /// **Note**
+  /// PanoWhiteboard has created doc with whiteboard file ID "default" when created
+  ///
+  /// 基于外部内容添加新的白板文件
+  ///
+  /// **Parameter** [contents] 外部白板文件内容
+  ///
+  /// **Returns**
+  /// - 当前白板文件ID，如果失败返回null
+  ///
+  /// **Note**
+  /// PanoWhiteboard创建时会生成白板文件ID为"default"的白板文件
+  Future<String?> addDocWithExternal(WBDocExtContents contents);
+
   /// Create new whiteboard file with some background images
   ///
   /// **Parameter** [urls] Background image url array (remote url only)
@@ -1332,6 +1376,35 @@ mixin RtcWhiteboardInterface {
   /// 如果指定用户不是当前用户，此操作需要管理员角色。
   Future<ResultCode> clearUserContents(
       String userId, bool curPage, WBClearType type);
+
+  /// Clear whiteboard content by specific file ID.
+  ///
+  /// **Parameter** [fileId] whiteboard file ID.
+  ///
+  /// **Parameter** [type] [WBClearType] enum type.
+  ///
+  /// **Returns**
+  ///    - OK: Success.
+  ///    - NO_PRIVILEGE: need ADMIN role to call this API.
+  ///    - Others: Fail.
+  ///
+  /// **Note**
+  /// This API need ADMIN role.
+  ///
+  /// 清除指定白板文件的内容。
+  ///
+  /// **Parameter** [fileId] 白板文件ID。
+  ///
+  /// **Parameter** [type] [WBClearType] 枚举类型。
+  ///
+  /// **Returns**
+  ///   - OK：成功。
+  ///   - NO_PRIVILEGE: 没有权限。
+  ///   - Others: 失败。
+  ///
+  /// **Note**
+  /// 只有 ADMIN 角色才可以调用。
+  Future<ResultCode> clearDocContents(String fileId, WBClearType type);
 
   /// Undo the last operation of the whiteboard.
   ///

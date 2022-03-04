@@ -10,7 +10,6 @@ import video.pano.rtc.native.events.RtcEngineEvent
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioChannel
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioDeviceType
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioEqualizationMode
-import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioProfileQuality
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioReverbMode
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getAudioSampleRate
 import video.pano.rtc.native.utils.EnumValueConvert.StaticParams.getFeedbackType
@@ -30,6 +29,7 @@ class RtcEngineManager(
     var networkMgr: RtcNetworkMgr? = null
     var videoStreamMgr: RtcVideoStreamMgr? = null
     var rtcMessageSrv: RtcMessageSrv? = null
+    var groupMgr: RtcGroupMgr? = null
     var frontCamera: Boolean = true
 
     fun getRtcWhiteboardEngine(whiteboardId: String): RtcWhiteboardEngine? {
@@ -58,7 +58,7 @@ class RtcEngineManager(
     }
 
     override fun destroy(callback: Callback) {
-        RtcEngine.destroy()
+        engine?.destroy()
         engine = null
         whiteboardMap.clear()
         annotationMgr?.destroy()
@@ -68,10 +68,6 @@ class RtcEngineManager(
         rtcMessageSrv = null
         frontCamera = true
         callback.success(Constants.QResult.OK)
-    }
-
-    override fun setParameters(params: Map<String, *>, callback: Callback) {
-        callback.success(engine?.setParameters((params["param"]) as String))
     }
 
     override fun joinChannel(params: Map<String, *>, callback: Callback) {
@@ -332,6 +328,16 @@ class RtcEngineManager(
         })
     }
 
+    override fun groupManager(callback: Callback) {
+        if (groupMgr == null) {
+            groupMgr = managerCreator.createRtcGroupMgr(engine?.groupManager)
+        }
+        callback.success(when (groupMgr) {
+            null -> Constants.QResult.NotInitialized
+            else -> Constants.QResult.OK
+        })
+    }
+
     override fun setOption(params: Map<String, *>, callback: Callback) {
         val type = (params["type"] as Number).toInt()
         if (type == 0) { //FaceBeautify
@@ -376,7 +382,7 @@ class RtcEngineManager(
                 val audioProfile = RtcAudioProfile().apply {
                     this.sampleRate = getAudioSampleRate((optionMap["sampleRate"] as Number).toInt())
                     this.channel = getAudioChannel((optionMap["channel"] as Number).toInt())
-                    this.profileQuality = getAudioProfileQuality((optionMap["profileQuality"] as Number).toInt())
+                    this.encodeBitrate = (optionMap["encodeBitrate"] as Number).toInt()
                 }
                 callback.success(engine?.setOption(optionType, audioProfile))
 
@@ -490,6 +496,21 @@ class RtcEngineManager(
         val taskId = (params["taskId"] as Number).toLong()
         val timestampMs = (params["timestampMs"] as Number).toLong()
         callback.success(engine?.audioMixingMgr?.seekAudioMixing(taskId, timestampMs))
+    }
+
+    override fun setParameters(params: Map<String, *>, callback: Callback) {
+        callback.success(engine?.setParameters((params["param"]) as String))
+    }
+
+    override fun callout(params: Map<String, *>, callback: Callback) {
+        val phoneNo = params["phoneNo"] as String
+        val bindToUser = params["bindToUser"] as Boolean
+        callback.success(engine?.callout(phoneNo, bindToUser))
+    }
+
+    override fun dropCall(params: Map<String, *>, callback: Callback) {
+        val phoneNo = params["phoneNo"] as String
+        callback.success(engine?.dropCall(phoneNo))
     }
 
     override fun getSdkVersion(callback: Callback) {

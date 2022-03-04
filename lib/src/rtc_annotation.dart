@@ -55,61 +55,9 @@ class RtcAnnotation with RtcAnnotationInterface {
   }
 
   @override
-  Future<ResultCode> clearContents() {
-    return _invokeCodeMethod('clearContents');
-  }
-
-  @override
-  Future<ResultCode> clearUserContents(String userId) {
-    return _invokeCodeMethod('clearUserContents', {'userId': userId});
-  }
-
-  @override
-  Future<ResultCode> redo() {
-    return _invokeCodeMethod('redo');
-  }
-
-  @override
-  Future<ResultCode> setColor(WBColor color) {
-    return _invokeCodeMethod('setColor', {'color': color.toJson()});
-  }
-
-  @override
-  Future<ResultCode> setFontSize(int size) {
-    return _invokeCodeMethod('setFontSize', {'size': size});
-  }
-
-  @override
-  Future<ResultCode> setFontStyle(WBFontStyle style) {
-    return _invokeCodeMethod(
-        'setFontStyle', {'style': WBFontStyleConverter(style).value()});
-  }
-
-  @override
-  Future<ResultCode> setLineWidth(int size) {
-    return _invokeCodeMethod('setLineWidth', {'size': size});
-  }
-
-  @override
   Future<ResultCode> setRoleType(WBRoleType type) {
     return _invokeCodeMethod(
         'setRoleType', {'type': WBRoleTypeConverter(type).value()});
-  }
-
-  @override
-  Future<ResultCode> setToolType(WBToolType type) {
-    return _invokeCodeMethod(
-        'setToolType', {'type': WBToolTypeConverter(type).value()});
-  }
-
-  @override
-  Future<ResultCode> setVisible(bool visible) {
-    return _invokeCodeMethod('setVisible', {'visible': visible});
-  }
-
-  @override
-  Future<ResultCode> snapshot(String outputDir) {
-    return _invokeCodeMethod('snapshot', {'outputDir': outputDir});
   }
 
   @override
@@ -124,8 +72,114 @@ class RtcAnnotation with RtcAnnotationInterface {
   }
 
   @override
+  Future<ResultCode> setVisible(bool visible) {
+    return _invokeCodeMethod('setVisible', {'visible': visible});
+  }
+
+  @override
+  Future<ResultCode> setToolType(WBToolType type) {
+    return _invokeCodeMethod(
+        'setToolType', {'type': WBToolTypeConverter(type).value()});
+  }
+
+  @override
+  Future<ResultCode> setLineWidth(int size) {
+    return _invokeCodeMethod('setLineWidth', {'size': size});
+  }
+
+  @override
+  Future<ResultCode> setColor(WBColor color) {
+    return _invokeCodeMethod('setColor', {'color': color.toJson()});
+  }
+
+  @override
+  Future<ResultCode> setFillType(WBFillType type) {
+    return _invokeCodeMethod(
+        'setFillType', {'type': WBFillTypeConverter(type).value()});
+  }
+
+  @override
+  Future<ResultCode> setFillColor(WBColor color) {
+    return _invokeCodeMethod('setFillColor', {'color': color.toJson()});
+  }
+
+  @override
+  Future<ResultCode> setFontStyle(WBFontStyle style) {
+    return _invokeCodeMethod(
+        'setFontStyle', {'style': WBFontStyleConverter(style).value()});
+  }
+
+  @override
+  Future<ResultCode> setFontSize(int size) {
+    return _invokeCodeMethod('setFontSize', {'size': size});
+  }
+
+  @override
   Future<ResultCode> undo() {
     return _invokeCodeMethod('undo');
+  }
+
+  @override
+  Future<ResultCode> redo() {
+    return _invokeCodeMethod('redo');
+  }
+
+  @override
+  Future<ResultCode> clearUserContents(String userId) {
+    return _invokeCodeMethod('clearUserContents', {'userId': userId});
+  }
+
+  @override
+  Future<ResultCode> clearContents() {
+    return _invokeCodeMethod('clearContents');
+  }
+
+  @override
+  Future<ResultCode> snapshot(String outputDir) {
+    return _invokeCodeMethod('snapshot', {'outputDir': outputDir});
+  }
+
+  @override
+  Future<WBToolType> getToolType() {
+    return _invokeMethod('getToolType')
+        .then((value) => WBToolTypeConverter.fromValue(value).e);
+  }
+
+  @override
+  Future<ResultCode> setAspectSize(int w, int h) {
+    return _invokeCodeMethod('setAspectSize', {'w': w, 'h': h});
+  }
+
+  @override
+  Future<ResultCode> setScalingMode(VideoScalingMode mode) {
+    return _invokeCodeMethod(
+        'setScalingMode', {'mode': VideoScalingModeConverter(mode).value()});
+  }
+
+  @override
+  Future<ResultCode> setOption(option, AnnoOptionType type) {
+    var params = <String, dynamic>{};
+    params['type'] = AnnoOptionTypeConverter(type).value();
+    var isValid = true;
+    switch (type) {
+      case AnnoOptionType.EnableLocalRender:
+      case AnnoOptionType.EnableShowDraws:
+      case AnnoOptionType.EnableUIResponse:
+      case AnnoOptionType.EnableCursorposSync:
+      case AnnoOptionType.EnableShowRemoteCursor:
+        if (option is bool) {
+          params['option'] = option;
+        } else {
+          isValid = false;
+        }
+        break;
+      default:
+        isValid = false;
+    }
+
+    if (!isValid) return Future.value(ResultCode.InvalidArgs);
+
+    return _invokeCodeMethod('setOption', params);
   }
 }
 
@@ -249,6 +303,45 @@ mixin RtcAnnotationInterface {
   /// - [ResultCode.OK]： 成功
   /// - Others: 失败
   Future<ResultCode> setColor(WBColor color);
+
+  /// Set fill type
+  ///
+  /// **Parameter** [type] Fill type
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// 设置填充类型
+  /// **Parameter** [type] 填充类型
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  Future<ResultCode> setFillType(WBFillType type);
+
+  /// Set fill color
+  ///
+  /// **Parameter** [color]  Color.  Valid value range: [0, 1].
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// **Note**
+  /// The color will be onset only the filltype is WbFileType.Color
+  ///
+  /// 设置填充颜色
+  ///
+  /// **Parameter** [color] 颜色。有效值范围：[0, 1]。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  ///
+  /// **Note**
+  /// 填充类型为WbFileType.Color时， 此设置方能起效。
+  Future<ResultCode> setFillColor(WBColor color);
 
   /// Set font style
   ///
@@ -378,4 +471,74 @@ mixin RtcAnnotationInterface {
   /// **Note**
   /// 快照结果和图像文件名通过回调函数[AnnotationEventHandler.onSnapshotComplete]返回
   Future<ResultCode> snapshot(String outputDir);
+
+  /// get tool type
+  ///
+  /// **Returns**
+  /// - tool type
+  ///
+  /// 获取工具类型
+  ///
+  /// **Returns**
+  /// - 工具类型
+  Future<WBToolType> getToolType();
+
+  /// set annotation area aspect size
+  ///
+  /// **Parameter** [w] width
+  ///
+  /// **Parameter** [h] height
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// 设置标注区域大小
+  ///
+  /// **Parameter** [w] 宽
+  ///
+  /// **Parameter** [h] 高
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  Future<ResultCode> setAspectSize(int w, int h);
+
+  /// set annotation area scaling mode
+  ///
+  /// **Parameter** [mode] scaling mode
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// 设置标注区域缩放模式
+  ///
+  /// **Parameter** [mode] 缩放模式
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  Future<ResultCode> setScalingMode(VideoScalingMode mode);
+
+  /// Set annotation option and paramters
+  ///
+  /// **Parameter** [option] paramter defined with option
+  ///
+  /// **Parameter** [type] option type
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - Others: Fail
+  ///
+  /// 设置标注参数
+  ///
+  /// **Parameter** [option] 参数, 参数的定义需遵循不同的option所定义的参数结构
+  ///
+  /// **Parameter** [type] 参数类别
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK]： 成功
+  /// - Others: 失败
+  Future<ResultCode> setOption(dynamic option, AnnoOptionType type);
 }

@@ -2,7 +2,7 @@
 //  RtcWhiteboard.swift
 //  pano_rtc
 //
-//  Copyright © 2021 Pano. All rights reserved.
+//  Copyright © 2022 Pano. All rights reserved.
 //
 
 import Foundation
@@ -83,6 +83,8 @@ protocol RtcWhiteboardInterfce {
     
     func addDocWithExtHtml(_ params: NSDictionary, _ callback: Callback)
     
+    func addDocWithExternal(_ params: NSDictionary, _ callback: Callback)
+    
     func createDocWithImages(_ params: NSDictionary, _ callback: Callback)
     
     func createDocWithFilePath(_ params: NSDictionary, _ callback: Callback)
@@ -104,6 +106,8 @@ protocol RtcWhiteboardInterfce {
     func clearContents(_ params: NSDictionary, _ callback: Callback)
     
     func clearUserContents(_ params: NSDictionary, _ callback: Callback)
+    
+    func clearDocContents(_ params: NSDictionary, _ callback: Callback)
     
     func undo(_ params: NSDictionary, _ callback: Callback)
     
@@ -330,6 +334,10 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
         callback.resolve(self[params["whiteboardId"] as! String]) { $0.addDoc(with:PanoWBDocExtHtml(map: params["extHtml"] as! [String: Any])) }
     }
     
+    @objc func addDocWithExternal(_ params: NSDictionary, _ callback: Callback) {
+        callback.resolve(self[params["whiteboardId"] as! String]) { $0.addDoc(withExternal:PanoWBDocExtContents(map: params["contents"] as! [String: Any])) }
+    }
+    
     @objc func createDocWithImages(_ params: NSDictionary, _ callback: Callback) {
         callback.resolve(self[params["whiteboardId"] as! String]) { $0.createDoc(withImages: params["urls"] as! [String]) }
     }
@@ -389,6 +397,12 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
             self[params["whiteboardId"] as! String]?.clearUserContents(UInt64(params["userId"] as! String) ?? 0,
                                       currentPage: params["curPage"] as! Bool,
                                       with: PanoWbClearType(rawValue: params["type"] as! Int)!))
+    }
+    
+    @objc func clearDocContents(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(
+            self[params["whiteboardId"] as! String]?.clearDocContents(params["fileId"] as! String,
+                                                                      with: PanoWbClearType(rawValue: params["type"] as! Int)!))
     }
     
     @objc func undo(_ params: NSDictionary, _ callback: Callback) {
@@ -477,6 +491,8 @@ class RtcWhiteboard: NSObject, RtcWhiteboardInterfce {
         case .cursorPosSync:
             option = NSNumber(value: params["option"] as! Bool)
         case .showRemoteCursor:
+            option = NSNumber(value: params["option"] as! Bool)
+        case .pcuaForExtHtml:
             option = NSNumber(value: params["option"] as! Bool)
         default:
             isValid = false

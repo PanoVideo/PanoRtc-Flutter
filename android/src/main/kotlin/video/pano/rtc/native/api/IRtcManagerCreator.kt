@@ -14,4 +14,6 @@ interface IRtcManagerCreator {
     fun createVideoStreamMgr(manager: RtcVideoStreamManager?): RtcVideoStreamMgr?
 
     fun createRtcMessageSrv(service: RtcMessageService?): RtcMessageSrv?
+
+    fun createRtcGroupMgr(manager: RtcGroupManager?): RtcGroupMgr?
 }
