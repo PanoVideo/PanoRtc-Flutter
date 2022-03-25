@@ -1284,8 +1284,13 @@ class WBDocInfo {
   /// 白板文件类型。
   WBDocType type;
 
+  /// upload doc ID.
+  ///
+  /// 上传文档的ID。
+  String docId;
+
   /// Constructs a [WBDocInfo]
-  WBDocInfo(this.fileId, this.name, this.creator, this.type);
+  WBDocInfo(this.fileId, this.name, this.creator, this.type, this.docId);
 
   /// @nodoc
   factory WBDocInfo.fromJson(Map<String, dynamic> json) =>

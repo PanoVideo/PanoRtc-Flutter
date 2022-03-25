@@ -24,12 +24,16 @@ class RtcMessageServiceEvent(
         callback("onUserMessage", userId.toString(), data)
     }
 
-    override fun onTopicMessage(topic: String?, userId: Long, data: ByteArray?) {
-        callback("onTopicMessage", topic, userId.toString(), data)
+    override fun onTopicMessage(topic: String?, userId: Long, data: ByteArray?, timestamp: Double) {
+        callback("onTopicMessage", topic, userId.toString(), data, timestamp)
     }
 
     override fun onSubscribeResult(topic: String?, result: Constants.QResult?) {
         callback("onSubscribeResult", topic, result?.value)
+    }
+
+    override fun onPublishTopicMessageFailed(topic: String?, userId: Long, requestId: Int, reason: Constants.QResult?) {
+        callback("onPublishTopicMessageFailed", topic, userId.toString(), requestId, reason?.value)
     }
 
     override fun onPropertyChanged(props: Array<out RtcPropertyAction>?) {

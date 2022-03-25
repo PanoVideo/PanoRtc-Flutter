@@ -37,7 +37,8 @@ class RtcMessageSrv(
     override fun publish(params: Map<String, *>, callback: Callback) {
         val topic = params["topic"] as String
         val data = params["data"] as ByteArray
-        callback.success(service?.publish(topic, data))
+        val requestId = (params["requestId"] as Number).toInt()
+        callback.success(service?.publish(topic, data, requestId))
     }
 
     override fun subscribe(params: Map<String, *>, callback: Callback) {

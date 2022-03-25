@@ -595,6 +595,7 @@ enum PanoRtcMessageDelegateType: String, CaseIterable {
     case onUserMessage
     case onSubscribeResult
     case onTopicMessage
+    case onPublishTopicMessageFailed
     case onPropertyChanged
 }
 
@@ -617,8 +618,12 @@ extension PanoRtcMessageDelegateHandler: PanoRtcMessageDelegate {
         callback(.onSubscribeResult, topic, result.rawValue)
     }
     
-    func onTopicMessage(_ topic: String, userId: UInt64, data: Data) {
-        callback(.onTopicMessage, topic, String(userId), data)
+    func onTopicMessage(_ topic: String, userId: UInt64, data: Data, timestamp: TimeInterval) {
+        callback(.onTopicMessage, topic, String(userId), data, timestamp)
+    }
+    
+    func onPublishTopicMessageFailed(_ topic: String, userId: UInt64, requestId: UInt32, reason: PanoResult) {
+        callback(.onPublishTopicMessageFailed, topic, String(userId), requestId, reason.rawValue)
     }
     
     func onPropertyChanged(_ props: [PanoPropertyAction]) {

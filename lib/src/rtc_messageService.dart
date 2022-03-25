@@ -62,8 +62,10 @@ class RtcMessageService with RtcMessageServiceInterface {
   }
 
   @override
-  Future<ResultCode> publish(String topic, Uint8List data) {
-    return _invokeCodeMethod('publish', {'topic': topic, 'data': data});
+  Future<ResultCode> publish(String topic, Uint8List data,
+      {int requestId = 0}) {
+    return _invokeCodeMethod(
+        'publish', {'topic': topic, 'data': data, 'requestId': requestId});
   }
 
   @override
@@ -79,21 +81,23 @@ class RtcMessageService with RtcMessageServiceInterface {
 
 /// The RtcMessageService interface
 mixin RtcMessageServiceInterface {
-  ///  @~english
-  ///  @brief Set or update meeting property.
-  ///  @param name  The property name.
-  ///  @param value  The to be set. if value is null or length is 0,
-  ///                then the property will be removed from server.
-  ///  @return
-  ///   - OK: Success.
-  ///   - others: Failure.
-  ///  @~chinese
-  ///  @brief 设置或更属性。
-  ///  @param name  属性名字。
-  ///  @param value  属性值。如果 value 为空，或者 length 为0，则此属性会被删除。
-  ///  @return
-  ///   - OK: 调用成功。
-  ///   - others: 调用失败。
+  /// Set or update meeting property.
+  ///
+  /// **Parameter** [name]  The property name.
+  /// **Parameter** [value]  The to be set. if value is null or length is 0, then the property will be removed from server.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 设置或更属性。
+  ///
+  /// **Parameter** [name]  属性名字。
+  /// **Parameter** [value]  属性值。如果 value 为空，或者 length 为0，则此属性会被删除。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
   Future<ResultCode> setProperty(String name, Uint8List value);
 
   /// Send message to the user specified by userId.
@@ -126,6 +130,7 @@ mixin RtcMessageServiceInterface {
   /// Broadcast message to all users.
   ///
   /// **Parameter** [message] The message data.
+  ///
   /// **Parameter** [sendBack] Send back flag.
   ///
   /// **Returns**
@@ -138,6 +143,7 @@ mixin RtcMessageServiceInterface {
   /// 广播消息给所有用户。
   ///
   /// **Parameter** [message] 要广播的消息。
+  ///
   /// **Parameter** [sendBack] 是否回发消息。
   ///
   /// **Returns**
@@ -149,52 +155,67 @@ mixin RtcMessageServiceInterface {
   Future<ResultCode> broadcastMessage(Uint8List message,
       {bool sendBack = true});
 
-  /// @~english
-  /// @brief Publish topic.
-  /// @param topic  The topic.
-  /// @param data  The topic data.
-  /// @return
-  ///   - OK: Success.
-  ///   - others: Failure.
-  /// @note You can send messages at a maximum frequency of 150 calls every 3 seconds.
+  /// Publish topic.
+  ///
+  /// **Parameter** [topic]  The topic.
+  ///
+  /// **Parameter** ]data]  The topic data.
+  ///
+  /// **Parameter** [requestId] The request id. Returned by onPublishTopicMessageFailed when publishing a message fails.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// **Note** You can send messages at a maximum frequency of 150 calls every 3 seconds.
   ///       The maximum data length is 4 KB.
-  /// @~chinese
-  /// @brief 发布一个主题。
-  /// @param topic  主题标识。
-  /// @param data  主题数据。
-  /// @return
-  ///   - OK: 成功。
-  ///   - 其他: 失败。
-  /// @note 发送消息的调用频率上限为每 3 秒 150 次。
+  ///
+  /// 发布一个主题。
+  ///
+  /// **Parameter** [topic]  主题标识。
+  ///
+  /// **Parameter** [data]  主题数据。
+  ///
+  /// **Parameter** [requestId]  请求标识。发布消息失败通过 onPublishTopicMessageFailed 返回。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
+  ///
+  /// **Note** 发送消息的调用频率上限为每 3 秒 150 次。
   ///       请确保二进制消息大小不超过 4 KB。
-  Future<ResultCode> publish(String topic, Uint8List data);
+  Future<ResultCode> publish(String topic, Uint8List data, {int requestId = 0});
 
-  /// @~english
-  /// @brief Subscribe topic.
-  /// @param topic  The topic.
-  /// @return
-  ///   - OK: Success.
-  ///   - others: Failure.
-  /// @~chinese
-  /// @brief 订阅一个主题。
-  /// @param topic  主题标识。
-  /// @return
-  ///   - OK: 成功。
-  ///   - 其他: 失败。
+  /// Subscribe topic.
+  /// **Parameter** [topic] The topic.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 订阅一个主题。
+  /// **Parameter** [topic]  主题标识。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
   Future<ResultCode> subscribe(String topic);
 
-  /// @~english
-  /// @brief Unsubscribe topic.
-  /// @param topic  The topic.
-  /// @return
-  ///   - OK: Success.
-  ///   - others: Failure.
-  /// @~chinese
-  /// @brief 取消订阅一个主题。
-  /// @param topic  主题标识。
-  /// @return
-  ///   - OK: 成功。
-  ///   - 其他: 失败。
+  /// Unsubscribe topic.
+  ///
+  /// **Parameter** [topic]  The topic.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success
+  /// - others: Failure
+  ///
+  /// 取消订阅一个主题。
+  ///
+  /// **Parameter** [topic]  主题标识。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功
+  /// - 其他: 失败
   Future<ResultCode> unsubscribe(String topic);
 }
 

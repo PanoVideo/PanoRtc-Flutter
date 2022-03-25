@@ -36,7 +36,7 @@ target 'Runner' do
   target 'Runner-Screen' do
     platform :ios, '11.0'
     use_frameworks!
-    pod 'PanoRtc_iOS/ReplayKitExt', '1.7.1.1'
+    pod 'PanoRtc_iOS/ReplayKitExt', '1.7.4.0'
   end
 end
 

@@ -1,5 +1,12 @@
 # Change log
 
+## 1.0.7
+
+* Support Pano SDK to 1.7.4.0
+* Add docId for WBDocInfo
+* Add Device Manager setPlayoutDataMuteStatus api
+* Support RtcMessageService new api
+
 ## 1.0.6
 
 * Support Pano SDK to 1.7.1.1

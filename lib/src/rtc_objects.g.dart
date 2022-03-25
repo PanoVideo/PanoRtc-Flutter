@@ -512,6 +512,7 @@ WBDocInfo _$WBDocInfoFromJson(Map<String, dynamic> json) => WBDocInfo(
       json['name'] as String,
       json['creator'] as String,
       $enumDecode(_$WBDocTypeEnumMap, json['type']),
+      json['docId'] as String,
     );
 
 Map<String, dynamic> _$WBDocInfoToJson(WBDocInfo instance) => <String, dynamic>{
@@ -519,6 +520,7 @@ Map<String, dynamic> _$WBDocInfoToJson(WBDocInfo instance) => <String, dynamic>{
       'name': instance.name,
       'creator': instance.creator,
       'type': _$WBDocTypeEnumMap[instance.type],
+      'docId': instance.docId,
     };
 
 WBVisionConfig _$WBVisionConfigFromJson(Map<String, dynamic> json) =>

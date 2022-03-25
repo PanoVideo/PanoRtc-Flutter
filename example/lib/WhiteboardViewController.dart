@@ -151,6 +151,7 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
       ),
       SafeArea(
         child: Container(
+          margin: EdgeInsets.only(bottom: 50),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -738,14 +739,9 @@ class _WhiteboardViewControllerState extends State<WhiteboardViewController> {
               ),
             ),
           ),
-          SizedBox(
-            width: 140,
-          ),
         ],
       )
-    ]
-        // ),
-        );
+    ]);
   }
 
   final ButtonStyle toolButtonStyle = ElevatedButton.styleFrom(

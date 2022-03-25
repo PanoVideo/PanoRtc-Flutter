@@ -1776,7 +1776,11 @@ typedef OnSubscribeResult = void Function(String topic, ResultCode result);
 
 /// @nodoc
 typedef OnTopicMessage = void Function(
-    String topic, String userId, Uint8List data);
+    String topic, String userId, Uint8List data, double timestamp);
+
+/// @nodoc
+typedef OnPublishTopicMessageFailed = void Function(
+    String topic, String userId, int requestId, ResultCode reason);
 
 /// @nodoc
 typedef OnPropertyChanged = void Function(List<RtcPropertyAction> props);
@@ -1786,7 +1790,9 @@ typedef OnPropertyChanged = void Function(List<RtcPropertyAction> props);
 /// RtcMessageService 的回调函数， 在使用 RtcMessageService 之前必须要设置回调以获取事件通知。
 class RtcMessageServiceHandler {
   /// Notification of message service state change.
+  ///
   /// **Parameter** [state] The service state, You can send message when state is [MessageServiceState.Available].
+  ///
   /// **Parameter** [reason] The reason of the state change.
   ///
   /// **Note**
@@ -1798,7 +1804,9 @@ class RtcMessageServiceHandler {
   /// that the service status is correctly obtained.
   ///
   /// 消息服务状态变更的通知。
+  ///
   /// **Parameter** [state] 服务状态，[MessageServiceState.Available] 时可以发送消息。
+  ///
   /// **Parameter** [reason] 状态变更的原因。
   ///
   /// **Note**
@@ -1807,38 +1815,79 @@ class RtcMessageServiceHandler {
   OnServiceStateChanged? onServiceStateChanged;
 
   /// Notification of user message.
+  ///
   /// **Parameter** [userId] The user who sent the message.
+  ///
   /// **Parameter** [data] The message data.
   ///
   /// 用户消息通知。
+  ///
   /// **Parameter** [userId] 发送消息的用户标识。
+  ///
   /// **Parameter** [data]  消息数据。
   OnUserMessage? onUserMessage;
 
   /// Notification of topic subscribe result.
+  ///
   /// **Parameter** [topic] The topic.
+  ///
   /// **Parameter** [result] The result of topic subscription.
   ///
   /// 主题消息订阅成功与否的通知。
+  ///
   /// **Parameter** [topic] 主题标识。
+  ///
   /// **Parameter** [result] 主题订阅的结果。
   OnSubscribeResult? onSubscribeResult;
 
   /// Notification of topic message.
+  ///
   /// **Parameter** [topic] The topic.
+  ///
   /// **Parameter** [userId] The user who published the message.
+  ///
   /// **Parameter** [data] The topic data.
   ///
+  /// **Parameter** [timestamp] The topic message send timestamp, in seconds.
+  ///
   /// 用户主题消息通知。
+  ///
   /// **Parameter** [topic] 主题标识。
+  ///
   /// **Parameter** [userId] 发布主题消息的用户标识。
+  ///
   /// **Parameter** [data] 主题消息数据。
+  ///
+  /// **Parameter** [timestamp] 主题消息发送时间戳，单位秒。
   OnTopicMessage? onTopicMessage;
 
+  /// Notification of topic message sending failed.
+  ///
+  /// **Parameter** [topic] The topic.
+  ///
+  /// **Parameter** [userId] The user who published the message, 0 means server message.
+  ///
+  /// **Parameter** [requestId] The request id.
+  ///
+  /// **Parameter** [reason] The reason for sending failure.
+  ///
+  /// 用户主题消息通知。
+  ///
+  /// **Parameter** [topic] 主题标识。
+  ///
+  /// **Parameter** [userId] 发布主题消息的用户标识，0 代表服务端消息。
+  ///
+  /// **Parameter** [requestId] 请求标识。
+  ///
+  /// **Parameter** [reason] 发送失败原因。
+  OnPublishTopicMessageFailed? onPublishTopicMessageFailed;
+
   /// Notification of message service property change.
+  ///
   /// **Parameter** [props] The property action array.
   ///
   /// 消息服务属性变更通知。
+  ///
   /// **Parameter** [props] 变更属性的数组。
   OnPropertyChanged? onPropertyChanged;
 
@@ -1848,6 +1897,7 @@ class RtcMessageServiceHandler {
       this.onUserMessage,
       this.onSubscribeResult,
       this.onTopicMessage,
+      this.onPublishTopicMessageFailed,
       this.onPropertyChanged});
 
   /// @nodoc
@@ -1865,7 +1915,10 @@ class RtcMessageServiceHandler {
             data[0], ResultCodeConverter.fromValue(data[1]).e);
         break;
       case 'onTopicMessage':
-        onTopicMessage?.call(data[0], data[1], data[2]);
+        onTopicMessage?.call(data[0], data[1], data[2], data[3]);
+        break;
+      case 'onPublishTopicMessageFailed':
+        onPublishTopicMessageFailed?.call(data[0], data[1], data[2], data[3]);
         break;
       case 'onPropertyChanged':
         var props = <RtcPropertyAction>[];
@@ -1905,74 +1958,106 @@ typedef OnGroupUserLeaveIndication = void Function(
 /// RtcGroupManager 的回调函数，在使用 RtcGroupManager 之前必须要设置回调以获取事件通知。
 class RtcGroupEventHandler {
   /// Notification of group join result.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [result] The result of group joining.
   ///
   /// 加入分组成功与否的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [result] 分组加入的结果。
   GroupResultCallback? onGroupJoinConfirm;
 
   /// Notification of group leaving indication.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [result] The reason of group leaving.
   ///
   /// 分组离开的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [result] 离开分组原因。
   GroupResultCallback? onGroupLeaveIndication;
 
   /// Notification of group user inviting.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [userId] The user who sent the invite.
   ///
   /// 用户分组邀请的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [userId] 发送邀请的用户ID。
   GroupUserCallback? onGroupInviteIndication;
 
   /// Notification of group dismiss result.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [result] The result of group dismiss.
   ///
   /// 解散分组成功与否的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [result] 分组解散的结果。
   GroupResultCallback? onGroupDismissConfirm;
 
   /// Notification of group user joining.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [userInfo] The information of the group member.
   ///
   /// 用户加入分组的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [userInfo] 分组成员信息。
   GroupUserJoinIndicationCallback? onGroupUserJoinIndication;
 
   /// Notification of group user leaving.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [userId] The user ID.
+  ///
   /// **Parameter** [reason] The reason of user leaving.
   ///
   /// 用户离开分组的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [userId] 用户ID。
+  ///
   /// **Parameter** [reason] 用户离开原因。
   OnGroupUserLeaveIndication? onGroupUserLeaveIndication;
 
   /// Notification of default group update.
+  ///
   /// **Parameter** [groupId] The default group ID.
   ///
   /// 默认分组变更的通知。
+  ///
   /// **Parameter** [groupId] 变更后的默认分组标识。
   GroupIdCallback? onGroupDefaultUpdateIndication;
 
   /// Notification of group event observe result.
+  ///
   /// **Parameter** [groupId] The group ID.
+  ///
   /// **Parameter** [result] The result of group event observation.
   ///
   /// 观察分组事件成功与否的通知。
+  ///
   /// **Parameter** [groupId] 分组标识。
+  ///
   /// **Parameter** [result] 分组事件订阅的结果。
   GroupResultCallback? onGroupObserveConfirm;
 

@@ -315,7 +315,8 @@ class RtcWhiteboardEngine(
                 "type" to info?.type,
                 "fileId" to info?.fileId,
                 "name" to info?.name,
-                "creator" to info?.creator.toString()))
+                "creator" to info?.creator.toString(),
+                "docId " to info?.docId))
     }
 
     override fun sendToExternalHtml(params: Map<String, *>, callback: Callback) {

@@ -232,6 +232,11 @@ class RtcEngineManager(
         callback.success(engine?.setMicrophoneMuteStatus(enable))
     }
 
+    override fun setPlayoutDataMuteStatus(params: Map<String, *>, callback: Callback) {
+        val muted = params["muted"] as Boolean
+        callback.success(engine?.audioDeviceManager?.setPlayoutDataMuteStatus(muted))
+    }
+
     override fun setAudioDeviceVolume(params: Map<String, *>, callback: Callback) {
         val volume = (params["volume"] as Number).toInt()
         val type = (params["type"] as Number).toInt()

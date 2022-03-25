@@ -106,6 +106,8 @@ protocol RtcDeviceManagerInterface {
     func stopPreview(_ callback: Callback)
     
     func isMultiCameraCaptureSupported(_ callback: Callback)
+    
+    func setPlayoutDataMuteStatus(_ params: NSDictionary, _ callback: Callback)
 }
 
 protocol RtcAudioMixingManagerInterface {
@@ -443,6 +445,10 @@ class RtcEngineManager: NSObject, RtcEngineManagerInterface {
         callback.resolve(engine) { it in
             it.isMultiCameraCaptureSupported()
         }
+    }
+    
+    @objc func setPlayoutDataMuteStatus(_ params: NSDictionary, _ callback: Callback) {
+        callback.code(engine?.setPlayoutDataMuteStatus(params["muted"] as! Bool))
     }
     
     @objc func createAudioMixingTask(_ params: NSDictionary, _ callback: Callback) {

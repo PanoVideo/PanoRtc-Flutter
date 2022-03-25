@@ -59,6 +59,8 @@ interface IRtcEngine {
     fun isEnabledLoudspeaker(callback: Callback)
 
     fun setMicrophoneMuteStatus(params: Map<String, *>, callback: Callback)
+    
+    fun setPlayoutDataMuteStatus(params: Map<String, *>, callback: Callback)
 
     fun setAudioDeviceVolume(params: Map<String, *>, callback: Callback)
 

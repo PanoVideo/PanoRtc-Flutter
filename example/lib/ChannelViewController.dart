@@ -363,10 +363,11 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
     }, onSubscribeResult: (String topic, ResultCode? result) {
       print('onSubscribeResult topic: $topic');
       print('onSubscribeResult result: $result');
-    }, onTopicMessage: (String topic, String userId, Uint8List data) {
+    }, onTopicMessage: (String topic, String userId, Uint8List data, double timestamp) {
       print('onTopicMessage topic: $topic');
       print('onTopicMessage userId: $userId');
       print('onTopicMessage data: ' + utf8.decode(data));
+      print('onTopicMessage timestamp: $timestamp');
     }, onPropertyChanged: (List<RtcPropertyAction> props) {
       print('onPropertyChanged props length: ' + props.length.toString());
       RtcPropertyAction action = props[0];
@@ -524,53 +525,54 @@ class _ChannelViewControllerState extends State<ChannelViewController> {
                                     size: 24,
                                   ),
                                   padding: EdgeInsets.all(8),
-                                  // shape: CircleBorder(),
                                 ),
                               ),
                             ],
                           )
                         : Container(),
-                    Row(
-                      children: [
-                        Spacer(),
-                        SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: MaterialButton(
-                            onPressed: enableAudio,
-                            color: Colors.white,
-                            textColor: Colors.blue,
-                            child: Icon(
-                              isEnableAudio ? Icons.mic : Icons.mic_off,
-                              size: 24,
+                    Container(
+                        margin: EdgeInsets.only(bottom: 50),
+                        child: Row(
+                          children: [
+                            Spacer(),
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: MaterialButton(
+                                onPressed: enableAudio,
+                                color: Colors.white,
+                                textColor: Colors.blue,
+                                child: Icon(
+                                  isEnableAudio ? Icons.mic : Icons.mic_off,
+                                  size: 24,
+                                ),
+                                padding: EdgeInsets.all(8),
+                                shape: CircleBorder(),
+                              ),
                             ),
-                            padding: EdgeInsets.all(8),
-                            shape: CircleBorder(),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: MaterialButton(
-                            onPressed: enableVideo,
-                            color: Colors.white,
-                            textColor: Colors.blue,
-                            child: Icon(
-                              isEnableVideo
-                                  ? Icons.camera_alt
-                                  : Icons.camera_alt_outlined,
-                              size: 24,
+                            SizedBox(
+                              width: 8,
                             ),
-                            padding: EdgeInsets.all(8),
-                            shape: CircleBorder(),
-                          ),
-                        ),
-                        Spacer(),
-                      ],
-                    ),
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: MaterialButton(
+                                onPressed: enableVideo,
+                                color: Colors.white,
+                                textColor: Colors.blue,
+                                child: Icon(
+                                  isEnableVideo
+                                      ? Icons.camera_alt
+                                      : Icons.camera_alt_outlined,
+                                  size: 24,
+                                ),
+                                padding: EdgeInsets.all(8),
+                                shape: CircleBorder(),
+                              ),
+                            ),
+                            Spacer(),
+                          ],
+                        ))
                   ],
                 ),
               ),

@@ -368,7 +368,8 @@ extension PanoWBDocInfo {
             "fileId": fileId,
             "name": name,
             "creator": String(creator),
-            "type": type.rawValue
+            "type": type.rawValue,
+            "docId": docId
         ]
     }
 }

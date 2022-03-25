@@ -366,6 +366,11 @@ class RtcEngineKit with RtcEngineKitInterface {
   }
 
   @override
+  Future<ResultCode> setPlayoutDataMuteStatus(bool muted) {
+    return _invokeCodeMethod('setPlayoutDataMuteStatus', {'muted': muted});
+  }
+
+  @override
   Future<ResultCode> createAudioMixingTask(int taskId, String filename) {
     return _invokeCodeMethod(
         'createAudioMixingTask', {'taskId': taskId, 'filename': filename});
@@ -1439,10 +1444,28 @@ mixin RtcDeviceManagerInterface {
   ///
   /// **Returns**
   /// 一个布尔值，指示是否支持。
+  ///
   /// **Note**
   /// iPhone XR，iPhone XS，iPhone XS Max，iPad Pro（第三代）或更高版本支持该功能。
   /// iOS版本需要13或更高版本。
   Future<bool> isMultiCameraCaptureSupported();
+
+  /// Set palyout data mute status.
+  ///
+  /// **Parameter** [muted] mute flag, true/false to mute/unmute.
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] Success.
+  /// - others: Failure.
+  ///
+  /// 设置播放数据静音状态。
+  ///
+  /// **Parameter** [muted] 静音开关，打开/关闭 静音开关。
+  ///
+  /// **Returns**
+  /// - [ResultCode.OK] 成功。
+  /// - 其他: 失败。
+  Future<ResultCode> setPlayoutDataMuteStatus(bool muted);
 }
 
 /// @nodoc

@@ -79,7 +79,7 @@ class RtcMessage: NSObject, RtcMessageInterface {
             return
         }
         
-        callback.code(service?.publishTopic(params["topic"] as! String, data: data))
+        callback.code(service?.publishTopic(params["topic"] as! String, data: data, requestId: params["requestId"] as! UInt32))
     }
     
     @objc func subscribe(_ params: NSDictionary, _ callback: Callback) {
